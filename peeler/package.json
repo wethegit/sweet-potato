@@ -1,5 +1,5 @@
 {
-  "name": "peeler",
+  "name": "@wethegit/sweet-potato-peeler",
   "version": "0.1.1",
   "description": "We The Collective Bootstrap Peeler",
   "main": "bin/index.js",

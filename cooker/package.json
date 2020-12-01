@@ -1,5 +1,5 @@
 {
-  "name": "cooker",
+  "name": "@wethegit/sweet-potato-cooker",
   "version": "0.1.1",
   "description": "We The Collective Bootstrap CLI",
   "main": "bin/index.js",
@@ -9,7 +9,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "ssh://git@github.com/wethegit/sweet-potato.git",
+    "url": "git@github.com:wethegit/sweet-potato.git",
     "directory": "cooker"
   },
   "dependencies": {
