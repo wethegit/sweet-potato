@@ -13,6 +13,9 @@ function build() {
     throw err;
   });
 
+  // Ensure environment variables are read.
+  require("../../../lib/env.js");
+
   // local imports
   const buildAll = require("../../../lib/build-all.js");
 

@@ -1,0 +1,32 @@
+//- Main template
+extends ../global.pug
+
+//- Styles
+append styles
+  +stylesheet({ filename: 'home' })
+
+//- Header
+block header
+  .row
+    h1!= locale.header.page_title
+    p!= locale.header.header_copy
+
+//- Content
+block main
+  section
+    .row
+      .column.column--12
+        h2!= locale.section_name.title
+        p: b!= locale.section_name.subtitle
+        p!= locale.section_name.body
+
+    .row
+      //- the following illustrates how to iterate over YAML sequences:
+      each item in locale.section_name.items
+        .column.column--4
+          h3!= item.title
+          p!= item.description
+          +button({
+            tag: 'a',
+            text: item.cta
+          }).feature__cta(href=item.cta_link)

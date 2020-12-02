@@ -1,0 +1,28 @@
+// Breakpoints
+$small-range: (25em, 39.9375em); // 639px
+$medium-range: (40em, 63.9375em); // 1023px
+$large-range: (64em, 71.4375em); // 1143px
+$xlarge-range: (71.5em, 89.9375em); // 1439px
+$xxlarge-range: (120em, 99999999em);
+
+$screen: "only screen";
+
+$bp-landscape: "#{$screen} and (orientation: landscape)";
+$bp-portrait: "#{$screen} and (orientation: portrait)";
+$bp-retina: "(-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi)";
+$bp-nintendo-medium-up: "#{$screen} and (min-width: 769px)";
+
+$small-up: "#{$screen} and (min-width: #{nth($small-range, 1)})";
+$small-only: "#{$screen} and (max-width: #{nth($small-range, 2)})";
+
+$medium-up: "#{$screen} and (min-width:#{nth($medium-range, 1)})";
+$medium-only: "#{$screen} and (min-width:#{nth($medium-range, 1)}) and (max-width:#{nth($medium-range, 2)})";
+
+$large-up: "#{$screen} and (min-width:#{nth($large-range, 1)})";
+$large-only: "#{$screen} and (min-width:#{nth($large-range, 1)}) and (max-width:#{nth($large-range, 2)})";
+
+$xlarge-up: "#{$screen} and (min-width:#{nth($xlarge-range, 1)})";
+$xlarge-only: "#{$screen} and (min-width:#{nth($xlarge-range, 1)}) and (max-width:#{nth($xlarge-range, 2)})";
+
+$xxlarge-up: "#{$screen} and (min-width:#{nth($xxlarge-range, 1)})";
+$xxlarge-only: "#{$screen} and (min-width:#{nth($xxlarge-range, 1)}) and (max-width:#{nth($xxlarge-range, 2)})";

@@ -1,0 +1,32 @@
+//- BUTTON
+  --------
+  Creates a button component.
+
+  Parameters
+  text {string}     Text that displays within the button.
+  sr_text {string}  Text that is read out for screen readers.
+  tag {string}      The HTML element for the button. Should be defined in the style of PUG, no <>. If not tag is specified, defaults to a button element. 
+
+  Usage
+  +button({ tag: 'a', text: 'This is a button', sr_text: 'Screen reader text' })
+
+mixin button(options)
+  - let { text, sr_text, tag } = options || null
+  - const baseClassName = 'button'
+  - let className = baseClassName
+
+  if !tag
+    - tag = 'button'
+  
+  if size
+    - className += ` ${baseClassName}--${size}`
+  
+  #{tag}(class=className)&attributes(attributes)
+    if text
+      span(aria-hidden=(sr_text ? 'true' : false))!=text
+    
+    if sr_text
+      span.visually-hidden!=sr_text
+
+    if block
+      block

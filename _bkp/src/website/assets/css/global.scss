@@ -1,0 +1,94 @@
+// modules
+@import "~wtc-modal-view";
+@import "~wtc-gallery-component";
+@import "~wtc-autoplay-video";
+
+// global elements
+@import "../../../components/grid/grid.scss",
+  "../../../components/button/button.scss", "../../../components/icon/icon.scss",
+  "../../../components/modal/modal.scss", "../../../components/vp/vp.scss",
+  "../../../components/skippers/skippers.scss",
+  "../../../components/reduce-motion/reduce-motion.scss",
+  "../../../components/gallery/gallery.scss",
+  "../../../components/main-nav/main-nav.scss";
+
+//- dependencies
+@import "../../../scss/helpers", "../../../scss/breakpoints",
+  "../../../scss/colors", "../../../scss/fonts", "../../../scss/typography",
+  "../../../scss/utils-text", "../../../scss/utils-visbility";
+
+// Global styles here ONLY
+*,
+*::after,
+*::before {
+  box-sizing: border-box;
+}
+
+// Custom properties
+:root {
+  --base-radius: 10px;
+  --base-space: 8px;
+}
+
+body {
+  margin: 0;
+  overflow-x: hidden;
+}
+
+button {
+  appearance: none;
+  background: none;
+  border: none;
+  border-radius: 0;
+  color: inherit;
+  cursor: pointer;
+  display: inline-block;
+  font: inherit;
+  padding: 0;
+}
+
+img {
+  max-width: 100%;
+
+  // necessary to establish an aspect ratio for lazy-images
+  &[height] {
+    height: auto;
+  }
+}
+
+pre code {
+  display: block;
+  padding: 20px;
+}
+
+code {
+  background-color: rgba(#eee, 0.5);
+  font-family: monospace;
+  font-size: 0.9em;
+  padding: 0 0.2em;
+}
+
+hr {
+  border: none;
+  border-top: solid 1px rgba(lightcoral, 0.3);
+}
+
+// main header
+.main-header {
+  padding: 80px 0 0;
+}
+
+// main footer
+.main-footer {
+  border-top: solid 1px lightcoral;
+  margin-top: 60px;
+  padding: 60px 0;
+}
+
+.main-footer__legal {
+  text-align: center;
+
+  p {
+    font-size: 12px;
+  }
+}

@@ -15,6 +15,39 @@ const CONSTS = require("../utils/consts.js");
 // consts
 const env = getClientEnvironment();
 
+function saveHtml({ destination, filepath, filename, pugFunction, data }) {
+  // page dest
+  const dest = path.join(destination, filepath);
+
+  // globals
+  const relroot = path.relative(dest, CONSTS.BUILD_FOLDER);
+  const rellocale = path.relative(dest, destination);
+
+  const outFile = path.join(dest, filename);
+
+  // render the html with the data
+  let htmlString;
+  try {
+    htmlString = pugFunction({
+      globals: {
+        relroot: relroot ? relroot : ".",
+        rellocale: rellocale ? rellocale : ".",
+        ...env.raw,
+      },
+      page: data ? data : {},
+    });
+  } catch (error) {
+    logger.error(
+      [outFile, "Failed to compiled template with locale variables"],
+      error
+    );
+  }
+
+  return fse
+    .outputFile(outFile, htmlString)
+    .then(() => logger.success([outFile, "Compiled"]));
+}
+
 async function pages(event, file) {
   // if the watcher function fires this, then event and file will be populated
   if (event && event == "add") return; // don't do anything for newly added files just yet
@@ -30,12 +63,12 @@ async function pages(event, file) {
     let fileInfo = path.parse(file);
 
     if (fileInfo.ext === ".pug" && file.includes(CONSTS.PAGES_FOLDER)) {
-      // if we are dealing with anything inside /website
+      // if we are dealing with anything inside /pages
       // we only compiled that specific template and locales
       pugFiles = [file];
     } else if (fileInfo.ext === ".yaml") {
       // if we have a locale file then we save that specific language
-      // that way we only compiled that languages template
+      // that way we only compiled that language template
       singleLocale = fileInfo.base;
       // if we are at not at the root then we find the relative template file
       // to the locale file
@@ -46,7 +79,9 @@ async function pages(event, file) {
     }
   }
 
-  // If we don't have any passed files, then we query them all
+  // If we don't have any files, then we query them all
+  // this means that we are either dealing with a master pug file
+  // or a master locale file
   if (!pugFiles)
     pugFiles = await helpers.getFiles(
       path.join(CONSTS.PAGES_FOLDER, "**", "*.pug")
@@ -61,6 +96,20 @@ async function pages(event, file) {
     // if file starts with underscore, we ignore it, expected as standard 👍
     if (templateInfo.name.charAt(0) == "_") continue;
 
+    // render the pug file to a function so we can just reuse
+    // that with the different locale. SUPA FAST ⚡️
+    let compiledFunction;
+
+    try {
+      compiledFunction = pug.compileFile(file);
+    } catch (error) {
+      logger.error([file, "Error compiling template"], error);
+      continue; // skips template file
+    }
+
+    // removes the path to the pages folder for the final output
+    const pagePath = templateInfo.dir.replace(CONSTS.PAGES_FOLDER, "");
+
     // Find locale files based on main updated file, if it exists
     let localeFiles;
     if (singleLocale) {
@@ -74,19 +123,24 @@ async function pages(event, file) {
         path.join(templateInfo.dir, "locales", "*.yaml")
       );
 
-    // note: files that doesn't have locales, will be skipped here 👍
-    if (localeFiles.length > 0) {
-      // render the pug file to a function so we can just reuse
-      // that with the different locale. SUPA FAST ⚡️
-      let compiledFunction;
+    const outputOptions = {
+      destination: CONSTS.BUILD_FOLDER,
+      filepath: pagePath,
+      filename: `${templateInfo.name}.html`,
+      pugFunction: compiledFunction,
+    };
 
+    if (localeFiles.length <= 0) {
+      // render the html with the data and save it
       try {
-        compiledFunction = pug.compileFile(file);
+        promises.push(saveHtml(outputOptions));
       } catch (error) {
-        logger.error([file, "Error compiling template"], error);
-        continue; // skips template file
+        logger.error("Failed to save template to disk", {
+          outputOptions,
+          error,
+        });
       }
-
+    } else {
       // go through the locale files
       for (const locale of localeFiles) {
         // get the file info
@@ -124,58 +178,22 @@ async function pages(event, file) {
           continue; // skips locale file
         }
 
-        // root dest with locale
-        const dest =
-          localeInfo.name !== "default"
-            ? path.join(CONSTS.BUILD_FOLDER, localeInfo.name)
-            : CONSTS.BUILD_FOLDER;
-
-        // page dest
-        const pageDest = path.join(
-          dest,
-          templateInfo.dir.replace(CONSTS.PAGES_FOLDER, "")
-        );
-
-        // relative paths
-        const relroot = path.relative(pageDest, CONSTS.BUILD_FOLDER);
-        const rellocale = path.relative(pageDest, dest);
-
-        // assemble the data
-        const data = {
-          globals: {
-            relroot: relroot ? relroot : ".",
-            rellocale: rellocale ? rellocale : ".",
-            ...env.raw,
-          },
-          locale: {
-            id: localeInfo.name,
+        // render the html with the data and save it
+        const options = {
+          ...outputOptions,
+          destination:
+            localeInfo.name !== "default"
+              ? path.join(CONSTS.BUILD_FOLDER, localeInfo.name)
+              : CONSTS.BUILD_FOLDER,
+          data: {
             ...mergedYaml[0],
           },
         };
 
-        const outFile = path.join(pageDest, `${templateInfo.name}.html`);
-
-        // render the html with the data
-        let htmlString;
         try {
-          htmlString = compiledFunction(data);
+          promises.push(saveHtml(options));
         } catch (error) {
-          logger.error(
-            [outFile, "Failed to compiled template with locale variables"],
-            error
-          );
-          continue; // skip file
-        }
-
-        try {
-          // output the file
-          promises.push(
-            fse
-              .outputFile(outFile, htmlString)
-              .then(() => logger.success([outFile, "Compiled"]))
-          );
-        } catch (error) {
-          logger.error([outFile, "Failed to save template to disk"], error);
+          logger.error("Failed to save template to disk", { options, error });
         }
       }
     }

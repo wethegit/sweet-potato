@@ -1,0 +1,4 @@
+selected_nav: gallery
+
+meta:
+  title: ['Gallery', *meta_title]

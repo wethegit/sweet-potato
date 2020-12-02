@@ -5,7 +5,7 @@ const commands = require("./commands");
 
 const pkg = require(path.join(__dirname, "..", "package.json"));
 
-const prog = sade("wtc-bootstrap");
+const prog = sade("sweet-potato-cooker");
 prog.version(pkg.version);
 prog
   .command("build")

@@ -1,0 +1,54 @@
+@import "./reduce-motion-helpers";
+
+.reduce-motion {
+  align-items: center;
+  display: flex;
+}
+
+.reduce-motion__label {
+  display: block;
+}
+
+.reduce-motion__icon {
+  --dimension: 13px;
+
+  border: 1px solid currentColor;
+  border-radius: 50%;
+  height: var(--dimension);
+  margin-left: 10px;
+  position: relative;
+  top: -1px;
+  width: var(--dimension);
+
+  &::before {
+    --inner-dimension: calc(var(--dimension) - 4px);
+
+    background-color: currentColor;
+    border-radius: 50%;
+    content: "";
+    display: none;
+    height: var(--inner-dimension);
+    left: 50%;
+    margin-left: calc(var(--inner-dimension) * -0.5);
+    margin-top: calc(var(--inner-dimension) * -0.5);
+    position: absolute;
+    top: 50%;
+    width: var(--inner-dimension);
+  }
+}
+
+@include reduce-motion() {
+  .reduce-motion[aria-pressed="true"] {
+    .reduce-motion__icon {
+      &::before {
+        display: block;
+      }
+    }
+  }
+}
+
+@media #{$reduce-motion-query} {
+  .reduce-motion {
+    display: none;
+  }
+}

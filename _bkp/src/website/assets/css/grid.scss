@@ -1,0 +1,16 @@
+.row {
+  background: gray;
+}
+
+.column {
+  background: gray;
+  text-align: center;
+
+  p {
+    background: graytext;
+    color: lightgray;
+    font-family: sans-serif;
+    margin: 0;
+    padding: 20px 5px;
+  }
+}

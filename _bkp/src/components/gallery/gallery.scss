@@ -1,0 +1,15 @@
+.gallery {
+  margin-top: 2rem;
+}
+
+.gallery__nav-markup {
+  display: none;
+}
+
+@include reduce-motion() {
+  .gallery__item {
+    &.is-transitioning {
+      transition-property: opacity;
+    }
+  }
+}

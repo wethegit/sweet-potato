@@ -1,0 +1,55 @@
+selected_nav: secondary
+
+header:
+  h1: WTC Bootstrap v2
+  h3: Sweet Potato
+  h4: Completely redone from scratch, with performance best pratices and ultra blazing fast ⚡️️️️️️️️️️⚡️
+
+features:
+  title: Features
+  subtitle: All the features that come bundled with the bootstrap.
+  description: |
+    <p>These features are separated into two categories, the <strong>Complex</strong> ones, that require a bit more attention and have a bigger learning curve, and the <strong>Simple</strong> ones, that are plug and play.</p>
+  items:
+    - cta: helpers/
+      title: Helpers
+      description: All of the mixins that help speed up development.
+  
+    - title: Autoplay Videos
+      description: This component deals with all of the browser incompatibilities regarging autoplaying videos. For all of the details on how to use it visit the <a href="https://github.com/wethegit/wtc-autoplay-video" target="_blank" rel="nofollow noopener">official documentation</a>.
+      
+    - cta: button/
+      title: Button
+      description: Simple component to create buttons and links.
+    
+    - cta: gallery/
+      title: Gallery
+      description: Component to create sliders and switchers. It comes bundled with screen reader and reduce motion support.
+
+    - cta: grid/
+      title: Grid
+      description: Learn how to use the grid, its helpers and breakpoints.
+
+    - cta: icon/
+      title: Icon
+      description: Used to create a library of svg icons.
+
+    - title: Main Navigation
+      location: /src/components/main-nav/
+      description: This component comes with all the necessary markup and script so it's easy to have a responsive, acessible and sticky navigation right out of the gate. You just need to <em>style it</em> 💅.
+    
+    - title: Modal
+      location: /src/components/modal/
+      description: The modal is really easy to use, for more information on all the options, visit the <a href="https://github.com/wethegit/wtc-modal-view" target="_blank" rel="nofollow noopener">official documentation</a>.
+    
+    - cta: reduce-motion/
+      title: Reduce Motion
+      description: Used to create a acessible animations and more.
+
+    - cta: skippers/
+      title: Skippers
+      description: Skippers are buttons that only appear on focus and are used to skip to parts of the website.
+
+    - cta: vp/
+      title: VP
+      description: The VP feature is a bundle of classes that help standardize animation across the website.

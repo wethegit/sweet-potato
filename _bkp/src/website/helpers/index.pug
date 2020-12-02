@@ -1,0 +1,97 @@
+//- Main template
+extends ../../global.pug
+
+block header
+  .wrapper
+    h1 Helpers
+    h4 This is a list on all the helpers for templates and styles and how to use them
+
+block main
+  article.wrapper
+    header
+      h2 Template helpers
+      p These are simple helpers to speed up layout development.
+      p ⚠️ They are imported on <code>/src/website/global.pug</code> and should only be imported there, and only once.
+      p <strong>Location:</strong> <code>/src/./_helpers.pug</code>
+    section
+      h3: code +stylesheet(options:Object)
+      p Use this to create <code>&lt;link&gt;</code> tags to local and external stylesheets.
+      p ⚠️ <strong>ONLY</strong> used under the <code>styles</code> block.
+      
+      h4 Options
+      
+      h5: code filename: String
+      p: strong required
+      p The file name, you should omit the extension and path, just use the filename.
+      
+      h5: code isExternal: Bool
+      p: strong optional
+      p If the file is from an external source, set this to true
+      
+      h4 Usage
+      pre
+        code.
+          append styles
+            +stylesheet({
+              filename: 'home'
+            })
+      
+      hr
+
+      h3: code +javascripts(options:Object)
+      p Use this to create <code>&lt;script&gt;</code> tags to local and external javscripts.
+      p ⚠️ <strong>ONLY</strong> used under the <code>javascripts</code> block.
+      
+      h4 Options
+      
+      h5: code filename: String
+      p: strong required
+      p The file name, you should omit the extension and path, just use the filename.
+      
+      h5: code isExternal: Bool
+      p: strong optional
+      p If the file is from an external source, set this to true
+      
+      h5: code isLib: Bool
+      p: strong optional
+      p If the file is an library but not from an external source
+      p ⚠️ Library files should be added to <code>/src/assets/vendor/</code>
+      h4 Usage
+      pre
+        code.
+          append javascripts
+            +script({ filename: 'three.min', isLib: true })
+      
+
+      hr
+
+      h3: code +img(options:Object)
+      p Use this to create <code>&lt;img&gt;</code> tags to local assets.
+      p ⚠️ <strong>ONLY</strong> used for local assets.
+      
+      h4 Options
+      
+      h5: code src: String
+      p: strong required
+      p ⚠️ Use the <code>srcset</code> option if you have the <code>-2x</code> version of the image.
+      p The path to the image inside <code>/src/website/assets/img/</code>.
+      
+      h5: code alt: String
+      p: strong optional
+      p If no alt is passed, an empty alt will be used for accessibility purposes.
+      
+      h5: code srcset: String
+      p: strong optional
+      p Same as <code>src</code> option but the <code>&lt;img&gt;</code> tag generated will have a srcset attribute set to the <code>-2x</code> version of the image.
+      p ⚠️ The <code>-2x</code> version of the file should have the same name as the 1x version and be suffixed with <code>-2x</code>
+      p ⚠️ Don't use <code>src</code> and <code>srcset</code> together, just use one. If you don't have a <code>-2x</code> version of an image, just use <code>src</code>.
+      h4 Usage
+      pre
+        code.
+          +img({ srcset: 'home/main.png', alt: 'Sweet potato' })
+  
+  article.wrapper
+    header
+      h2 .scss helpers
+      p These are simple helpers and the code they generate is pretty self explanatory
+      p <strong>Location:</strong> <code>/src/./_helpers.scss</code>

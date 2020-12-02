@@ -1,0 +1,85 @@
+//- Main template
+extends ../../global.pug
+
+//- Styles
+append styles
+  +stylesheet({ filename: 'vp' })
+
+block header
+  .wrapper
+    h1 VP
+    h4 A collection of classes to standardize and help with adding animations to the pages.
+
+block main
+  article
+    header.wrapper
+      p These animations trigger when the element is around 30% inside the viewport and only triggers once.
+      p Feel free to change the transitions inside theses classes, these are simple slides and fades.
+      p ⚠️ Don't forget the data attribute on the parent of the element animating.
+      p ✅ These classes already use the <code>reduce-motion</code> helpers to deal with motion sickness.
+      p <strong>Location:</strong> <code>/src/components/vp/vp.scss</code>
+    section 
+      .wrapper
+        h4 Usage
+        pre
+          code.
+            div(data-controller="Viewport")
+              .vp-slide.vp-slide--left
+                p Aute consectetur aute consectetur non ipsum magna esse ea. Labore 
+              .vp-slide.vp-slide--right
+                p Aute consectetur aute consectetur non ipsum magna esse ea. Labore 
+              .vp-slide.vp-slide--up
+                p Aute consectetur aute consectetur non ipsum magna esse ea. Labore 
+              .vp-slide.vp-slide--down
+                p Aute consectetur aute consectetur non ipsum magna esse ea. Labore 
+        
+        h2 Full example
+      .full-usage
+        .row(data-controller="Viewport")
+          .column.vp-slide.vp-slide--left
+            p Slide left 
+          .column.vp-slide.vp-slide--right
+            p Slide right
+          .column.vp-slide.vp-slide--up
+            p Slide up
+          .column.vp-slide.vp-slide--down
+            p Slide down
+        
+        .wrapper
+          h4 With delay
+        .row(data-controller="Viewport")
+          .column.vp-slide.vp-slide--left
+            p Slide left 
+          .column.vp-slide.vp-slide--right.vp-delay-2
+            p Slide right
+          .column.vp-slide.vp-slide--up.vp-delay-4
+            p Slide up
+          .column.vp-slide.vp-slide--down.vp-delay-6
+            p Slide down
+  
+  article.wrapper
+    header
+      h2 Helper
+      p This helper is the root of the standardization, it will make sure that all animations are triggered at the same time, default is 30% inside the viewport.
+      p This is used by the classes above, changing it will change everything, which is what we want.
+      p Use this to create custom transitions outside of the ones covered above.
+      p <strong>Location:</strong> <code>/src/components/vp/_vp-helpers.scss</code>
+    section
+      h4 Usage
+      pre
+        code.
+          @import 'components/vp/vp-helpers';
+
+          p {
+            transform: scale(0);
+            transition: transform 1s ease;
+
+            @include vp-animate {
+              transform: scale(0);
+            }
+          }
+
+      h4 Example
+      div(data-controller="Viewport")
+        .helpers-usage
+          p Scale!

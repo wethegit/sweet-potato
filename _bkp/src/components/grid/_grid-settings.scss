@@ -1,0 +1,66 @@
+@import "../../scss/breakpoints";
+
+// Grid
+$column-gutter: 16px;
+$row-width: 1144px;
+$total-columns: 12;
+
+@function grid-calc($colNumber) {
+  $result: percentage(($colNumber / $total-columns));
+  @if $result == 0% {
+    $result: 0;
+  }
+  @return $result;
+}
+
+@function get-grid-class($base, $size: null) {
+  $klass: $base;
+  @if $size != null {
+    $klass: $klass + "-" + $size;
+  }
+
+  @return $klass;
+}
+
+@mixin add-grid-columns($size: null) {
+  $klass: get-grid-class(column, $size);
+
+  @for $i from 1 through $total-columns {
+    .#{$klass}--#{$i} {
+      flex-basis: grid-calc($i);
+      flex-grow: 0;
+      flex-shrink: 0;
+    }
+  }
+}
+
+@mixin add-grid-row($size: null) {
+  $klass: get-grid-class(row, $size);
+
+  .#{$klass} {
+    display: flex;
+  }
+
+  .#{$klass}--nowrap {
+    flex-wrap: nowrap;
+  }
+
+  .#{$klass}--vertical-center {
+    align-items: center;
+  }
+
+  .#{$klass}--vertical-uncenter {
+    align-items: baseline;
+  }
+
+  .#{$klass}--horizontal-uncenter {
+    justify-content: flex-start;
+  }
+
+  .#{$klass}--gutterless {
+    > .column {
+      padding-left: 0;
+      padding-right: 0;
+    }
+  }
+}

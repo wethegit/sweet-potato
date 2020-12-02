@@ -1,0 +1,5 @@
+@mixin vp-animate {
+  .vp--onf-30 & {
+    @content;
+  }
+}

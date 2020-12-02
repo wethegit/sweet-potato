@@ -1,0 +1,72 @@
+//- set the doctype first, pug can accept different doctypes
+doctype html
+
+//- Includes
+include ././_helpers.pug
+include ./components/button/_button.pug
+include ./components/gallery/_gallery.pug
+
+- const LOCALE_ROOT = locale.htmlLang != 'en' ? `${WTC_RELROOT}/${locale.htmlLang}` : WTC_RELROOT
+
+html(lang=(locale.htmlLang ? locale.htmlLang : locale.id))
+  head
+    //- Base metas
+    meta(charset="UTF-8")
+    meta(name="viewport" content="width=device-width, initial-scale=1.0")
+    meta(name="viewport" content="width=device-width, initial-scale=1, user-scalable=1, minimum-scale=1")
+    meta(http-equiv="X-UA-Compatible" content="ie=edge")
+    
+    //- Title and description
+    meta(name="description" content=locale.meta.description)
+    title=(typeof locale.meta.title == 'object' ? locale.meta.title.join(' | ') : locale.meta.title)
+    
+    //- Favicons
+    include ./favicons/favicons.pug
+
+    //- Open Graph meta
+    meta(property='og:image' content=`${WTC_TLDN}${WTC_PUBLIC_URL}assets/img/share-fb.jpg`)
+    meta(property='og:title' content=locale.meta.title)
+    meta(property='og:description' content=locale.meta.description)
+    meta(property='og:url' content=`${WTC_TLDN}${WTC_PUBLIC_URL}`)
+    meta(property='og:type' content='website')
+
+    //- Facebook meta
+    meta(property='fb:app_id' content='775678255785283')
+
+    //- Twitter meta
+    meta(name='twitter:title' content=locale.meta.title)
+    meta(name='twitter:description' content=`${locale.meta.description} ${WTC_TLDN}${WTC_PUBLIC_URL}`)
+    meta(name='twitter:image' content=`${WTC_TLDN}${WTC_PUBLIC_URL}assets/img/share-tw.jpg`)
+
+    //- Fonts
+    link(rel="preconnect" href="https://fonts.gstatic.com/" crossorigin)
+    +stylesheet({ filename: 'https://fonts.googleapis.com/css?family=Raleway:900|Roboto:400,700&display=swap', isExternal: true })
+    
+    //- Stylesheet
+    +stylesheet({ filename: 'global' })
+    
+    block styles
+  
+  body(data-env=NODE_ENV)
+    include ./components/icon/icon.pug
+
+    include ./components/main-nav/main-nav.pug
+
+    #skippers-main
+
+    header.main-header(data-controller="Viewport")
+      block header
+      
+    main.main
+      block main
+
+    footer.main-footer
+      .main-footer__legal
+        for legal in locale.main_footer.legal
+          p!=legal
+    
+    //- Javascript
+    +localScript({ filename: 'runtime' })
+    +localScript({ filename: 'global' })
+
+    block javascripts

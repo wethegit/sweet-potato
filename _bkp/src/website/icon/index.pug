@@ -1,0 +1,52 @@
+//- Main template
+extends ../../global.pug
+
+block header
+  .wrapper
+    h2 Icon helpers
+    h4 These helpers are used to create a library of <code>SVG</code> icons.
+
+block main
+  article.wrapper
+    header
+      p They are imported on <code>/src/website/global.pug</code> so you can use them across the website.
+      p <strong>Location:</strong> <code>/src/./_helpers.pug</code>
+    section
+      h3: code +icon-symbol(options:Object)
+      p Use this to create <code>&lt;symbols&gt;</code> that are gonna be used as icons.
+      p ⚠️ <strong>ONLY</strong> use this helper inside <code>/src/components/icon/icon.pug</code>.
+      
+      h4 Options
+      
+      h5: code id: String
+      p: strong required
+      p The <code>ID</code> that will be the reference for the icon.
+      
+      h5: code width: Integer
+      p: strong required
+      p The width of the symbol.
+
+      h5: code height: Integer
+      p: strong required
+      p The height of the symbol.
+      
+      h4 Usage
+      pre
+        code.
+          +icon-symbol({ id: 'arrow', width: 60, height: 40 })
+            path(d="M22.829 28.255s5.721" fill="currentColor" fill-rule="evenodd")
+    
+
+      h3: code +icon(options:Object)
+      p Use this to render an <code>&lt;svg&gt;</code> icon created with <code>+icon-symbol()</code>.
+      
+      h4 Options
+      
+      h5: code id: String
+      p: strong required
+      p The <code>ID</code> of the icon.
+      
+      h4 Usage
+      pre
+        code.
+          +icon({ id: 'arrow' })

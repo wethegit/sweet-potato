@@ -1,0 +1,56 @@
+--- #this marks the beggining of the document, please don't add this to the sub page locales because they extend this file
+htmlLang: en
+meta:
+  title: &meta_title WTC Bootstrap V2 Sweet Potato
+  description: &meta_description A really good bootstrap or a really good potato?
+
+learn_more: Learn more
+
+reduced_motion: Reduced motion
+
+gallery:
+  next: Next item
+  previous: Previous item
+
+main_skip_button: Skip to main content
+
+play_video: Play video
+
+main_nav:
+  title: Main site navigation
+  menu:
+    label: Menu
+    open: Open navigation
+    close: Close navigation
+  items:
+    - id: home
+      href: ""
+      label: Home
+    - id: helpers
+      href: helpers/
+      label: Helpers
+    - id: button
+      href: button/
+      label: Button
+    - id: gallery
+      href: gallery/
+      label: Gallery
+    - id: grid
+      href: grid/
+      label: Grid
+    - id: icon
+      href: icon/
+      label: Icon
+    - id: reduce-motion
+      href: reduce-motion/
+      label: Reduce Motion
+    - id: skippers
+      href: skippers/
+      label: Skippers
+    - id: vp
+      href: vp/
+      label: VP
+
+main_footer: &main_footer
+  legal: &main_footer-legal
+    - © 2019 we { the collective }

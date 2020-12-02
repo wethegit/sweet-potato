@@ -1,0 +1,11 @@
+@import "../scss/breakpoints";
+
+:root {
+  --font-base: 18;
+  --font-body: "Roboto", sans-serif;
+  --font-heading: "Raleway", serif;
+
+  @media #{$large-up} {
+    --font-base: 20;
+  }
+}

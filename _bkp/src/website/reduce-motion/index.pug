@@ -1,0 +1,81 @@
+//- Main template
+extends ../../global.pug
+
+block header
+  .wrapper
+    h1 Reduce Motion
+    h4 A collection of scripts and classes to help you create a more acessible website.
+
+block main
+  article.wrapper
+    header
+      p This component is composed of <strong>4</strong> files, all located on the same folder. We will go through each file and what they do.
+      p <strong>Location:</strong> <code>/src/components/reduce-motion/</code> 
+    section
+      h2 Markup
+      p This button can be included anywhere on the website, it toggles the reduce motion flag on and off.
+      p ✅ By default it's included in the <code>main-nav.pug</code>.
+      p <strong>Location:</strong> <code>/src/components/reduce-motion/reduce-motion.pug</code>
+      h4 Usage
+      pre
+        code.
+          include ./reduce-motion/reduce-motion.pug
+
+      h2 Styles
+      p The main <code>reduce-motion.scss</code> file includes the basic styles for the button to toggle the icons and the label.
+      p ✅ By default it's included in the <code>global.scss</code>.
+      p <strong>Location:</strong> <code>/src/components/reduce-motion/reduce-motion.scss</code>
+
+      h2 Styles Helper
+      p The helper <code>_reduce-motion.scss</code> file includes a mixin to be used when creating a reduce motion version of a component.
+      p <strong>Location:</strong> <code>/src/components/reduce-motion/_reduce-motion.scss</code>
+
+      h3: code @include reduce-motion
+      h4 Usage
+      pre
+        code.
+          @import './include/reduce-motion/reduce-motion';
+          
+          .component {
+            transition: transform 0.2s ease, opacity 0.2s ease;
+
+            @include reduce-motion {
+              transition-property: transform;
+            }
+          }
+      
+      h2 Scripts
+      p The scripts help when you need to dynamically toggle the reduce motion on and off.
+      p <strong>Location:</strong> <code>/src/components/reduce-motion/reduce-motion.js</code>
+      
+      h4 Usage
+      pre
+        code.
+          import { rmGetState, rmOn, rmOff, rmInit, rmDestroy } from "../../../components/reduce-motion/reduce-motion.js";
+          
+          // Initiate it first
+          rmInit();
+
+          // after you initiate you can start listening to events
+          window.addEventlistener('wtc-reduce-motion', function({ detail }) {
+            const { state } = detail;
+            if (state) {
+              // reduce motion is on
+            }
+            else {
+              // reduce motion is off
+            }
+          });
+
+          // Turn reduce motion on
+          rmOn();
+
+          // Turn reduce motion off
+          rmOff(); 
+
+          // Get current state
+          const isReduceMotion = rmGetState();
+
+          // this is used to remove the click event on the buttons
+          // you will use this for ajax websites
+          rmDestroy();

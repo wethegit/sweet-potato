@@ -2,13 +2,13 @@
 "use strict";
 
 // Imports
-const del = require("del");
+const fse = require("fs-extra");
 
 // Locals
-const CONSTS = require("./consts.js");
+const CONSTS = require("../utils/consts.js");
 
 async function clean() {
-  return await del(CONSTS.BUILD_FOLDER);
+  return fse.remove(CONSTS.BUILD_FOLDER);
 }
 
 module.exports = clean;

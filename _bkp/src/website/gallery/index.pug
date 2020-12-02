@@ -1,0 +1,39 @@
+//- Main template
+extends ../../global.pug
+
+//- Styles
+append styles
+  +stylesheet({ filename: 'gallery' })
+
+block header
+  .wrapper
+    h2 Gallery
+    h4 A flexible and highly customizable component used to create sliders and switchers, bundled with screen reader and reduce motion support.
+
+block main
+  article.wrapper
+    header
+      p This is just how to use the gallery helpers, for the full list of options visit the <a href="https://github.com/wethegit/wtc-gallery-component" target="_blank" rel="nofollow noopener">official repository</a>.
+      p These helpers can be easily extended to accept other options as well.
+      p <strong>Location:</strong> <code>/src/components/gallery/_gallery.pug</code>
+    section
+      h3: code +gallery()
+      p This generates the main wrapper for the gallery, already includes the necessary markup for navigation and the controller attribute.
+      p By itself it doesn't do anything, you also need the next helper to add items to it.
+
+      h3: code +gallery-item()
+      p This will generate the necessary markup for an item inside the gallery.
+      
+      h3 Full usage
+      pre
+        code.
+          +gallery
+            for item in locale.gallery.items
+              +gallery-item
+                p Gallery item
+      
+      h3 Example
+      +gallery.custom-gallery
+        for item in [1, 2, 3, 4, 5]
+          +gallery-item
+            p Gallery item #{item}

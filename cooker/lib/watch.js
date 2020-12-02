@@ -9,7 +9,7 @@ const chokidar = require("chokidar");
 const pages = require("./pages.js");
 // const styles = require("./styles.js");
 // const javascripts = require("./javascripts.js");
-// const assets = require("./assets.js");
+const assets = require("./assets.js");
 // const favicons = require("./favicons.js");
 const CONSTS = require("../utils/consts.js");
 
@@ -30,6 +30,7 @@ function watch() {
     .watch(
       [
         path.join(CONSTS.CWD, "*.yaml"),
+        path.join(CONSTS.CWD, "templates", "*.pug"),
         path.join(CONSTS.PAGES_FOLDER, "**", "*.yaml"),
       ],
       options
@@ -49,10 +50,8 @@ function watch() {
   //   .watch(`${CONSTS.SRC_FOLDER}/favicons/main.png`, options)
   //   .on("all", favicons);
 
-  // // watch for assets
-  // chokidar
-  //   .watch(`${CONSTS.SOURCE_WEBSITE_ASSETS_FOLDER}/**/!(css|js)/*`, options)
-  //   .on("all", assets);
+  // watch for assets
+  chokidar.watch(CONSTS.PUBLIC_FOLDER, options).on("all", assets);
 }
 
 module.exports = watch;

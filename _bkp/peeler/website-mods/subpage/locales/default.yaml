@@ -1,0 +1,6 @@
+#this variable specifies which `main-nav` (id) item will be active, when you visit this page.
+selected_nav: subpage
+
+header:
+  page_title: 👋 This is a sub-page
+  header_copy: And here is some sub-page content!

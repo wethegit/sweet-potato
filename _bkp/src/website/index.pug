@@ -1,0 +1,35 @@
+//- Main template
+extends ../global.pug
+
+//- Styles
+append styles
+  +stylesheet({ filename: 'home' })
+
+block header
+  hgroup.wrapper.txt-center
+    h1.main-header__logo: +img({ srcset: 'global/main.png' })
+    h2.main-header__title!=locale.header.h1
+    h3.main-header__subtitle=locale.header.h3
+    h4.main-header__description=locale.header.h4
+
+//- Content
+block main
+  - const features = locale.features
+  header.wrapper
+    h2!=features.title
+    h4!=features.subtitle
+    !=features.description
+  section
+    .row
+      each item in features.items
+        article.feature.column.column--4
+          div.feature__wrapper
+            h4.feature__title!=item.title
+            p.feature__description!=item.description
+            if item.location
+              p.feature__location <strong>Location</strong>: <code>#{item.location}</code>
+            if item.cta
+              +button({
+                tag: 'a',
+                text: locale.learn_more
+              }).feature__cta(href=`${WTC_RELROOT}/${item.cta}`)

@@ -1,0 +1,86 @@
+@function strip-unit($num) {
+  @return $num / ($num * 0 + 1);
+}
+
+@mixin font-smoothing($value: on) {
+  @if $value == on {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  } @else {
+    -webkit-font-smoothing: subpixel-antialiased;
+    -moz-osx-font-smoothing: auto;
+  }
+}
+
+@mixin font-heading() {
+  font-family: var(--font-heading);
+  font-weight: 900;
+}
+
+@function base-rem($size) {
+  @return calc(#{$size} / var(--font-base) * 1rem);
+}
+
+@mixin full-absolute() {
+  height: 100%;
+  left: 0;
+  position: absolute;
+  top: 0;
+  width: 100%;
+}
+
+@mixin vertical-center() {
+  align-items: center;
+  display: flex;
+  justify-content: center;
+}
+
+@mixin replace-image($img, $scale: 1, $resize: false) {
+  @if not $resize {
+    background: image-url($img) center center/contain no-repeat;
+  }
+
+  height: image-height($img) * $scale;
+  width: image-width($img) * $scale;
+}
+
+@function percent-ratio($width, $height) {
+  @return (strip-unit($height) / strip-unit($width)) * 100%;
+}
+
+// Creates a value which is a multiple of the global base-space.
+@function space-by($multiplier: false) {
+  @if not $multiplier {
+    @return var(--base-space);
+  } @else if $multiplier == 1 {
+    @return var(--base-space);
+  } @else {
+    @return calc(var(--base-space) * #{$multiplier});
+  }
+}
+
+// Creates a responsive CSS background image with a set aspect ratio; useful for decorative elements.
+@mixin bg-item($img, $img2x) {
+  background-image: image-url($img);
+  background-repeat: no-repeat;
+  background-size: 100% auto;
+
+  &::before {
+    content: "";
+    display: block;
+    padding-top: percent-ratio(image-width($img), image-height($img));
+  }
+
+  @if $img2x {
+    @media #{$bp-retina} {
+      background-image: image-url($img2x);
+    }
+  }
+}
+
+// Can be used in conjunction with `outline: none` to provide a contrast-safe focus ring.
+@mixin focus-style {
+  box-shadow: 0px 0px 0px 2px var(--color-black),
+    0px 0px 0px 4px var(--color-white), 0px 2px 7px 3px rgba(0, 0, 0, 0.5),
+    inset 0px 2px 4px 0px rgba(0, 0, 0, 0.2);
+}
