@@ -20,18 +20,14 @@ const options = {
 };
 
 function watch() {
-  // watch for pages
-  chokidar
-    .watch(path.join(CONSTS.PAGES_FOLDER, "**", "*.pug"), options)
-    .on("all", pages);
-
-  // watch for locales
+  // watch for pages and locales
   chokidar
     .watch(
       [
-        path.join(CONSTS.CWD, "*.yaml"),
+        path.join(CONSTS.PAGES_FOLDER, "**", "*.pug"),
         path.join(CONSTS.CWD, "templates", "*.pug"),
         path.join(CONSTS.PAGES_FOLDER, "**", "*.yaml"),
+        path.join(CONSTS.CWD, "*.yaml"),
       ],
       options
     )

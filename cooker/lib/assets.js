@@ -24,6 +24,8 @@ async function assets(event, file) {
     to = path.join(CONSTS.BUILD_FOLDER, fileInfo.base);
   }
 
+  if (!fse.pathExistsSync(from)) return;
+
   // if a file is passed use it instead of querying for all
   return fse
     .copy(from, to)

@@ -15,13 +15,30 @@ const CONSTS = require("../utils/consts.js");
 // consts
 const env = getClientEnvironment();
 
-function saveHtml({ destination, filepath, filename, pugFunction, data }) {
+function saveHtml({
+  destination,
+  filepath,
+  filename,
+  pugFunction,
+  data,
+  locale,
+}) {
   // page dest
   const dest = path.join(destination, filepath);
 
   // globals
   const relroot = path.relative(dest, CONSTS.BUILD_FOLDER);
-  const rellocale = path.relative(dest, destination);
+  let globals = {
+    ...env.raw,
+    relativeRoot: relroot ? relroot : ".",
+  };
+
+  if (locale) {
+    const rellocale = path.relative(dest, destination);
+
+    globals.relativeLocaleRoot = rellocale ? rellocale : ".";
+    globals.localeKey = locale;
+  }
 
   const outFile = path.join(dest, filename);
 
@@ -29,11 +46,7 @@ function saveHtml({ destination, filepath, filename, pugFunction, data }) {
   let htmlString;
   try {
     htmlString = pugFunction({
-      globals: {
-        relroot: relroot ? relroot : ".",
-        rellocale: rellocale ? rellocale : ".",
-        ...env.raw,
-      },
+      globals,
       page: data ? data : {},
     });
   } catch (error) {
@@ -72,10 +85,16 @@ async function pages(event, file) {
       singleLocale = fileInfo.base;
       // if we are at not at the root then we find the relative template file
       // to the locale file
-      if (file.includes(CONSTS.PAGES_FOLDER))
+      if (file.includes(CONSTS.PAGES_FOLDER)) {
         pugFiles = await helpers.getFiles(
           path.join(fileInfo.dir, "..", "*.pug")
         );
+
+        if (!pugFiles) {
+          logger.finish("Locale without template.");
+          return;
+        }
+      }
     }
   }
 
@@ -149,28 +168,32 @@ async function pages(event, file) {
         // get the main locale, if doesn't exists uses default.yaml
         let mainYamlFile = path.join(CONSTS.CWD, localeInfo.name, ".yaml");
 
-        const exists = await fse.pathExists(mainYamlFile);
-        if (!exists) mainYamlFile = path.join(CONSTS.CWD, "default.yaml");
+        if (!fse.pathExistsSync(mainYamlFile))
+          mainYamlFile = path.join(CONSTS.CWD, "default.yaml");
 
-        let mainYaml;
-        try {
-          mainYaml = await fse.readFile(mainYamlFile, "utf8");
-        } catch (error) {
-          logger.error([mainYaml, "Failed to read locale"], error);
-          continue; // skips locale file
+        let mainYaml = "";
+        if (fse.pathExistsSync(mainYamlFile)) {
+          try {
+            mainYaml = await fse.readFile(mainYamlFile, "utf8");
+          } catch (error) {
+            // silently skips it
+          }
         }
 
-        let localeYaml;
-        try {
-          localeYaml = await fse.readFile(locale, "utf8");
-        } catch (error) {
-          logger.error([localeYaml, "Failed to read locale"], error);
-          continue; // skips locale file
+        let localeYaml = "";
+        if (fse.pathExistsSync(locale)) {
+          try {
+            localeYaml = await fse.readFile(locale, "utf8");
+          } catch (error) {
+            // silently skips it
+          }
         }
+
+        if (mainYaml === "" && localeYaml === "") continue;
 
         let mergedYaml;
         try {
-          mergedYaml = yaml.loadAll(mainYaml + "\n" + localeYaml, null, {
+          mergedYaml = yaml.load("---\n" + mainYaml + "\n" + localeYaml, {
             json: true,
           });
         } catch (error) {
@@ -181,13 +204,12 @@ async function pages(event, file) {
         // render the html with the data and save it
         const options = {
           ...outputOptions,
+          locale: localeInfo.name,
           destination:
             localeInfo.name !== "default"
               ? path.join(CONSTS.BUILD_FOLDER, localeInfo.name)
               : CONSTS.BUILD_FOLDER,
-          data: {
-            ...mergedYaml[0],
-          },
+          data: mergedYaml,
         };
 
         try {
