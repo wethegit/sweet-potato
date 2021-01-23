@@ -1,2 +1,2 @@
 # sweet-potato
-Our collection of packages for tooling and developer productivity.
+We The Collective website framework.
