@@ -9,6 +9,19 @@ const path = require("path");
 const CONSTS = require("../utils/consts.js");
 const logger = require("./logger.js");
 
+const copyRecursive = async function (src, dest) {
+  await fse.copy(src, dest);
+
+  if (fse.lstatSync(src).isDirectory())
+    fse
+      .readdirSync(src)
+      .map((name) => name)
+      .filter((dir) => fse.lstatSync(path.join(src, dir)).isDirectory())
+      .forEach((dir) => {
+        copyRecursive(path.join(src, dir), path.join(dest, dir));
+      });
+};
+
 async function assets(event, file) {
   if (file && !fse.pathExistsSync(file)) return; // if file for some reason got removed
 
@@ -26,15 +39,12 @@ async function assets(event, file) {
 
   if (!fse.pathExistsSync(from)) return;
 
-  // if a file is passed use it instead of querying for all
-  return fse
-    .copy(from, to)
-    .then(() => {
-      logger.finish("Ended assets transfer");
-    })
-    .catch((error) => {
-      logger.error("Failed to copy assets", error);
-    });
+  try {
+    await copyRecursive(from, to);
+    logger.finish("Ended assets transfer");
+  } catch (error) {
+    logger.error("Failed to copy assets", error);
+  }
 }
 
 module.exports = assets;

@@ -1,7 +1,7 @@
 // local imports
 const clean = require("./clean.js");
 const pages = require("./pages.js");
-// const styles = require("./styles.js");
+const styles = require("./styles.js");
 // const javascripts = require("./javascripts.js");
 const assets = require("./assets.js");
 // const favicons = require("./favicons.js");
@@ -9,8 +9,10 @@ const assets = require("./assets.js");
 
 async function buildAll() {
   await clean();
+  await assets();
 
-  return Promise.all([assets(), pages()]);
+  return Promise.all([pages(), styles()]);
+
   // await for favicons because we need the generated the templates
   // await favicons();
   // await pages();

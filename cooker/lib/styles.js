@@ -12,7 +12,8 @@ const packageImporter = require("node-sass-package-importer");
 // local imports
 const logger = require("./logger.js");
 const helpers = require("./helpers.js");
-const CONSTS = require("./consts.js");
+const CONSTS = require("../utils/consts.js");
+
 const isProduction = process.env.NODE_ENV == "production";
 
 async function lint(file) {
@@ -23,7 +24,7 @@ async function lint(file) {
       files: file,
       syntax: "scss",
       formatter: stylelintFormatter,
-      maxWarnings: 20,
+      configFile: path.join(CONSTS.ROOT, ".stylelintrc.yaml"),
     });
 
     if (result.errored || result.maxWarningsExceeded) {
@@ -43,6 +44,21 @@ async function lint(file) {
   return result;
 }
 
+async function standardize(file) {
+  // If we pass a file and it's outside website, we still need to lint and prettyfy
+  const prettified = await helpers.prettify(file, { parser: "scss" });
+
+  // we prettified the file and wrote it on disk again,
+  // that will trigger another update for this file, not with proper coding style
+  // so we skip it here at this moment, and compile it on the second trigger
+  if (prettified === true) return false;
+
+  const lintResult = await lint(file);
+  if (lintResult === false) return false;
+
+  return true;
+}
+
 async function styles(event, file) {
   if (event && event == "add") return; // don't do anything for newly added files just yet
 
@@ -50,45 +66,30 @@ async function styles(event, file) {
 
   logger.start("Started styles compilation");
 
-  // If we pass a file and it's outside website, we still need to lint and prettyfy
-  if (file && !file.includes(CONSTS.SOURCE_WEBSITE_FOLDER)) {
-    const prettified = await helpers.prettify(file, { parser: "scss" });
-    if (prettified === true) {
-      logger.finish("Ended styles compilation");
-      return;
+  // if it's a file com a component or someplace else we
+  // need to compiled all dependencies
+  if (file && !file.includes(CONSTS.PAGES_FOLDER)) {
+    try {
+      await standardize(file);
+      file = null;
+    } catch (error) {
+      logger.error([file, "Failed to standardize style asset"], error);
     }
-
-    const lintResult = await lint(file);
-    if (lintResult === false) {
-      logger.finish("Ended styles compilation");
-      return;
-    }
-
-    file = null;
   }
 
-  // if a file is passed use it instead of querying for all
   let sassFiles = file
     ? [file]
-    : await helpers.getFiles(
-        `${CONSTS.SOURCE_WEBSITE_ASSETS_FOLDER}/css/**/*.scss`
-      );
+    : await helpers.getFiles(path.join(CONSTS.PAGES_FOLDER, "**", "*.scss"));
 
   // gonna save all promises here to callback completion
   let promises = [];
 
   // go through files
   for (const file of sassFiles) {
+    const inStandards = await standardize(file);
+    if (!inStandards) return;
+
     const fileInfo = path.parse(file);
-
-    const prettified = await helpers.prettify(file, { parser: "scss" });
-    // we prettified the file and wrote it on disk again,
-    // that will trigger another update for this file, not with proper coding style
-    // so we skip it here at this moment, and compile it on the second trigger
-    if (prettified === true) return;
-
-    const lintResult = await lint(file);
-    if (lintResult === false) return;
 
     // if file starts with underscore, we ignore it, expected as standard 👍
     if (fileInfo.name.charAt(0) == "_") continue;
@@ -111,8 +112,7 @@ async function styles(event, file) {
           outputStyle: "compressed",
           importer: packageImporter(),
           functions: assetFunctions({
-            images_path: `${CONSTS.SOURCE_WEBSITE_ASSETS_FOLDER}/img`,
-            http_images_path: `${process.env.WTC_PUBLIC_URL}assets/img`,
+            images_path: CONSTS.BUILD_FOLDER,
           }),
         },
         async function (error, result) {

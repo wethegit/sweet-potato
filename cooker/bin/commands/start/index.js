@@ -20,8 +20,8 @@ async function start() {
   require("../../../lib/env.js");
 
   const liveServer = require("live-server");
-  const watch = require("../../../lib/watch.js");
   const CONSTS = require("../../../utils/consts.js");
+  const watch = require("../../../lib/watch.js");
   const logger = require("../../../lib/logger.js");
   const {
     assetsMiddleware,
