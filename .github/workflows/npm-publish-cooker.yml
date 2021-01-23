@@ -17,12 +17,13 @@ jobs:
       - uses: actions/checkout@v2
 
       # Publish to NPM
+      - name: Publish to npm
       - uses: actions/setup-node@v1
         with:
           node-version: 12
-          registry-url: https://registry.npmjs.org/
-          working-directory: "./cooker"
+          registry-url: https://registry.npmjs.org/        
       - run: npm publish --access public
+        working-directory: "./cooker"
         env:
           NODE_AUTH_TOKEN: ${{secrets.NPM_TOKEN}}
 
@@ -33,5 +34,6 @@ jobs:
           registry-url: https://npm.pkg.github.com/
           working-directory: "./cooker"
       - run: npm publish
+        working-directory: "./cooker"
         env:
           NODE_AUTH_TOKEN: ${{secrets.GITHUB_TOKEN}}
