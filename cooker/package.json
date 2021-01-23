@@ -2,7 +2,7 @@
   "name": "@wethegit/sweet-potato-cooker",
   "version": "0.2.7",
   "description": "We The Collective Bootstrap CLI",
-  "main": "bin/commands/index.js",
+  "main": "bin/index.js",
   "bin": {
     "sweet-potato-cooker": "bin/index.js"
   },
