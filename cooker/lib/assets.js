@@ -7,7 +7,7 @@ const path = require("path");
 
 // local imports
 const CONSTS = require("../utils/consts.js");
-const logger = require("./logger.js");
+const logger = require("../utils/logger.js");
 
 const copyRecursive = async function (src, dest) {
   await fse.copy(src, dest);

@@ -9,7 +9,11 @@ let CONFIG = {
   buildDirectory: "build",
   sourceDirectory: "",
   sassOptions: () => {},
-  favicon: null,
+  favicon: {
+    sourceFile: '',
+    destination: 'favicons',
+    outputTags: false
+  },
   sitemap: true,
   compress: {
     imageminMozjpeg: {},

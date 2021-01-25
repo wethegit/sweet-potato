@@ -6,7 +6,7 @@ const fse = require("fs-extra");
 const prettier = require("prettier");
 
 // Locals
-const logger = require("./logger.js");
+const logger = require("../utils/logger.js");
 const CONSTS = require("../utils/consts.js");
 
 // Helper function to simplify the process of prettifying a file

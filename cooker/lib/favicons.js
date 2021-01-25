@@ -14,18 +14,6 @@ const CONSTS = require("../utils/consts.js");
 const env = getClientEnvironment();
 const FAVICON_CONFIG = CONSTS.CONFIG.favicon;
 
-// check existance of favicon config
-if (!FAVICON_CONFIG) return;
-
-// check if file was passed and exists
-const SOURCE_FILE = FAVICON_CONFIG.sourceFile;
-
-if (!SOURCE_FILE)
-  throw Error("favicon option is missing required `sourceFile` field.");
-
-if (!fse.pathExistsSync(SOURCE_FILE))
-  throw Error(`Couldn't find favicon source: ${SOURCE_FILE}`);
-
 // build destination and options
 const FAVICONS_DIRECTORY = path.join(
   CONSTS.BUILD_DIRECTORY,
@@ -85,6 +73,19 @@ const writeFiles = async function (response) {
 };
 
 async function favicons(event, file) {
+  // check existance of favicon config
+  if (!FAVICON_CONFIG) return;
+
+  // check if file was passed and exists
+  const SOURCE_FILE = FAVICON_CONFIG.sourceFile;
+
+  if (!SOURCE_FILE) return;
+
+  if (!fse.pathExistsSync(SOURCE_FILE)) {
+    logger.error(`Couldn't find favicon source: ${SOURCE_FILE}`);
+    return;
+  }
+
   const source = file ? file : SOURCE_FILE;
 
   // if file for some reason got removed or we don't have a main.png

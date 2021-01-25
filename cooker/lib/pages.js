@@ -7,7 +7,7 @@ const fse = require("fs-extra");
 const path = require("path");
 
 // local imports
-const logger = require("./logger.js");
+const logger = require("../utils/logger.js");
 const helpers = require("./helpers.js");
 const getClientEnvironment = require("./env.js");
 const CONSTS = require("../utils/consts.js");

@@ -26,7 +26,7 @@ async function start(options) {
   const {
     assetsMiddleware,
     assetsLogger,
-  } = require("../../../lib/assets-logger-middleware.js");
+  } = require("./assets-logger-middleware.js");
 
   // local imports
   const buildAll = require("../../../lib/build-all.js");

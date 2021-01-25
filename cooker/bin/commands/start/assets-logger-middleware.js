@@ -1,7 +1,7 @@
 const path = require("path");
-const logger = require("../utils/logger.js");
-const CONSTS = require("../utils/consts.js");
-const helpers = require("./helpers.js");
+const logger = require("../../../utils/logger.js");
+const CONSTS = require("../../../utils/consts.js");
+const helpers = require("../../../lib/helpers.js");
 
 let assetsList = {};
 
