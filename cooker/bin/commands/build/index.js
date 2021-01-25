@@ -1,4 +1,4 @@
-// This file run the functions to build a local version of the website
+// The purpose os this command is generate a production build of the website
 "use strict";
 
 function build() {

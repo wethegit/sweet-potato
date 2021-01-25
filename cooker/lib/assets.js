@@ -27,14 +27,14 @@ async function assets(event, file) {
 
   logger.start("Started assets transfer");
 
-  let from = CONSTS.PUBLIC_FOLDER;
-  let to = CONSTS.BUILD_FOLDER;
+  let from = CONSTS.PUBLIC_DIRECTORY;
+  let to = CONSTS.BUILD_DIRECTORY;
 
   if (file) {
     const fileInfo = path.parse(file);
 
     from = file;
-    to = path.join(CONSTS.BUILD_FOLDER, fileInfo.base);
+    to = path.join(CONSTS.BUILD_DIRECTORY, fileInfo.base);
   }
 
   if (!fse.pathExistsSync(from)) return;

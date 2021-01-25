@@ -56,7 +56,9 @@ async function getFiles(pattern, options = {}) {
 // I would reccomend avoiding this function, don't tweak it, this is
 // here to be used as a base for MOST compilers.
 function buildDest(fileInfo, appendName = true) {
-  let dest = fileInfo.dir.replace(CONSTS.PAGES_FOLDER, CONSTS.BUILD_FOLDER);
+  let dest = fileInfo.dir
+    .replace(CONSTS.PAGES_DIRECTORY, CONSTS.BUILD_DIRECTORY)
+    .replace(CONSTS.ROOT_DIRECTORY, CONSTS.BUILD_DIRECTORY);
   if (appendName) dest = path.join(dest, `${fileInfo.name}${fileInfo.ext}`);
 
   return dest;

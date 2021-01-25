@@ -10,7 +10,7 @@ const assetFunctions = require("node-sass-asset-functions");
 const packageImporter = require("node-sass-package-importer");
 
 // local imports
-const logger = require("./logger.js");
+const logger = require("../utils/logger.js");
 const helpers = require("./helpers.js");
 const CONSTS = require("../utils/consts.js");
 
@@ -24,7 +24,7 @@ async function lint(file) {
       files: file,
       syntax: "scss",
       formatter: stylelintFormatter,
-      configFile: path.join(CONSTS.ROOT, ".stylelintrc.yaml"),
+      configFile: path.join(CONSTS.ROOT_DIRECTORY, ".stylelintrc.yaml"),
     });
 
     if (result.errored || result.maxWarningsExceeded) {
@@ -68,7 +68,7 @@ async function styles(event, file) {
 
   // if it's a file com a component or someplace else we
   // need to compiled all dependencies
-  if (file && !file.includes(CONSTS.PAGES_FOLDER)) {
+  if (file && !file.includes(CONSTS.PAGES_DIRECTORY)) {
     try {
       await standardize(file);
       file = null;
@@ -79,7 +79,7 @@ async function styles(event, file) {
 
   let sassFiles = file
     ? [file]
-    : await helpers.getFiles(path.join(CONSTS.PAGES_FOLDER, "**", "*.scss"));
+    : await helpers.getFiles(path.join(CONSTS.PAGES_DIRECTORY, "**", "*.scss"));
 
   // gonna save all promises here to callback completion
   let promises = [];
@@ -112,8 +112,9 @@ async function styles(event, file) {
           outputStyle: "compressed",
           importer: packageImporter(),
           functions: assetFunctions({
-            images_path: CONSTS.BUILD_FOLDER,
+            images_path: CONSTS.BUILD_DIRECTORY,
           }),
+          ...CONSTS.CONFIG.sassOptions(!isProduction, file),
         },
         async function (error, result) {
           if (error) {

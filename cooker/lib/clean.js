@@ -8,7 +8,7 @@ const fse = require("fs-extra");
 const CONSTS = require("../utils/consts.js");
 
 async function clean() {
-  return fse.remove(CONSTS.BUILD_FOLDER);
+  return fse.remove(CONSTS.BUILD_DIRECTORY);
 }
 
 module.exports = clean;

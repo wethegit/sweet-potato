@@ -4,7 +4,7 @@
 // and also fires a local server.
 "use strict";
 
-async function start() {
+async function start(options) {
   // Do this as the first thing so that any code reading it knows the right env.
   process.env.BABEL_ENV = "development";
   process.env.NODE_ENV = "development";
@@ -22,7 +22,7 @@ async function start() {
   const liveServer = require("live-server");
   const CONSTS = require("../../../utils/consts.js");
   const watch = require("../../../lib/watch.js");
-  const logger = require("../../../lib/logger.js");
+  const logger = require("../../../utils/logger.js");
   const {
     assetsMiddleware,
     assetsLogger,
@@ -40,18 +40,19 @@ async function start() {
 
   watch();
 
-  process.on("SIGINT", async function () {
-    await assetsLogger();
-    process.exit();
-  });
+  if (options["asset-logger"])
+    process.on("SIGINT", async function () {
+      await assetsLogger();
+      process.exit();
+    });
 
   liveServer.start({
-    root: CONSTS.BUILD_FOLDER,
+    root: CONSTS.BUILD_DIRECTORY,
     wait: 1000,
     logLevel: 1,
-    middleware: [assetsMiddleware],
-    host: "localhost",
-    port: 8080,
+    middleware: options["asset-logger"] ? [assetsMiddleware] : [],
+    host: options.host || "localhost",
+    port: options.port || 8080,
   });
 }
 

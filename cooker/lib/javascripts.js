@@ -63,7 +63,7 @@ async function javascripts(event, file) {
 
   const dest = `${CONSTS.BUILD_ASSETS_FOLDER}/js/`;
   // get relative path of the final output and pass to environment variables
-  const rel = path.relative(dest, CONSTS.BUILD_FOLDER);
+  const rel = path.relative(dest, CONSTS.BUILD_DIRECTORY);
   env.stringified["process.env"].WTC_RELROOT = rel
     ? JSON.stringify(rel)
     : '"."';

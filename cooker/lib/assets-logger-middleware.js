@@ -1,5 +1,5 @@
 const path = require("path");
-const logger = require("./logger.js");
+const logger = require("../utils/logger.js");
 const CONSTS = require("../utils/consts.js");
 const helpers = require("./helpers.js");
 
@@ -43,7 +43,7 @@ async function assetsLogger() {
   // get all assets on the build folder
   // everything there is public
   const publicList = await helpers.getFiles(
-    path.join(CONSTS.PUBLIC_FOLDER, "**", "*"),
+    path.join(CONSTS.PUBLIC_DIRECTORY, "**", "*"),
     {
       nodir: true,
     }
@@ -57,7 +57,7 @@ async function assetsLogger() {
       addToList(
         publicListOrdered,
         extension,
-        asset.replace(CONSTS.BUILD_FOLDER, "")
+        asset.replace(CONSTS.BUILD_DIRECTORY, "")
       );
   }
 

@@ -10,13 +10,14 @@ const pages = require("./pages.js");
 const styles = require("./styles.js");
 // const javascripts = require("./javascripts.js");
 const assets = require("./assets.js");
-// const favicons = require("./favicons.js");
+const favicons = require("./favicons.js");
 const CONSTS = require("../utils/consts.js");
 
 const options = {
   persistent: true,
   interval: 300,
   ignoreInitial: true,
+  ignored: ["node_modules", ".git", "build", ".vscode"],
 };
 
 function watch() {
@@ -41,14 +42,22 @@ function watch() {
   //   .watch(`${CONSTS.SRC_FOLDER}/**/!(vendor)/*.js`, options)
   //   .on("all", javascripts);
 
-  // // watch for the favicon
-  // chokidar
-  //   .watch(`${CONSTS.SRC_FOLDER}/favicons/main.png`, options)
-  //   .on("all", favicons);
+  // watch for the config file
+  chokidar
+    .watch(path.join(CONSTS.CWD, "sweet-potato-cooker.config.js"), options)
+    .on("all", function () {
+      console.log("Detected changes to config. Please restart.");
+    });
+
+  // watch for the favicon
+  if (CONSTS.CONFIG.favicon)
+    chokidar
+      .watch(path.join(CONSTS.CWD, CONSTS.CONFIG.favicon.sourceFile), options)
+      .on("all", favicons);
 
   // watch for assets
   chokidar
-    .watch(path.join(CONSTS.PUBLIC_FOLDER, "**", "*"), options)
+    .watch(path.join(CONSTS.PUBLIC_DIRECTORY, "**", "*"), options)
     .on("all", assets);
 }
 

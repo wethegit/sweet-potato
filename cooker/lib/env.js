@@ -8,7 +8,7 @@ const path = require("path");
 
 // local imports
 const CONSTS = require("../utils/consts.js");
-const logger = require("./logger.js");
+const logger = require("../utils/logger.js");
 const ENV = process.env.NODE_ENV;
 
 // https://github.com/bkeepers/dotenv#what-other-env-files-can-i-use
@@ -32,14 +32,14 @@ dotenvFiles.forEach((dotenvFile) => {
   }
 });
 
-// Grab NODE_ENV and WTC_* environment variables and prepare them to be
+// Grab NODE_ENV and PUBLIC_* environment variables and prepare them to be
 // injected into the application via DefinePlugin in Webpack configuration.
 // They are also injected on our PUG files!
-const WTC_ = /^WTC_/i;
+const PUBLIC_ = /^PUBLIC_/i;
 
 function getClientEnvironment() {
   const raw = Object.keys(process.env)
-    .filter((key) => WTC_.test(key))
+    .filter((key) => PUBLIC_.test(key))
     .reduce(
       (env, key) => {
         env[key] = process.env[key];
@@ -47,7 +47,7 @@ function getClientEnvironment() {
       },
       {
         // Useful for determining whether we’re running in production mode.
-        NODE_ENV: ENV || "development",
+        NODE_ENV: ENV || "production",
       }
     );
   // Stringify all values so we can feed into Webpack DefinePlugin

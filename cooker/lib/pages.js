@@ -27,7 +27,7 @@ function saveHtml({
   const dest = path.join(destination, filepath);
 
   // globals
-  const relroot = path.relative(dest, CONSTS.BUILD_FOLDER);
+  const relroot = path.relative(dest, CONSTS.BUILD_DIRECTORY);
   let globals = {
     ...env.raw,
     relativeRoot: relroot ? relroot : ".",
@@ -75,7 +75,7 @@ async function pages(event, file) {
   if (file) {
     let fileInfo = path.parse(file);
 
-    if (fileInfo.ext === ".pug" && file.includes(CONSTS.PAGES_FOLDER)) {
+    if (fileInfo.ext === ".pug" && file.includes(CONSTS.PAGES_DIRECTORY)) {
       // if we are dealing with anything inside /pages
       // we only compiled that specific template and locales
       pugFiles = [file];
@@ -85,7 +85,7 @@ async function pages(event, file) {
       singleLocale = fileInfo.base;
       // if we are at not at the root then we find the relative template file
       // to the locale file
-      if (file.includes(CONSTS.PAGES_FOLDER)) {
+      if (file.includes(CONSTS.PAGES_DIRECTORY)) {
         pugFiles = await helpers.getFiles(
           path.join(fileInfo.dir, "..", "*.pug")
         );
@@ -103,7 +103,7 @@ async function pages(event, file) {
   // or a master locale file
   if (!pugFiles)
     pugFiles = await helpers.getFiles(
-      path.join(CONSTS.PAGES_FOLDER, "**", "*.pug")
+      path.join(CONSTS.PAGES_DIRECTORY, "**", "*.pug")
     );
 
   // go throught all of them
@@ -127,7 +127,7 @@ async function pages(event, file) {
     }
 
     // removes the path to the pages folder for the final output
-    const pagePath = templateInfo.dir.replace(CONSTS.PAGES_FOLDER, "");
+    const pagePath = templateInfo.dir.replace(CONSTS.PAGES_DIRECTORY, "");
 
     // Find locale files based on main updated file, if it exists
     let localeFiles;
@@ -143,7 +143,7 @@ async function pages(event, file) {
       );
 
     const outputOptions = {
-      destination: CONSTS.BUILD_FOLDER,
+      destination: CONSTS.BUILD_DIRECTORY,
       filepath: pagePath,
       filename: `${templateInfo.name}.html`,
       pugFunction: compiledFunction,
@@ -207,8 +207,8 @@ async function pages(event, file) {
           locale: localeInfo.name,
           destination:
             localeInfo.name !== "default"
-              ? path.join(CONSTS.BUILD_FOLDER, localeInfo.name)
-              : CONSTS.BUILD_FOLDER,
+              ? path.join(CONSTS.BUILD_DIRECTORY, localeInfo.name)
+              : CONSTS.BUILD_DIRECTORY,
           data: mergedYaml,
         };
 
