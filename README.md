@@ -1,9 +1,9 @@
 # sweet-potato 🍠
 We The Collective's static website generator.
 
-🐶 [Pug](https://pugjs.org/api/getting-started.html)  
-🎨 [Sass](https://sass-lang.com/)  
-😇 Vanilla JS  
+🐶  [Pug](https://pugjs.org/api/getting-started.html) for templating  
+🎨  [Sass](https://sass-lang.com/) for styling  
+😇  and vanilla Javascript
 
 ## Quick start
 Use the [swee-potato-peeler](https://github.com/wethegit/sweet-potato/tree/main/peeler) to quickly scaffold a new project and get started.
