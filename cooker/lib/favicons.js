@@ -55,13 +55,24 @@ const writeFiles = async function (response) {
     );
 
   // Array of strings (html elements)
-  if (FAVICON_CONFIG.outputTags)
-    promises.push(
-      fse.outputFile(
-        path.join(CONSTS.CWD, FAVICON_CONFIG.outputTags),
-        response.html.join("\n")
-      )
-    );
+  if (FAVICON_CONFIG.outputTags) {
+    const htmlResponse = response.html.join("\n");
+
+    if (FAVICON_CONFIG.outputTags === "log") {
+      logger.announce("Favicons output tags");
+      console.log(htmlResponse);
+    } else
+      promises.push(
+        fse.outputFile(
+          path.join(
+            CONSTS.BUILD_DIRECTORY,
+            FAVICON_CONFIG.outputTags,
+            "favicons.html"
+          ),
+          htmlResponse
+        )
+      );
+  }
 
   // Array of { name: string, contents: <buffer> }
   for (let image of response.images)

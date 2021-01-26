@@ -27,7 +27,7 @@ async function compress(options) {
   const helpers = require("../../../lib/helpers.js");
 
   // consts
-  const toCompress = [".jpg", ".jpeg", ".png", ".svg"];
+  const toCompress = [".jpg", ".jpeg", ".png", ".svg", ".gif"];
 
   // The cache file that shows what images have already been compressed and records their current size
   const CACHE_FILE = path.join(CONSTS.CACHE_DIRECTORY, "compress.json")
@@ -54,21 +54,10 @@ async function compress(options) {
     await imagemin([file], {
       destination: outFile,
       plugins: [
-        imageminMozjpeg({
-          quality: 70,
-          ...COMPRESSION_OPTIONS.imageminMozjpeg
-        }),
-        imageminPngquant({
-          quality: [0.65, 0.95],
-          speed: 1,
-          ...COMPRESSION_OPTIONS.imageminPngquant
-        }),
+        imageminMozjpeg(COMPRESSION_OPTIONS.imageminMozjpeg),
+        imageminPngquant(COMPRESSION_OPTIONS.imageminPngquant),
         imageminGifsicle(COMPRESSION_OPTIONS.imageminGifsicle),
-        imageminSvgo({
-          plugins: [{ removeViewBox: false }],
-          multipass: true,
-          ...COMPRESSION_OPTIONS.imageminSvgo
-        }),
+        imageminSvgo(COMPRESSION_OPTIONS.imageminSvgo),
       ],
     });
     

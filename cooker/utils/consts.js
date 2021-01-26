@@ -6,20 +6,28 @@ const CWD = process.cwd();
 // load config file
 const CONFIG_PATH = path.join(CWD, "sweet-potato-cooker.config.js");
 let CONFIG = {
-  buildDirectory: "build",
-  sourceDirectory: "",
-  sassOptions: () => {},
+  buildDirectory: "build/",
+  sourceDirectory: ".",
+  sassOptions: () => { return {}  },
   favicon: {
     sourceFile: '',
-    destination: 'favicons',
-    outputTags: false
+    destination: 'favicons/',
+    outputTags: 'log'
   },
   sitemap: true,
   compress: {
-    imageminMozjpeg: {},
-    imageminPngquant: {},
+    imageminMozjpeg: {
+       quality: 70,
+    },
+    imageminPngquant: {
+      quality: [0.65, 0.95],
+      speed: 1
+    },
     imageminGifsicle: {},
-    imageminSvgo: {}
+    imageminSvgo: {
+      plugins: [{ removeViewBox: false }],
+      multipass: true,
+    }
   }
 };
 
