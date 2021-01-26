@@ -1,5 +1,6 @@
 # sweet-potato-cooker 🍠👩‍🍳
-An opinionated static site generator that uses [Pug](https://pugjs.org/api/getting-started.html) as a template engine with `yaml` files for localization and [Sass](https://sass-lang.com/) for styles.
+An opinionated static site generator that uses [Pug](https://pugjs.org/api/getting-started.html) as a template engine with `yaml` files for localization and [Sass](https://sass-lang.com/) for styles.  
+For information on how to structure the project check the [sweet-potato docs](https://github.com/wethegit/sweet-potato).  
 
 ## Usage
 Initiate a new project with npm and install.
@@ -38,12 +39,6 @@ Then just run `npm start/build`
 ```sh
 npx sweet-potato-cooker --help
 ```
-
-## Localization
-TODO: write about localization and automatic path generation
-
-## Static files
-All files inside a `public/` directory in the root of the project will be copied to `build/`.
 
 ## Config
 The cooker can be customized to an extent.
