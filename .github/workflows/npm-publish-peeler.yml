@@ -8,7 +8,7 @@ on:
     branches:
       - main
     paths:
-      - "cooker/**"
+      - "peeler/**"
 
 jobs:
   publish:
@@ -22,7 +22,7 @@ jobs:
           node-version: 12
           registry-url: https://registry.npmjs.org/        
       - run: npm publish --access public
-        working-directory: "./cooker"
+        working-directory: "./peeler"
         env:
           NODE_AUTH_TOKEN: ${{secrets.NPM_TOKEN}}
 
@@ -32,6 +32,6 @@ jobs:
           node-version: 12
           registry-url: https://npm.pkg.github.com/
       - run: npm publish
-        working-directory: "./cooker"
+        working-directory: "./peeler"
         env:
           NODE_AUTH_TOKEN: ${{secrets.GITHUB_TOKEN}}
