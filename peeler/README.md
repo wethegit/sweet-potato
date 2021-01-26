@@ -1,2 +1,4 @@
-# sweet-potato-peeler
-Responsible for scafolding a new project.
+# sweet-potato-peeler 🍠🍴
+```sh
+npx @wethegit/sweet-potato-peeler my-dir --template default [--use-yarn | --use-pnpm | --no-install]
+```
