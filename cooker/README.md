@@ -57,13 +57,13 @@ module.exports = {
 Specify the directory to which build the files to.
 
 ### sourceDirectory
-**Type:** `string`
+**Type:** `string`  
 **Default:** `.`  
 Specify the source directory.
 
 ### localesDirectory
-**Type:** `string`
-**Default:** `locales/`
+**Type:** `string`  
+**Default:** `locales/`  
 Specify the directory to find localization for pages.
 
 ### sassOptions
