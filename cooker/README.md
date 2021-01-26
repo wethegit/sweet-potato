@@ -42,9 +42,12 @@ npx sweet-potato-cooker --help
 ## Localization
 TODO: write about localization and automatic path generation
 
+## Static files
+All files inside a `public/` directory in the root of the project will be copied to `build/`.
+
 ## Config
 The cooker can be customized to an extent.
-Create a `sweet-potato-cooker.config.js` on the root of the project, same level as `package.json`.
+Create a `sweet-potato-cooker.config.js` in the root of the project, same level as `package.json`.
 ```js
 module.exports = {
   // Options
