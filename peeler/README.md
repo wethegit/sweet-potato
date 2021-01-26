@@ -14,4 +14,4 @@ Perfect for projects with multiple localizations and pages.
 
 ### minimal
 
-Ideal for landing page, quick prototypes, demos, anything that won't require layouts.
+Ideal for landing pages, quick prototypes, anything that won't complex require layouts.
