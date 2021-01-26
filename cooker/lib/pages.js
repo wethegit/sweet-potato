@@ -88,7 +88,6 @@ async function pages(event, file) {
       // to the locale file
       if (file.includes(CONSTS.PAGES_DIRECTORY)) {
         // this assumes that the yaml file lives inside `locales/` just a folder deep
-        // TODO: fix this to use CONSTS.localesDirectory
         pugFiles = await helpers.getFiles(
           path.join(fileInfo.dir, "..", "*.pug")
         );
@@ -150,6 +149,10 @@ async function pages(event, file) {
       filepath: pagePath,
       filename: `${templateInfo.name}.html`,
       pugFunction: compiledFunction,
+      data: {
+        globals: {},
+        page: {}
+      },
     };
 
     if (localeFiles.length <= 0) {
@@ -169,7 +172,7 @@ async function pages(event, file) {
         const localeInfo = path.parse(locale);
 
         // get the main locale, if doesn't exists uses default.yaml
-        let mainYamlFile = path.join(CONSTS.SOURCE_DIRECTORY, 'locales', localeInfo.name, ".yaml");
+        let mainYamlFile = path.join(CONSTS.SOURCE_DIRECTORY, 'locales', localeInfo.base);
 
         if (!fse.pathExistsSync(mainYamlFile))
           mainYamlFile = path.join(CONSTS.SOURCE_DIRECTORY, 'locales', "default.yaml");
