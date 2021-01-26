@@ -6,17 +6,12 @@ html(lang=(globals.localeKey === 'default' ? 'en-US' : globals.localeKey))
     meta(name="viewport" content="width=device-width, initial-scale=1, user-scalable=1, minimum-scale=1")
     meta(http-equiv="X-UA-Compatible" content="ie=edge")
     
-    meta(name="description" content=(globals.meta.title || page.meta.title))
-    title=`${globals.meta.title} | ${page.meta.title}`
+    meta(name="description" content="Your first Sweet Potato project!")
+    title Sweet Potato
     
-    link(rel="stylesheet" href=`${globals.relativeRoot}/global.css`)
-    block meta
-    
+    link(rel="stylesheet" href="./global.css")
   body
     code
       pre!=JSON.stringify(globals, null, 2)
-    
-    code 
-      pre!=JSON.stringify(page, null, 2)
       
-    block main
+    h1!=page.title

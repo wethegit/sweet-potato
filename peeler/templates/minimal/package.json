@@ -1,0 +1,17 @@
+{
+  "name": "sweet-potato-default-template",
+  "description": "Default template for sweet-potato projects",
+  "version": "1.0.0",
+  "keywords": [
+    "spp-template"
+  ],
+  "private": true,
+  "scripts": {
+    "start": "sweet-potato-cooker start",
+    "build": "sweet-potato-cooker build"
+  },
+  "dependencies": {},
+  "devDependencies": {
+    "@wethegit/sweet-potato-cooker": "^0.4.2"
+  }
+}
