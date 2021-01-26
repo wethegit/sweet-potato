@@ -8,11 +8,12 @@ const CONFIG_PATH = path.join(CWD, "sweet-potato-cooker.config.js");
 let CONFIG = {
   buildDirectory: "build/",
   sourceDirectory: ".",
+  localesDirectory: "locales/",
   sassOptions: () => { return {}  },
   favicon: {
-    sourceFile: '',
-    destination: 'favicons/',
-    outputTags: 'log'
+    sourceFile: "",
+    destination: "favicons/",
+    outputTags: "log"
   },
   sitemap: true,
   compress: {

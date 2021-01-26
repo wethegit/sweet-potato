@@ -166,10 +166,10 @@ async function pages(event, file) {
         const localeInfo = path.parse(locale);
 
         // get the main locale, if doesn't exists uses default.yaml
-        let mainYamlFile = path.join(CONSTS.CWD, localeInfo.name, ".yaml");
+        let mainYamlFile = path.join(CONSTS.CWD, CONSTS.CONFIG.localesDirectory, localeInfo.name, ".yaml");
 
         if (!fse.pathExistsSync(mainYamlFile))
-          mainYamlFile = path.join(CONSTS.CWD, "default.yaml");
+          mainYamlFile = path.join(CONSTS.CWD, CONSTS.CONFIG.localesDirectory, "default.yaml");
 
         let mainYaml = "";
         if (fse.pathExistsSync(mainYamlFile)) {
