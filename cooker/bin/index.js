@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+"use strict";
 const sade = require("sade");
 const path = require("path");
 const commands = require("./commands");
@@ -24,6 +25,7 @@ prog
   )
   .option("--port", "Port to bind", 8080)
   .option("--host", "Hostname to bind", "localhost")
+  .option("--open", "Automatic web browser launching", false)
   .action(commands.start);
 
 prog

@@ -31,6 +31,7 @@ function saveHtml({
   let globals = {
     ...env.raw,
     relativeRoot: relroot ? relroot : ".",
+    ...data.globals
   };
 
   if (locale) {
@@ -47,7 +48,7 @@ function saveHtml({
   try {
     htmlString = pugFunction({
       globals,
-      page: data ? data : {},
+      page: data.page,
     });
   } catch (error) {
     logger.error(
@@ -86,6 +87,8 @@ async function pages(event, file) {
       // if we are at not at the root then we find the relative template file
       // to the locale file
       if (file.includes(CONSTS.PAGES_DIRECTORY)) {
+        // this assumes that the yaml file lives inside `locales/` just a folder deep
+        // TODO: fix this to use CONSTS.localesDirectory
         pugFiles = await helpers.getFiles(
           path.join(fileInfo.dir, "..", "*.pug")
         );
@@ -166,39 +169,27 @@ async function pages(event, file) {
         const localeInfo = path.parse(locale);
 
         // get the main locale, if doesn't exists uses default.yaml
-        let mainYamlFile = path.join(CONSTS.CWD, CONSTS.CONFIG.localesDirectory, localeInfo.name, ".yaml");
+        let mainYamlFile = path.join(CONSTS.SOURCE_DIRECTORY, 'locales', localeInfo.name, ".yaml");
 
         if (!fse.pathExistsSync(mainYamlFile))
-          mainYamlFile = path.join(CONSTS.CWD, CONSTS.CONFIG.localesDirectory, "default.yaml");
+          mainYamlFile = path.join(CONSTS.SOURCE_DIRECTORY, 'locales', "default.yaml");
 
-        let mainYaml = "";
+        let mainYaml = {};
         if (fse.pathExistsSync(mainYamlFile)) {
           try {
-            mainYaml = await fse.readFile(mainYamlFile, "utf8");
+            mainYaml = await fse.readFile(mainYamlFile, "utf8").then(contents => yaml.load(contents));
           } catch (error) {
             // silently skips it
           }
         }
 
-        let localeYaml = "";
+        let localeYaml = {};
         if (fse.pathExistsSync(locale)) {
           try {
-            localeYaml = await fse.readFile(locale, "utf8");
+            localeYaml = await fse.readFile(locale, "utf8").then(contents => yaml.load(contents));
           } catch (error) {
             // silently skips it
           }
-        }
-
-        if (mainYaml === "" && localeYaml === "") continue;
-
-        let mergedYaml;
-        try {
-          mergedYaml = yaml.load("---\n" + mainYaml + "\n" + localeYaml, {
-            json: true,
-          });
-        } catch (error) {
-          logger.error([mergedYaml, "Failed to compile locale"], error);
-          continue; // skips locale file
         }
 
         // render the html with the data and save it
@@ -209,7 +200,10 @@ async function pages(event, file) {
             localeInfo.name !== "default"
               ? path.join(CONSTS.BUILD_DIRECTORY, localeInfo.name)
               : CONSTS.BUILD_DIRECTORY,
-          data: mergedYaml,
+          data: {
+            globals: mainYaml,
+            page: localeYaml
+          },
         };
 
         try {

@@ -8,7 +8,6 @@ const CONFIG_PATH = path.join(CWD, "sweet-potato-cooker.config.js");
 let CONFIG = {
   buildDirectory: "build/",
   sourceDirectory: ".",
-  localesDirectory: "locales/",
   sassOptions: () => { return {}  },
   favicon: {
     sourceFile: "",
@@ -40,8 +39,9 @@ if (fse.pathExistsSync(CONFIG_PATH)) {
 const BUILD_DIRECTORY = path.join(CWD, CONFIG.buildDirectory);
 const CACHE_DIRECTORY = path.join(CWD, ".cache", "sweet-potato-cooker");
 
-const PAGES_DIRECTORY = path.join(CWD, CONFIG.sourceDirectory, "pages");
-const PUBLIC_DIRECTORY = path.join(CWD, CONFIG.sourceDirectory, "public");
+const SOURCE_DIRECTORY = path.join(CWD, CONFIG.sourceDirectory)
+const PAGES_DIRECTORY = path.join(SOURCE_DIRECTORY, "pages");
+const PUBLIC_DIRECTORY = path.join(SOURCE_DIRECTORY, "public");
 
 const ROOT_DIRECTORY = path.join(__dirname, "..");
 const BIN_DIRECTORY = path.join(__dirname, "..", "bin"); // internal folders
@@ -54,6 +54,7 @@ module.exports = {
   ROOT_DIRECTORY,
   BUILD_DIRECTORY,
   CACHE_DIRECTORY,
+  SOURCE_DIRECTORY,
   PAGES_DIRECTORY,
   PUBLIC_DIRECTORY,
   BIN_DIRECTORY,

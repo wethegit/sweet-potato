@@ -50,6 +50,7 @@ async function start(options) {
     root: CONSTS.BUILD_DIRECTORY,
     wait: 1000,
     logLevel: 1,
+    open: options["asset-logger"] || false,
     middleware: options["asset-logger"] ? [assetsMiddleware] : [],
     host: options.host || "localhost",
     port: options.port || 8080,

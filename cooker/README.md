@@ -64,11 +64,6 @@ Specify the directory to which build the files to.
 **Default:** `.`  
 Specify the source directory.
 
-### localesDirectory
-**Type:** `string`  
-**Default:** `locales/`  
-Specify the directory to find localization for pages.
-
 ### sassOptions
 **Type:** `function`  
 **Default:** `null`  
