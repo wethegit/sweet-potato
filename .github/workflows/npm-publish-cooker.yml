@@ -31,7 +31,6 @@ jobs:
         with:
           node-version: 12
           registry-url: https://npm.pkg.github.com/
-          working-directory: "./cooker"
       - run: npm publish
         working-directory: "./cooker"
         env:
