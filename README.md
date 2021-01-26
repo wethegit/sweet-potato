@@ -6,7 +6,7 @@ We The Collective's static website generator.
 😇 Vanilla JS
 
 ## Quick start
-Use the (swee-potato-peeler)[https://github.com/wethegit/sweet-potato/tree/main/peeler] to quickly scaffold a new project and get started.
+Use the [swee-potato-peeler](https://github.com/wethegit/sweet-potato/tree/main/peeler) to quickly scaffold a new project and get started.
 ```sh
 $ npx @wethegit/sweet-potato-peeler my-website
 $ cd my-website
