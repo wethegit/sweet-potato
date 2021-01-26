@@ -1,5 +1,6 @@
 # sweet-potato 🍠
-We The Collective's static website generator.
+An opinionated and minimal static website generator.  
+The goal is to be simple and allow the composing and styling of pages without getting in the way and with minimal footprint.  
 
 🐶    [Pug](https://pugjs.org/api/getting-started.html) for templating  
 🎨    [Sass](https://sass-lang.com/) for styling  
