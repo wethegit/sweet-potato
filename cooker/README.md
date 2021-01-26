@@ -1,4 +1,4 @@
-# sweet-potato-cooker 🍠
+# sweet-potato-cooker 🍠🫕
 An opinionated static site generator that uses [Pug](https://pugjs.org/api/getting-started.html) as a template engine with `yaml` files for localization and [Sass](https://sass-lang.com/) for styles.
 
 ## Usage
