@@ -1,15 +1,23 @@
 {
   "name": "@wethegit/sweet-potato-peeler",
-  "version": "0.1.1",
-  "description": "We The Collective Bootstrap Peeler",
+  "version": "0.1.0",
+  "description": "We The Collective Bootstrap CLI",
   "main": "bin/index.js",
-  "scripts": {
-    "build": "node bin/index.js build",
-    "start": "node bin/index.js start"
+  "bin": {
+    "sweet-potato-peeler": "bin/index.js"
+  },
+  "publishConfig": {
+    "access": "public"
   },
   "repository": {
     "type": "git",
-    "url": "ssh://git@github.com/wethegit/sweet-potato.git",
+    "url": "git@github.com:wethegit/sweet-potato.git",
     "directory": "peeler"
+  },
+  "dependencies": {
+    "execa": "^5.0.0",
+    "fs-extra": "^9.1.0",
+    "kleur": "^4.1.4",
+    "yargs-parser": "^20.2.4"
   }
 }
