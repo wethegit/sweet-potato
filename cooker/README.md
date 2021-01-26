@@ -82,9 +82,9 @@ A function that will receive the file and environment as parameters and must ret
 **Default:**  
 ```js
 {
-  sourceFile: '',
-  destination: 'favicons/',
-  outputTags: '',
+  sourceFile: "",
+  destination: "favicons/",
+  outputTags: "log",
   generatorOptions: {
     appName: "Your App Name",
     appShortName: "Short App Name",
