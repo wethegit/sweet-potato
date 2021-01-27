@@ -60,6 +60,14 @@ async function javascripts(event, file) {
         fileInfo.base
       );
 
+      let DEFINE_VALUES = {
+        RELATIVE_ROOT: `"${path.relative(DEST, CONSTS.BUILD_DIRECTORY)}"`,
+      };
+
+      for (const [key, value] of Object.entries(env.raw)) {
+        DEFINE_VALUES[key] = typeof value === "string" ? `"${value}"` : value;
+      }
+
       promises.push(
         service
           .build({
@@ -70,10 +78,7 @@ async function javascripts(event, file) {
             sourcemap: !isProduction,
             target: ["esnext"],
             format: "esm",
-            define: {
-              ...env.raw,
-              RELATIVE_ROOT: path.relative(DEST, CONSTS.BUILD_DIRECTORY),
-            },
+            define: DEFINE_VALUES,
           })
           .then(() => logger.success([DEST, "Bundled"]))
       );
