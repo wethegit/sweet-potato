@@ -26,8 +26,25 @@ It's the perfect place to add images, videos and any other file that should be p
 The [sweet-potato-cooker](https://github.com/wethegit/sweet-potato/blob/main/cooker/README.md#compressing-and-optimizing-assets) also offers a way to optimize your images.  
 
 ## Environment variables
-This project uses [dotenv](https://github.com/motdotla/dotenv) and accepts standard `.env` files.  
-In addition to passing these values to [javascript files](https://esbuild.github.io/api/#define), it also passes them to your pug template files as part of the `globals` variables.  
+This project uses [dotenv](https://github.com/motdotla/dotenv) and accepts standard `.env` files. 
+Only values that start with `PUBLIC_` will be accepted. This is because these values will be part of the final compiled files and available for the public.  
+In addition to passing these values to [javascript files](https://esbuild.github.io/api/#define) they will also be passed to pug template files as part of the `globals` variables.  
+
+### Example:  
+```
+# .env
+PUBLIC_URL=http://my-website.com
+```
+```js
+// index.js
+// notice how NODE_ENV is passed by default
+if (NODE_ENV === 'development') console.log('In dev')
+console.log(PUBLIC_URL)
+```
+```pug
+//- index.pug
+p=globals.PUBLIC_URL
+```
 
 ## Options and customization
 Under the hood, sweet-potato uses [sweet-potato-cooker](https://github.com/wethegit/sweet-potato/tree/main/cooker) to serve, bundle and optimize assets.  
