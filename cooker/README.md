@@ -45,6 +45,15 @@ Note: for a quicker setup it's recommended to add these scripts to `package.json
 
 Then just run `npm start/build`
 
+### Compressing and optimizing assets
+
+⚠️ This command is destructive and will overwrite the original files.  
+This compresses and optimizes all `.jpg`, `.png`, `.svg`, `.gif` files in a given directory, default is `public/`.  
+
+```sh
+npx sweet-potato-cooker compress
+```
+
 ## See all commands & options
 
 ```sh
