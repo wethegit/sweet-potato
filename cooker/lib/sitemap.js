@@ -17,7 +17,25 @@ const CONSTS = require("../utils/consts.js");
 const env = getClientEnvironment();
 
 async function sitemap() {
-  if (!CONSTS.CONFIG.sitemap || !env.raw.PUBLIC_TLDN) return;
+  if (!CONSTS.CONFIG.sitemap) return;
+
+  let publicUrl;
+  if (typeof CONSTS.CONFIG.sitemap === "string")
+    publicUrl = CONSTS.CONFIG.sitemap;
+  else if (env.raw.PUBLIC_URL) {
+    publicUrl = env.raw.PUBLIC_URL;
+
+    if (publicUrl.charAt(publicUrl.length - 1) === "/")
+      publicUrl = publicUrl.substring(0, publicUrl.length - 1);
+  }
+
+  if (!publicUrl) {
+    logger.error("Tried to generate sitemap.xml but no public url was set.", {
+      message:
+        "https://github.com/wethegit/sweet-potato/tree/main/cooker#sitemap",
+    });
+    return;
+  }
 
   // Get all html files
   const htmlFiles = await helpers.getFiles(
@@ -29,11 +47,7 @@ async function sitemap() {
   logger.start("Started sitemap generation");
 
   // Creates a sitemap object given the input configuration with URLs
-  let URL = env.raw.PUBLIC_TLDN;
-  if (URL.charAt(URL.length - 1) === "/")
-    URL = URL.substring(0, URL.length - 1);
-
-  const sitemap = new SitemapStream({ hostname: URL });
+  const sitemap = new SitemapStream({ hostname: publicUrl });
   const lastmod = new Date().toISOString();
 
   // go throught all of them

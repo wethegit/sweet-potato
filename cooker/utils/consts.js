@@ -16,7 +16,7 @@ let CONFIG = {
     destination: "favicons",
     outputTags: "log",
   },
-  sitemap: true,
+  sitemap: false,
   compress: {
     imageminMozjpeg: {
       quality: 70,
