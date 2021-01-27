@@ -15,7 +15,7 @@ $ npm start
 ```
 
 ## Pages
-TODO: write about the pages/ structure and globals variables
+TODO: write about the pages/ structure
 
 ## Localization
 TODO: write about localization and yaml
