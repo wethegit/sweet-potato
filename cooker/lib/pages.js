@@ -30,15 +30,15 @@ function saveHtml({
   const relroot = path.relative(dest, CONSTS.BUILD_DIRECTORY);
   let globals = {
     ...env.raw,
-    relativeRoot: relroot ? relroot : ".",
+    RELATIVE_ROOT: relroot ? relroot : ".",
     ...data.globals,
   };
 
   if (locale) {
     const rellocale = path.relative(dest, destination);
 
-    globals.relativeLocaleRoot = rellocale ? rellocale : ".";
-    globals.localeKey = locale;
+    globals.RELATIVE_LOCALE_ROOT = rellocale ? rellocale : ".";
+    globals.LOCALE_KEY = locale;
   }
 
   const outFile = path.join(dest, filename);

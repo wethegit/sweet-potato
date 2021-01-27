@@ -70,6 +70,10 @@ async function javascripts(event, file) {
             sourcemap: !isProduction,
             target: ["esnext"],
             format: "esm",
+            define: {
+              ...env.raw,
+              RELATIVE_ROOT: path.relative(DEST, CONSTS.BUILD_DIRECTORY),
+            },
           })
           .then(() => logger.success([DEST, "Bundled"]))
       );
