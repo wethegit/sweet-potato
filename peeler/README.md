@@ -10,8 +10,8 @@ npx @wethegit/sweet-potato-peeler my-dir --template default [--use-yarn | --use-
 
 ### default
 
-Perfect for projects with multiple localizations and complex layouts.
+Perfect for projects with multiple localizations and complex page compositions.
 
 ### minimal
 
-Ideal for landing pages, quick prototypes, anything that won't complex require layouts.
+Ideal for landing pages, anything that won't require complex layouts.
