@@ -27,7 +27,7 @@ The [sweet-potato-cooker](https://github.com/wethegit/sweet-potato/blob/main/coo
 ## Environment and global variables
 This project uses [dotenv](https://github.com/motdotla/dotenv) and accepts standard `.env` files.  
 Only values that start with `PUBLIC_` will be accepted, this is because these values will be part of the final compiled files and available for the public.  
-In addition to passing these values to [javascript files](https://esbuild.github.io/api/#define) they will also be passed to Pug template files as part of the `globals` variables.  
+In addition to passing these values to javascript files they will also be passed to Pug template files as part of the `globals` variables.  
 
 ### Globals
 In addition to values from `.env` files Pug templates and Javascript files will also receive default global variables.
