@@ -24,7 +24,8 @@ TODO: write about localization and yaml
 TODO: write about the public/ folder and compressing images
 
 ## Environment variables
-TODO: write about .env files
+This project uses [dotenv](https://github.com/motdotla/dotenv) and accepts standard `.env` files.  
+In addition to passing these values to [javascript files](https://esbuild.github.io/api/#define), it also passes them to your pug template files as part of the `globals` variables.  
 
 ## Customization
 Under the hood, sweet-potato uses [sweet-potato-cooker](https://github.com/wethegit/sweet-potato/tree/main/cooker) to serve, bundle and optimize assets.  
