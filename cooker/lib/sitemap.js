@@ -17,7 +17,7 @@ const CONSTS = require("../utils/consts.js");
 const env = getClientEnvironment();
 
 async function sitemap() {
-  if (!CONSTS.CONFIG.sitemap) return;
+  if (!CONSTS.CONFIG.sitemap || !env.raw.PUBLIC_TLDN) return;
 
   // Get all html files
   const htmlFiles = await helpers.getFiles(
@@ -29,18 +29,21 @@ async function sitemap() {
   logger.start("Started sitemap generation");
 
   // Creates a sitemap object given the input configuration with URLs
-  const sitemap = new SitemapStream({ hostname: env.raw.PUBLIC_TLDN || "/" });
+  let URL = env.raw.PUBLIC_TLDN;
+  if (URL.charAt(URL.length - 1) === "/")
+    URL = URL.substring(0, URL.length - 1);
+
+  const sitemap = new SitemapStream({ hostname: URL });
   const lastmod = new Date().toISOString();
 
   // go throught all of them
   for (const file of htmlFiles) {
     const fileInfo = path.parse(file);
-    let dir = fileInfo.dir.replace(path.join(CONSTS.BUILD_DIRECTORY, "/"), "");
+    let dir = fileInfo.dir.replace(CONSTS.BUILD_DIRECTORY, "");
 
-    if (dir === "build") dir = "";
-    else dir += "/";
+    if (dir === "") dir += "/";
 
-    sitemap.write({ url: `${env.raw.PUBLIC_URL}${dir}`, lastmod });
+    sitemap.write({ url: `${URL}${dir}`, lastmod });
   }
 
   sitemap.end();

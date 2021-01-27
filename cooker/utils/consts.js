@@ -6,29 +6,31 @@ const CWD = process.cwd();
 // load config file
 const CONFIG_PATH = path.join(CWD, "sweet-potato-cooker.config.js");
 let CONFIG = {
-  buildDirectory: "build/",
+  buildDirectory: "build",
   sourceDirectory: ".",
-  sassOptions: () => { return {}  },
+  sassOptions: () => {
+    return {};
+  },
   favicon: {
     sourceFile: "",
-    destination: "favicons/",
-    outputTags: "log"
+    destination: "favicons",
+    outputTags: "log",
   },
   sitemap: true,
   compress: {
     imageminMozjpeg: {
-       quality: 70,
+      quality: 70,
     },
     imageminPngquant: {
       quality: [0.65, 0.95],
-      speed: 1
+      speed: 1,
     },
     imageminGifsicle: {},
     imageminSvgo: {
       plugins: [{ removeViewBox: false }],
       multipass: true,
-    }
-  }
+    },
+  },
 };
 
 if (fse.pathExistsSync(CONFIG_PATH)) {
@@ -39,7 +41,7 @@ if (fse.pathExistsSync(CONFIG_PATH)) {
 const BUILD_DIRECTORY = path.join(CWD, CONFIG.buildDirectory);
 const CACHE_DIRECTORY = path.join(CWD, ".cache", "sweet-potato-cooker");
 
-const SOURCE_DIRECTORY = path.join(CWD, CONFIG.sourceDirectory)
+const SOURCE_DIRECTORY = path.join(CWD, CONFIG.sourceDirectory);
 const PAGES_DIRECTORY = path.join(SOURCE_DIRECTORY, "pages");
 const PUBLIC_DIRECTORY = path.join(SOURCE_DIRECTORY, "public");
 

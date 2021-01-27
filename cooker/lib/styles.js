@@ -70,7 +70,13 @@ async function styles(event, file) {
   // need to compiled all dependencies
   if (file && !file.includes(CONSTS.PAGES_DIRECTORY)) {
     try {
-      await standardize(file);
+      const inStandards = await standardize(file);
+      // if it had linting issues we don't continue and let the
+      // updates to the file trigger a new event
+      if (!inStandards) return;
+
+      // if it's all good, because we are outside the pages
+      // directory, we want to compile everything again
       file = null;
     } catch (error) {
       logger.error([file, "Failed to standardize style asset"], error);
@@ -87,7 +93,7 @@ async function styles(event, file) {
   // go through files
   for (const file of sassFiles) {
     const inStandards = await standardize(file);
-    if (!inStandards) return;
+    if (!inStandards) continue;
 
     const fileInfo = path.parse(file);
 

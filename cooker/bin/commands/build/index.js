@@ -20,7 +20,7 @@ function build() {
   const buildAll = require("../../../lib/build-all.js");
 
   try {
-    buildAll();
+    buildAll(process.env.NODE_ENV);
   } catch (error) {
     logger.error("Failed to build local files", error);
     process.exit();

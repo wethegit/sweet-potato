@@ -31,7 +31,7 @@ function saveHtml({
   let globals = {
     ...env.raw,
     relativeRoot: relroot ? relroot : ".",
-    ...data.globals
+    ...data.globals,
   };
 
   if (locale) {
@@ -151,7 +151,7 @@ async function pages(event, file) {
       pugFunction: compiledFunction,
       data: {
         globals: {},
-        page: {}
+        page: {},
       },
     };
 
@@ -172,15 +172,25 @@ async function pages(event, file) {
         const localeInfo = path.parse(locale);
 
         // get the main locale, if doesn't exists uses default.yaml
-        let mainYamlFile = path.join(CONSTS.SOURCE_DIRECTORY, 'locales', localeInfo.base);
+        let mainYamlFile = path.join(
+          CONSTS.SOURCE_DIRECTORY,
+          "locales",
+          localeInfo.base
+        );
 
         if (!fse.pathExistsSync(mainYamlFile))
-          mainYamlFile = path.join(CONSTS.SOURCE_DIRECTORY, 'locales', "default.yaml");
+          mainYamlFile = path.join(
+            CONSTS.SOURCE_DIRECTORY,
+            "locales",
+            "default.yaml"
+          );
 
         let mainYaml = {};
         if (fse.pathExistsSync(mainYamlFile)) {
           try {
-            mainYaml = await fse.readFile(mainYamlFile, "utf8").then(contents => yaml.load(contents));
+            mainYaml = await fse
+              .readFile(mainYamlFile, "utf8")
+              .then((contents) => yaml.load(contents));
           } catch (error) {
             // silently skips it
           }
@@ -189,7 +199,9 @@ async function pages(event, file) {
         let localeYaml = {};
         if (fse.pathExistsSync(locale)) {
           try {
-            localeYaml = await fse.readFile(locale, "utf8").then(contents => yaml.load(contents));
+            localeYaml = await fse
+              .readFile(locale, "utf8")
+              .then((contents) => yaml.load(contents));
           } catch (error) {
             // silently skips it
           }
@@ -205,7 +217,7 @@ async function pages(event, file) {
               : CONSTS.BUILD_DIRECTORY,
           data: {
             globals: mainYaml,
-            page: localeYaml
+            page: localeYaml,
           },
         };
 

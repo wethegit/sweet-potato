@@ -8,7 +8,7 @@ const chokidar = require("chokidar");
 // local imports
 const pages = require("./pages.js");
 const styles = require("./styles.js");
-// const javascripts = require("./javascripts.js");
+const javascripts = require("./javascripts.js");
 const assets = require("./assets.js");
 const favicons = require("./favicons.js");
 const CONSTS = require("../utils/consts.js");
@@ -37,10 +37,10 @@ function watch() {
     .watch(path.join(CONSTS.CWD, "**", "*.scss"), options)
     .on("all", styles);
 
-  // // watch for javascripts
-  // chokidar
-  //   .watch(`${CONSTS.SRC_FOLDER}/**/!(vendor)/*.js`, options)
-  //   .on("all", javascripts);
+  // watch for javascripts
+  chokidar
+    .watch(path.join(CONSTS.CWD, "**", "*.js"), options)
+    .on("all", javascripts);
 
   // watch for the config file
   chokidar
