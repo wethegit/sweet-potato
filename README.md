@@ -25,10 +25,23 @@ All files inside a `public/` directory in the root of the project are considered
 It's the perfect place to add images, videos and any other file that should be public.  
 The [sweet-potato-cooker](https://github.com/wethegit/sweet-potato/blob/main/cooker/README.md#compressing-and-optimizing-assets) also offers a way to optimize your images.  
 
-## Environment variables
+## Environment and global variables
 This project uses [dotenv](https://github.com/motdotla/dotenv) and accepts standard `.env` files. 
 Only values that start with `PUBLIC_` will be accepted. This is because these values will be part of the final compiled files and available for the public.  
-In addition to passing these values to [javascript files](https://esbuild.github.io/api/#define) they will also be passed to pug template files as part of the `globals` variables.  
+In addition to passing these values to [javascript files](https://esbuild.github.io/api/#define) they will also be passed to Pug template files as part of the `globals` variables.  
+
+### Globals
+In addition to values from `.env` files Pug templates and Javascript files will also receive default global variables.
+
+#### Pug
+- **NODE_ENV =** current environment mode
+- **RELATIVE_ROOT =** relative path to root of `build/`
+- **RELATIVE_LOCALE_ROOT =** relative path to locale root
+- **LOCALE_KEY =** locale key name
+
+#### Javascript
+- **NODE_ENV =** current environment mode
+- **RELATIVE_ROOT =** relative path to root of `build/`
 
 ### Example:  
 ```
@@ -37,13 +50,13 @@ PUBLIC_URL=http://my-website.com
 ```
 ```js
 // index.js
-// notice how NODE_ENV is passed by default
 if (NODE_ENV === 'development') console.log('In dev')
-console.log(PUBLIC_URL)
+console.log(PUBLIC_URL) // from .env
 ```
 ```pug
 //- index.pug
-p=globals.PUBLIC_URL
+link(rel="stylesheet" href=`${globals.RELATIVE_ROOT}/global.css`)
+p=globals.PUBLIC_URL //- from .env
 ```
 
 ## Options and customization
