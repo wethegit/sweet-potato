@@ -29,6 +29,6 @@ The [sweet-potato-cooker](https://github.com/wethegit/sweet-potato/blob/main/coo
 This project uses [dotenv](https://github.com/motdotla/dotenv) and accepts standard `.env` files.  
 In addition to passing these values to [javascript files](https://esbuild.github.io/api/#define), it also passes them to your pug template files as part of the `globals` variables.  
 
-## Options
+## Options and customization
 Under the hood, sweet-potato uses [sweet-potato-cooker](https://github.com/wethegit/sweet-potato/tree/main/cooker) to serve, bundle and optimize assets.  
 For a list of all the available options check the [docs](https://github.com/wethegit/sweet-potato/tree/main/cooker#config).
