@@ -21,7 +21,9 @@ TODO: write about the pages/ structure and globals variables
 TODO: write about localization and yaml
 
 ## Static assets
-TODO: write about the public/ folder and compressing images
+All files inside a `public/` directory in the root of the project are considered static and will be copied over to the `build/` directory.  
+It's the perfect place to add images, videos and any other file that should be public.  
+The [sweet-potato-cooker](https://github.com/wethegit/sweet-potato/blob/main/cooker/README.md#compressing-and-optimizing-assets) also offers a way to optimize your images.  
 
 ## Environment variables
 This project uses [dotenv](https://github.com/motdotla/dotenv) and accepts standard `.env` files.  
