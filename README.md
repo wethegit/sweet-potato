@@ -34,13 +34,13 @@ In addition to values from `.env` files Pug templates and Javascript files will 
 
 #### Pug
 - **NODE_ENV =** current environment mode
-- **RELATIVE_ROOT =** relative path to root of `build/`
+- **RELATIVE_ROOT =** relative path from file to `build/`
 - **RELATIVE_LOCALE_ROOT =** relative path to locale root
 - **LOCALE_KEY =** locale key name
 
 #### Javascript
 - **NODE_ENV =** current environment mode
-- **RELATIVE_ROOT =** relative path to root of `build/`
+- **RELATIVE_ROOT =** relative path from file to `build/`
 
 ### Example:  
 ```
