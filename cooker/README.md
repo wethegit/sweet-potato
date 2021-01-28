@@ -74,7 +74,7 @@ module.exports = {
 ### buildDirectory
 
 **Type:** `string`  
-**Default:** `build/`  
+**Default:** `build`  
 Specify the directory to which build the files to.
 
 ### sourceDirectory
@@ -104,7 +104,7 @@ A function that will receive the file and environment as parameters and must ret
 ```js
 {
   sourceFile: "",
-  destination: "favicons/",
+  destination: "favicons",
   outputTags: "log",
   generatorOptions: {
     appName: "Your App Name",
@@ -130,7 +130,7 @@ A PNG with the minimum of 512x512px dimension.
 #### favicon.destination
 
 **Type:** `string`  
-**Default:** `favicons/`  
+**Default:** `favicons`  
 The directory inside the `buildDirectory` to save the generated images to.
 
 #### favicon.outputTags
@@ -165,7 +165,7 @@ A list of valid [favicons](https://www.npmjs.com/package/favicons) options.
 **Type:** `string|boolean`  
 **Default:** `false`  
 If set, will generate a `sitemap.xml` during the production build.  
-If `true` will use the `PUBLIC_URL` value from the `.env` file.
+If `true`, will use the `PUBLIC_URL` value from the `.env` file.
 
 ### compress
 
