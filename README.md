@@ -119,7 +119,7 @@ nav.main-nav(aria-label=globals.nav.label)
 
 ## Javascript
 All `.js` files will be transpiled and bundled with [esbuild](https://esbuild.github.io/) with the assumption that you are supporting modern browsers that have support for [ESM](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Modules).  
-Files outside the `pages/` folder won't generate an output but they will still be prettified and linted.
+Files outside the `pages/` folder won't generate an output but they will still be prettified and linted. Vendor and any other scripts that don't require bundling should be placed inside public/ in the root of the project.
 
 ### Usage:
 ```
