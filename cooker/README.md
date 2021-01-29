@@ -39,7 +39,7 @@ Note: for a quicker setup it's recommended to add these scripts to `package.json
 
 ```js
 "scripts": {
-  "start": "sweet-potato-cooker dev",
+  "start": "sweet-potato-cooker start",
   "build": "sweet-potato-cooker build"
 }
 ```
