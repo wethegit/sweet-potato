@@ -137,7 +137,7 @@ In addition to values from `.env` files Pug templates and Javascript files will 
 - **NODE_ENV =** current environment mode
 - **RELATIVE_ROOT =** relative path from file to `build/`
 
-### Example:  
+### Usage:  
 ```
 # .env
 PUBLIC_URL=http://my-website.com
