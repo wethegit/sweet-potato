@@ -29,7 +29,7 @@ pages/
 If you're creating localized versions of your pages (different languages), you can have all your data live in YAML files, which are accessible via the Pug templates. This will allow you, for example, to have an English page and a French page; while still only using a single page template.
 
 ### Page-specific language data
-To create language-specific data files, you must include a `locales/` folder for **each page** at the **same level** as the page's Pug template (`index.pug`). Within this `locales/` folder, you must then create a `default.yaml` file for the default language. Any other languages you need should be created as appropriately-named `YAML` files. For example, the file that lives at `pages/about/locales/fr.yaml` would have a final URL path of `about/fr/`. Here's a full example of file structure, with French and Spanish localizations for each page:
+To create language-specific data files, you must include a `locales/` folder for **each page** at the **same level** as the page's Pug template (`index.pug`). Within this `locales/` folder, you must then create a `default.yaml` file for the default language. Any other languages you need should be created as appropriately-named `YAML` files. For example, the file that lives at `pages/about/locales/fr.yaml` would have a final URL path of `fr/about/`. Here's a full example of file structure, with French and Spanish localizations for each page:
 ```
 pages/
   |-- index.pug
