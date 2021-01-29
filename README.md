@@ -88,6 +88,7 @@ pages/
 package.json
 package-lock.json
 ```
+
 #### Usage
 Let's say your `locales/default.yaml` looked like this…
 ```yaml
@@ -122,7 +123,7 @@ You should also add any `.css` or `.js` files that doesn't have to be pre-proces
 The [sweet-potato-cooker](https://github.com/wethegit/sweet-potato/blob/main/cooker/README.md#compressing-and-optimizing-assets) also offers a way to optimize your images.  
 
 ## Javascript
-All `.js` files will be transpiled and bundled with [esbuild](https://esbuild.github.io/) with the assumption that you are supporting modern browsers that have support for ESM (import/export).  
+All `.js` files will be transpiled and bundled with [esbuild](https://esbuild.github.io/) with the assumption that you are supporting modern browsers that have support for [ESM](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Modules).  
 Files outside the `pages/` folder won't generate an output but they will still be prettified and linted.
 
 ### Usage:
@@ -144,6 +145,34 @@ This will be the output:
 build/
   |-- index.html
   |-- index.js
+```
+
+## Styles
+
+Files outside the `pages/` folder won't generate an output but they will still be prettified and linted. If using `.css` instead of `.scss`, place your files inside `public/` in the root of the project.
+
+### Usage:
+```
+components/
+  |-- navigation/
+    |-- _navigation.pug
+    |-- navigation.scss
+scss/
+  |-- _helpers.scss
+pages/
+  |-- global.scss    
+  |-- index.pug
+```
+```scss
+// global.scss
+@import '../components/navigation';
+@import '../scss/helpers';
+```
+This will be the output:
+```
+build/
+  |-- index.html
+  |-- global.css
 ```
 
 ## Environment and global variables
