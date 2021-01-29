@@ -4,7 +4,7 @@ The goal is to be simple and allow the composing and styling of pages without ge
 
 🐶    [Pug](https://pugjs.org/api/getting-started.html) for templating  
 🎨    [Sass](https://sass-lang.com/) for styling  
-😇    Javascript transpiled and bundled with [esbuild](https://esbuild.github.io/)
+😇    and vanilla Javascript
 
 ## Quick start
 Use the [swee-potato-peeler](https://github.com/wethegit/sweet-potato/tree/main/peeler) to quickly scaffold a new project and get started.
@@ -115,9 +115,36 @@ nav.main-nav(aria-label=globals.nav.label)
       li
         a(href=item.url)= item.label
 ```
+
 ## Static assets
-All files inside a `public/` directory in the root of the project are considered static and will be copied over to the `build/` directory. It's the perfect place to add images, videos and any other file that should be public.  
+All files inside a `public/` directory in the root of the project are considered static and will be copied over to the `build/` directory. It's the perfect place to add fonts, images, videos and any other file that should be public. 
+You should also add any `.css` or `.js` files that doesn't have to be pre-processed.  
 The [sweet-potato-cooker](https://github.com/wethegit/sweet-potato/blob/main/cooker/README.md#compressing-and-optimizing-assets) also offers a way to optimize your images.  
+
+## Javascript
+All `.js` files will be transpiled and bundled with [esbuild](https://esbuild.github.io/) with the assumption that you are supporting modern browsers that have support for ESM (import/export).  
+Files outside the `pages/` folder won't generate an output but they will still be prettified and linted.
+
+### Usage:
+```
+components/
+  |-- navigation/
+    |-- _navigation.pug
+    |-- navigation.js
+pages/
+  |-- index.js    
+  |-- index.pug
+```
+```js
+// index.js
+import Navigation from '../components/navigation/navigation.js';
+```
+This will be the output:
+```
+build/
+  |-- index.html
+  |-- index.js
+```
 
 ## Environment and global variables
 This project uses [dotenv](https://github.com/motdotla/dotenv) and accepts standard `.env` files.  
