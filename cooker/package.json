@@ -7,8 +7,13 @@
     "sweet-potato-cooker": "bin/index.js"
   },
   "engines": {
-    "node": ">= 12.0.0",
+    "node": ">= 12.0.0"
   },
+  "browserslist": [
+    "> 1%",
+    "last 2 versions",
+    "not ie"
+  ],
   "publishConfig": {
     "access": "public"
   },
