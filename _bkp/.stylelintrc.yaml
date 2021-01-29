@@ -1,7 +1,0 @@
-options:
-  max-warnings: 20
-plugins: ["stylelint-scss", "stylelint-order", "stylelint-prettier"]
-extends: ["stylelint-prettier/recommended"]
-rules:
-  prettier/prettier: true
-  order/properties-alphabetical-order: true
