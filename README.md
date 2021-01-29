@@ -117,11 +117,6 @@ nav.main-nav(aria-label=globals.nav.label)
         a(href=item.url)= item.label
 ```
 
-## Static assets
-All files inside a `public/` directory in the root of the project are considered static and will be copied over to the `build/` directory. It's the perfect place to add fonts, images, videos and any other file that should be public. 
-You should also add any `.css` or `.js` files that doesn't have to be pre-processed.  
-The [sweet-potato-cooker](https://github.com/wethegit/sweet-potato/blob/main/cooker/README.md#compressing-and-optimizing-assets) also offers a way to optimize your images.  
-
 ## Javascript
 All `.js` files will be transpiled and bundled with [esbuild](https://esbuild.github.io/) with the assumption that you are supporting modern browsers that have support for [ESM](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Modules).  
 Files outside the `pages/` folder won't generate an output but they will still be prettified and linted.
@@ -174,6 +169,11 @@ build/
   |-- index.html
   |-- global.css
 ```
+
+## Static assets
+All files inside a `public/` directory in the root of the project are considered static and will be copied over to the `build/` directory. It's the perfect place to add fonts, images, videos and any other file that should be public. 
+You should also add any `.css` or `.js` files that doesn't have to be pre-processed.  
+The [sweet-potato-cooker](https://github.com/wethegit/sweet-potato/blob/main/cooker/README.md#compressing-and-optimizing-assets) also offers a way to optimize your images.  
 
 ## Environment and global variables
 This project uses [dotenv](https://github.com/motdotla/dotenv) and accepts standard `.env` files.  
