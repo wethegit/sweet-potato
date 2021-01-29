@@ -4,7 +4,7 @@ The goal is to be simple and allow the composing and styling of pages without ge
 
 🐶    [Pug](https://pugjs.org/api/getting-started.html) for templating  
 🎨    [Sass](https://sass-lang.com/) for styling  
-😇    and vanilla Javascript
+😇    vanilla Javascript bundled with [esbuild](https://esbuild.github.io/)
 
 ## Quick start
 Use the [swee-potato-peeler](https://github.com/wethegit/sweet-potato/tree/main/peeler) to quickly scaffold a new project and get started.
