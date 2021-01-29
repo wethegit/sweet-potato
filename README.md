@@ -15,11 +15,106 @@ $ npm start
 ```
 
 ## Pages
-TODO: write about the pages/ structure
+Adding pages to your site is as easy as creating folders for each of them within the `pages/` directory, and placing an `index.pug` file in each. The "root" or "home" page of your site does not need to live in its own folder—it will just need an `index.pug` file at the root of `pages/`. A site with a homepage, about page, and contact page might have a `pages/` structure like this:
+```
+pages/
+  |-- index.pug
+  |-- about/
+      |-- index.pug
+  |-- contact/
+      |-- index.pug
+```
 
 ## Localization
-TODO: write about localization and yaml
+If you're creating localized versions of your pages (different languages), you can have all your data live in YAML files, which are accessible via the Pug templates. This will allow you, for example, to have an English page and a French page; while still only using a single page template.
 
+### Page-specific language data
+To create language-specific data files, you must include a `locales/` folder for **each page** at the **same level** as the page's Pug template (`index.pug`). Within this `locales/` folder, you must then create a `default.yaml` file for the default language. Any other languages you need should be created as appropriately-named `YAML` files. For example, the file that lives at `pages/about/locales/fr.yaml` would have a final URL path of `about/fr/`. Here's a full example of file structure, with French and Spanish localizations for each page:
+```
+pages/
+  |-- index.pug
+  |-- locales/
+      |-- default.yaml
+      |-- fr.yaml
+      |-- es.yaml
+  |-- about/
+      |-- index.pug
+      |-- locales/
+          |-- default.yaml
+          |-- fr.yaml
+          |-- es.yaml
+  |-- contact/
+      |-- index.pug
+      |-- locales/
+          |-- default.yaml
+          |-- fr.yaml
+          |-- es.yaml
+```
+#### Usage:
+Let's say your `pages/locales/default.yaml` looked like this…
+```yaml
+# pages/locales/default.yaml
+
+banner:
+  title: This is the main heading
+  body: This is some body copy that lives in the banner.
+```
+…and your `pages/locales/fr.yaml` looked like this:
+```yaml
+# pages/locales/fr.yaml
+
+banner:
+  title: Ceci est le titre principal
+  body: Ceci est une copie du corps qui vit dans la bannière.
+```
+You could then access this data from within the `pages/index.pug` file, by doing:
+```pug
+//- pages/index.pug
+
+header.main-header
+  h1= page.banner.title
+  p= page.banner.body
+```
+As you can see, all of the page's `YAML` data is available to the Pug template via the Pug variable: `page`.
+
+### Global language data
+You don't want to have to repeat data on every page for things like site-wide navigation, right? This is where global language data comes in. Create a `locales/` folder in the root directory of your project, which includes—at the very least—a `default.yaml` file, and any locales you want to support. These will now be available to you from within _all_ of your Pug templates, via a variable called `globals`. See the folder structure below:
+```
+locales/
+  |-- default.yaml
+  |-- fr.yaml
+  |-- es.yaml
+pages/
+package.json
+package-lock.json
+```
+#### Usage
+Let's say your `locales/default.yaml` looked like this…
+```yaml
+# locales/default.yaml
+
+nav:
+  label: Main site navigation
+  items:
+    - label: Home
+      url: /
+    - label: About
+      url: /about
+    - label: Contact
+      url: /contact
+```
+You could then access this data from within any of your Pug files, by using the `globals` variable:
+```pug
+//- 
+  pages/main.pug
+  Let's assume this is a top-level template which gets extended on a per-page basis.
+
+nav.main-nav(aria-label=globals.nav.label)
+  ul
+    each item in globals.nav.items
+      li
+        a(href=item.url)= item.label
+```
 ## Static assets
 All files inside a `public/` directory in the root of the project are considered static and will be copied over to the `build/` directory. It's the perfect place to add images, videos and any other file that should be public.  
 The [sweet-potato-cooker](https://github.com/wethegit/sweet-potato/blob/main/cooker/README.md#compressing-and-optimizing-assets) also offers a way to optimize your images.  
@@ -42,7 +137,7 @@ In addition to values from `.env` files Pug templates and Javascript files will 
 - **NODE_ENV =** current environment mode
 - **RELATIVE_ROOT =** relative path from file to `build/`
 
-### Example:  
+### Usage:  
 ```
 # .env
 PUBLIC_URL=http://my-website.com

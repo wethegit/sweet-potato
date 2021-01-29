@@ -8,6 +8,7 @@ For information on how to structure the project check the [sweet-potato docs](ht
 Initiate a new project with npm and install.
 
 ```sh
+npm init
 npm install --save-dev @wethegit/sweet-potato-cooker
 ```
 
