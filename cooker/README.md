@@ -166,6 +166,7 @@ A list of valid [favicons](https://www.npmjs.com/package/favicons) options.
 **Type:** `string|boolean`  
 **Default:** `false`  
 If set, will generate a `sitemap.xml` during the production build.  
+If a `string` is provided, will use it as the base url.  
 If `true`, will use the `PUBLIC_URL` value from the `.env` file.
 
 ### compress
