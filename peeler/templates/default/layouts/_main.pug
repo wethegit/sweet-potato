@@ -9,10 +9,12 @@ html(lang=(globals.localeKey === 'default' ? 'en-US' : globals.localeKey))
     meta(name="description" content=(globals.meta.title || page.meta.title))
     title=`${globals.meta.title} | ${page.meta.title}`
     
-    link(rel="stylesheet" href=`${globals.relativeRoot}/global.css`)
-    block meta
+    block styles
+      link(rel="stylesheet" href=`${globals.relativeRoot}/global.css`)
     
   body
+    include ../components/navigation/navigation
+    
     code
       pre!=JSON.stringify(globals, null, 2)
     
@@ -20,3 +22,6 @@ html(lang=(globals.localeKey === 'default' ? 'en-US' : globals.localeKey))
       pre!=JSON.stringify(page, null, 2)
       
     block main
+    
+    block scripts
+      script(type="module" src=`${globals.relativeRoot}/global.js`)

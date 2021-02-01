@@ -76,7 +76,7 @@ async function javascripts(event, file) {
             outfile: DEST,
             minify: isProduction,
             sourcemap: !isProduction,
-            target: ["esnext"],
+            target: ["es2020"],
             format: "esm",
             define: DEFINE_VALUES,
           })

@@ -2,6 +2,12 @@
   --color-main: #5c524e;
 }
 
+@import "../components/navigation/navigation";
+
+html {
+  font-size: 16px;
+}
+
 body {
   margin: 0;
 }
