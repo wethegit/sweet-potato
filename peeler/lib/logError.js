@@ -6,7 +6,7 @@ const errorLink = `${colors.dim(
 )}`;
 
 module.exports = function logError(msg, showLink = false) {
-  console.error(`${errorAlert} ${msg} ${showLink && errorLink}`.trim());
+  console.error(`${errorAlert} ${msg} ${showLink ? errorLink : ""}`.trim());
   console.error("Cannot continue safely. Exiting...");
   process.exit(1);
 };

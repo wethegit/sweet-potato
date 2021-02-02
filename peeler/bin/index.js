@@ -41,12 +41,6 @@ function validateArgs(args) {
   const targetDirectoryRelative = target || _[2];
   const targetDirectory = path.resolve(process.cwd(), targetDirectoryRelative);
 
-  if (fs.existsSync(targetDirectory) && !force) {
-    logError(
-      `${targetDirectory} already exists. Use \`--force\` to overwrite this directory.`
-    );
-  }
-
   return {
     template: template || "default",
     useYarn,
@@ -85,13 +79,13 @@ const isBaseTemplate = listOfBaseTemplates.find((file) => {
   console.log(`Using template ${colors.cyan(template)}`);
   console.log(`Creating a new project in ${colors.cyan(targetDirectory)}`);
 
-  fs.mkdirSync(targetDirectory, { recursive: true });
-
   // fetch from npm or GitHub if not local (which will be most of the time)
   if (!isBaseTemplate) {
     const templateInfo = await getRepoInfo(template);
 
     try {
+      const tempPath = path.join(targetDirectoryRelative, "temp");
+
       await execa(
         "git",
         [
@@ -100,20 +94,28 @@ const isBaseTemplate = listOfBaseTemplates.find((file) => {
           templateInfo.branch,
           "--single-branch",
           `git@github.com:${templateInfo.username}/${templateInfo.name}.git`,
-          ".",
+          tempPath,
         ],
         {
           cwd: targetDirectory,
           all: true,
         }
       );
-      await remove(path.join(targetDirectory, ".git"));
+
+      await remove(path.join(tempPath, ".git"));
+
+      await copy(tempPath, targetDirectory);
+
+      await remove(tempPath);
     } catch (err) {
       // Only log output if the command failed
       console.error(err.all);
       throw err;
     }
   } else {
+    // if (targetDirectoryRelative !== '.')
+    fs.mkdirSync(targetDirectoryRelative, { recursive: true });
+
     await copy(isBaseTemplate, targetDirectory);
     await cleanProject(targetDirectory);
   }
