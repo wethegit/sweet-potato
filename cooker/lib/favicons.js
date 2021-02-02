@@ -41,11 +41,7 @@ const writeFiles = async function (response) {
     } else
       promises.push(
         fse.outputFile(
-          path.join(
-            CONSTS.BUILD_DIRECTORY,
-            FAVICON_CONFIG.outputTags,
-            "favicons.html"
-          ),
+          path.join(CONSTS.CWD, FAVICON_CONFIG.outputTags, "favicons.html"),
           htmlResponse
         )
       );
@@ -122,9 +118,7 @@ async function favicons(event, file) {
   }
 
   // Path for overriding default icons path. `string`
-  GENERATOR_CONFIG.path = path.normalize(
-    path.join("./", path.relative(CONSTS.BUILD_DIRECTORY, FAVICONS_DIRECTORY))
-  );
+  GENERATOR_CONFIG.path = "./";
 
   return new Promise(function (resolve, reject) {
     generator(source, GENERATOR_CONFIG, async function (error, response) {
