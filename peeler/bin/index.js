@@ -1,7 +1,6 @@
 #!/usr/bin/env node
 "use strict";
 
-// Adapted from create-snowpack-app
 const fs = require("fs");
 const path = require("path");
 const execa = require("execa");
