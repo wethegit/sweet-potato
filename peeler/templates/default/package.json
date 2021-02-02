@@ -3,7 +3,7 @@
   "description": "Default template for sweet-potato projects",
   "version": "1.0.0",
   "keywords": [
-    "spp-template"
+    "sweet-potato-template"
   ],
   "private": true,
   "scripts": {
