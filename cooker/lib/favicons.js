@@ -68,6 +68,7 @@ const deepObjectKeysCheck = function (origin, toCompare) {
     if (originValue instanceof Object && compareValue instanceof Object) {
       didOriginChange = deepObjectKeysCheck(originValue, compareValue);
     } else if (origin[key] !== toCompare[key]) {
+      console.log(key, origin[key], toCompare[key]);
       didOriginChange = true;
     }
 
@@ -111,6 +112,8 @@ async function favicons(event, file) {
         logger.finish(["Ended favicons generation.", "No Change"]);
         return;
       }
+
+      await fse.outputJson(FAVICONS_CACHE, current);
     } else {
       // save modified date and config
       await fse.outputJson(FAVICONS_CACHE, current);
