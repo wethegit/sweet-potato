@@ -29,7 +29,7 @@ const logger = {
     log(chalk.cyan(buildMessage("⏩", message)));
   },
   finish: function (message) {
-    log(chalk.cyan(buildMessage("⏹", message)));
+    log(chalk.cyan(buildMessage("🏁", message)));
   },
 };
 

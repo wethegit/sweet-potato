@@ -67,7 +67,7 @@ async function sitemap() {
     const dest = path.join(CONSTS.BUILD_DIRECTORY, "sitemap.xml");
 
     return fse.outputFile(dest, sitemapData.toString()).then(() => {
-      logger.success([dest, "Sitemap compiled"]);
+      if (CONSTS.CONFIG.verbose) logger.success([dest, "Sitemap compiled"]);
 
       // done 🎉
       logger.finish("Ended sitemap generation");

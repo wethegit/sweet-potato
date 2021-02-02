@@ -7,11 +7,11 @@ const path = require("path");
 
 // local imports
 const logger = require("../utils/logger.js");
-const getClientEnvironment = require("./env.js");
 const CONSTS = require("../utils/consts.js");
+const getClientEnvironment = require("./env.js");
+const env = getClientEnvironment();
 
 // consts
-const env = getClientEnvironment();
 const FAVICON_CONFIG = CONSTS.CONFIG.favicon;
 
 // build destination and options
@@ -20,30 +20,7 @@ const FAVICONS_DIRECTORY = path.join(
   FAVICON_CONFIG.destination ? FAVICON_CONFIG.destination : "favicons"
 );
 const FAVICONS_CACHE = path.join(CONSTS.CACHE_DIRECTORY, "favicons.json");
-
-const GENERATOR_CONFIG = Object.assign(
-  {},
-  {
-    // Path for overriding default icons path. `string`
-    path: `${env.raw.PUBLIC_URL}${FAVICONS_DIRECTORY}`,
-    // Your application's name. `string`
-    appName: "Your App Name",
-    // Your application's short_name. `string`. Optional. If not set, appName will be used
-    appShortName: "Short App Name",
-    // Your application's description. `string`
-    appDescription:
-      "Mollit consequat velit nostrud tempor amet in ad cupidatat aliquip culpa tempor in aliqua.",
-    // Your (or your developer's) name. `string`
-    developerName: "we { the collective }",
-    // Your (or your developer's) URL. `string`
-    developerURL: "http://www.wethecollective.com",
-    // Background colour for flattened icons. `string`
-    background: "#fff",
-    // Theme color user for example in Android's task switcher. `string`
-    theme_color: "#fff",
-  },
-  FAVICON_CONFIG.generatorOptions
-);
+const GENERATOR_CONFIG = FAVICON_CONFIG.generatorOptions || {};
 
 const writeFiles = async function (response) {
   let promises = [];
@@ -51,7 +28,7 @@ const writeFiles = async function (response) {
   // Array of { name: string, contents: <string> }
   for (let file of response.files)
     promises.push(
-      fse.outputFile(path.joins(FAVICONS_DIRECTORY, file.name), file.contents)
+      fse.outputFile(path.join(FAVICONS_DIRECTORY, file.name), file.contents)
     );
 
   // Array of strings (html elements)
@@ -77,10 +54,31 @@ const writeFiles = async function (response) {
   // Array of { name: string, contents: <buffer> }
   for (let image of response.images)
     promises.push(
-      fse.outputFile(path.joins(FAVICONS_DIRECTORY, image.name), image.contents)
+      fse.outputFile(path.join(FAVICONS_DIRECTORY, image.name), image.contents)
     );
 
   return promises;
+};
+
+const deepObjectKeysCheck = function (origin, toCompare) {
+  let didOriginChange = false;
+  const originKeys = Object.keys(origin);
+
+  for (let i = 0; i < originKeys.length; i++) {
+    const key = originKeys[i];
+    const originValue = origin[key];
+    const compareValue = toCompare[key];
+
+    if (originValue instanceof Object && compareValue instanceof Object) {
+      didOriginChange = deepObjectKeysCheck(originValue, compareValue);
+    } else if (origin[key] !== toCompare[key]) {
+      didOriginChange = true;
+    }
+
+    if (didOriginChange) break;
+  }
+
+  return didOriginChange;
 };
 
 async function favicons(event, file) {
@@ -89,8 +87,6 @@ async function favicons(event, file) {
 
   // check if file was passed and exists
   const SOURCE_FILE = FAVICON_CONFIG.sourceFile;
-
-  if (!SOURCE_FILE) return;
 
   if (!fse.pathExistsSync(SOURCE_FILE)) {
     logger.error(`Couldn't find favicon source: ${SOURCE_FILE}`);
@@ -104,33 +100,31 @@ async function favicons(event, file) {
 
   logger.start("Started favicons generation");
 
-  // get the last modified date from the file and create cache json
-  const { mtimeMs } = await fse.stat(source);
-  const current = { ...config, mtimeMs };
+  if (process.env.NODE_ENV !== "production") {
+    // get the last modified date from the file and create cache json
+    const { mtimeMs } = await fse.stat(source);
+    const current = { ...FAVICON_CONFIG, mtimeMs };
 
-  if (fse.pathExistsSync(FAVICONS_CACHE)) {
-    // compare to our cache
-    const cache = await fse.readJson(FAVICONS_CACHE);
-    const cacheKeys = Object.keys(cache);
-    let didChange = false;
+    if (fse.pathExistsSync(FAVICONS_CACHE)) {
+      // compare to our cache
+      const cache = await fse.readJson(FAVICONS_CACHE);
+      const didChange = deepObjectKeysCheck(current, cache);
 
-    for (let i = 0; i < cacheKeys.length; i++) {
-      const key = cacheKeys[i];
-      if (current[key] !== cache[key]) {
-        didChange = true;
-        break;
+      // if it's the same, we skip
+      if (!didChange) {
+        logger.finish(["Ended favicons generation.", "No Change"]);
+        return;
       }
+    } else {
+      // save modified date and config
+      await fse.outputJson(FAVICONS_CACHE, current);
     }
-
-    // if it's the same, we skip
-    if (!didChange) {
-      logger.finish(["Ended favicons generation.", "No Change"]);
-      return;
-    }
-  } else {
-    // save modified date and config
-    await fse.outputJson(FAVICONS_CACHE, current);
   }
+
+  // Path for overriding default icons path. `string`
+  GENERATOR_CONFIG.path = path.normalize(
+    path.join("./", path.relative(CONSTS.BUILD_DIRECTORY, FAVICONS_DIRECTORY))
+  );
 
   return new Promise(function (resolve, reject) {
     generator(source, GENERATOR_CONFIG, async function (error, response) {

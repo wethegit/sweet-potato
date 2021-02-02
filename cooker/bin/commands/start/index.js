@@ -46,10 +46,11 @@ async function start(options) {
       process.exit();
     });
 
+  console.clear();
   liveServer.start({
     root: CONSTS.BUILD_DIRECTORY,
     wait: 1000,
-    logLevel: 1,
+    logLevel: 0,
     open: options["asset-logger"] || false,
     middleware: options["asset-logger"] ? [assetsMiddleware] : [],
     host: options.host || "localhost",

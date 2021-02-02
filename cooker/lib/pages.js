@@ -57,9 +57,9 @@ function saveHtml({
     );
   }
 
-  return fse
-    .outputFile(outFile, htmlString)
-    .then(() => logger.success([outFile, "Compiled"]));
+  return fse.outputFile(outFile, htmlString).then(() => {
+    if (CONSTS.CONFIG.verbose) logger.success([outFile, "Compiled"]);
+  });
 }
 
 async function pages(event, file) {

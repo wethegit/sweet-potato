@@ -12,12 +12,25 @@ const javascripts = require("./javascripts.js");
 const assets = require("./assets.js");
 const favicons = require("./favicons.js");
 const CONSTS = require("../utils/consts.js");
+const logger = require("../utils/logger.js");
+
+let pathsToIgnore = [
+  path.join(CONSTS.CWD, "node_modules"),
+  path.join(CONSTS.CWD, ".git"),
+  path.join(CONSTS.CWD, "build"),
+  path.join(CONSTS.CWD, ".vscode"),
+];
+
+if (CONSTS.CONFIG.ignoreOnWatch) {
+  for (let path of CONSTS.CONFIG.ignoreOnWatch)
+    pathsToIgnore.push(path.join(path));
+}
 
 const options = {
   persistent: true,
   interval: 300,
   ignoreInitial: true,
-  ignored: ["node_modules", ".git", "build", ".vscode"],
+  ignored: pathsToIgnore,
 };
 
 function watch() {
@@ -46,7 +59,7 @@ function watch() {
   chokidar
     .watch(path.join(CONSTS.CWD, "sweet-potato-cooker.config.js"), options)
     .on("all", function () {
-      console.log("Detected changes to config. Please restart.");
+      logger.warning("Detected changes to config. Please restart.");
     });
 
   // watch for the favicon

@@ -49,7 +49,7 @@ Then just run `npm start/build`
 ### Compressing and optimizing assets
 
 ⚠️ This command is destructive and will overwrite the original files.  
-This compresses and optimizes all `.jpg`, `.png`, `.svg`, `.gif` files in a given directory, default is `public/`.  
+This compresses and optimizes all `.jpg`, `.png`, `.svg`, `.gif` files in a given directory, default is `public/`.
 
 ```sh
 npx sweet-potato-cooker compress
@@ -100,33 +100,14 @@ A function that will receive the file and environment as parameters and must ret
 ### favicon
 
 **Type:** `object`  
-**Default:**
-
-```js
-{
-  sourceFile: "",
-  destination: "favicons",
-  outputTags: "log",
-  generatorOptions: {
-    appName: "Your App Name",
-    appShortName: "Short App Name",
-    appDescription:
-      "Mollit consequat velit nostrud tempor amet in ad cupidatat aliquip culpa tempor in aliqua.",
-    developerName: "we { the collective }",
-    developerURL: "http://www.wethecollective.com",
-    background: "#fff",
-    theme_color: "#fff",
-  }
-}
-```
-
+**Default:** `{}`  
 Given a `sourceFile` all modern and standard favicon images will be generated into the given `destination` directory inside the `buildDirectory` provided above.
 
 #### favicon.sourceFile
 
 **Type:** `string`  
 **Default:** `''`  
-A PNG with the minimum of 512x512px dimension.
+Path to a PNG with the minimum of 512x512px dimension.
 
 #### favicon.destination
 
@@ -144,21 +125,7 @@ If provided a path to a directory, it will save a `favicons.html` file with all 
 #### favicon.generatorOptions
 
 **Type:** `object`  
-**Default:**
-
-```js
-{
-  appName: "Your App Name",
-  appShortName: "Short App Name",
-  appDescription:
-    "Mollit consequat velit nostrud tempor amet in ad cupidatat aliquip culpa tempor in aliqua.",
-  developerName: "we { the collective }",
-  developerURL: "http://www.wethecollective.com",
-  background: "#fff",
-  theme_color: "#fff",
-}
-```
-
+**Default:** `{}`  
 A list of valid [favicons](https://www.npmjs.com/package/favicons) options.
 
 ### sitemap

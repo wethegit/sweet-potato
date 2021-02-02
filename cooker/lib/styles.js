@@ -136,9 +136,10 @@ async function styles(event, file) {
 
           try {
             // output the file
-            fse
-              .outputFile(outFile, finalCSS)
-              .then(() => resolve(logger.success([outFile, "Compiled"])));
+            fse.outputFile(outFile, finalCSS).then(() => {
+              if (CONSTS.CONFIG.verbose) logger.success([outFile, "Compiled"]);
+              resolve(true);
+            });
           } catch (error) {
             logger.error(
               [outFile, "Failed saving compiled .css"],
