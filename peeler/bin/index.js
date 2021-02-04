@@ -171,5 +171,9 @@ const isBaseTemplate = listOfBaseTemplates.find((file) => {
     )
   );
 
+  console.log(
+    formatCommand(`${installer} run compress`, "Compresses all your images.")
+  );
+
   console.log(``);
 })();
