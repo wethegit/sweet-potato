@@ -22,12 +22,9 @@ async function javascripts(event, file) {
   if (event && event === "add") return; // don't do anything for newly added files just yet
 
   if (file) {
-    if (file && !fse.pathExistsSync(file)) return; // if file for some reason got removed
+    if (!fse.pathExistsSync(file)) return; // if file for some reason got removed
 
-    if (file && path.parse(file).base === "sweet-potato-cooker.config.js")
-      return;
-
-    logger.start("Started javascripts bundling");
+    if (path.parse(file).base === "sweet-potato-cooker.config.js") return;
 
     // If we pass a file and it's outside website, we still need to prettify
     if (!file.includes(CONSTS.PAGES_DIRECTORY)) {
@@ -46,6 +43,8 @@ async function javascripts(event, file) {
     : await helpers.getFiles(path.join(CONSTS.PAGES_DIRECTORY, "**", "*.js"));
 
   if (jsFiles.length <= 0) return;
+
+  logger.start("Started javascripts bundling");
 
   let promises = [];
   let service = await esbuild.startService();
