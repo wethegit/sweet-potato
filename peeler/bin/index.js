@@ -86,13 +86,15 @@ const isBaseTemplate = listOfBaseTemplates.find((file) => {
     try {
       const tempPath = path.join(targetDirectoryRelative, "temp");
 
+      fs.mkdirSync(tempPath, { recursive: true });
+
       await execa(
         "git",
         [
           "clone",
+          "--single-branch",
           "--branch",
           templateInfo.branch,
-          "--single-branch",
           `git@github.com:${templateInfo.username}/${templateInfo.name}.git`,
           tempPath,
         ],
