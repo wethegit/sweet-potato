@@ -1,6 +1,6 @@
 {
   "name": "@wethegit/sweet-potato-peeler",
-  "version": "0.3.1",
+  "version": "0.3.2",
   "description": "We The Collective Bootstrap CLI",
   "main": "bin/index.js",
   "bin": {

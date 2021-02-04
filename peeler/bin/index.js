@@ -99,7 +99,6 @@ const isBaseTemplate = listOfBaseTemplates.find((file) => {
           tempPath,
         ],
         {
-          cwd: targetDirectory,
           all: true,
         }
       );
