@@ -19,23 +19,26 @@ const env = getClientEnvironment();
 const isProduction = process.env.NODE_ENV == "production";
 
 async function javascripts(event, file) {
-  if ((event && event === "add") || !file) return; // don't do anything for newly added files just yet
+  if (event && event === "add") return; // don't do anything for newly added files just yet
 
-  if (!fse.pathExistsSync(file)) return; // if file for some reason got removed
+  if (file) {
+    if (file && !fse.pathExistsSync(file)) return; // if file for some reason got removed
 
-  if (path.parse(file).base === "sweet-potato-cooker.config.js") return;
+    if (file && path.parse(file).base === "sweet-potato-cooker.config.js")
+      return;
 
-  logger.start("Started javascripts bundling");
+    logger.start("Started javascripts bundling");
 
-  // If we pass a file and it's outside website, we still need to prettify
-  if (!file.includes(CONSTS.PAGES_DIRECTORY)) {
-    const prettified = await helpers.prettify(file, { parser: "babel" });
+    // If we pass a file and it's outside website, we still need to prettify
+    if (!file.includes(CONSTS.PAGES_DIRECTORY)) {
+      const prettified = await helpers.prettify(file, { parser: "babel" });
 
-    // if it had linting issues we don't continue and let the
-    // updates to the file trigger a new event
-    if (prettified === true) return;
+      // if it had linting issues we don't continue and let the
+      // updates to the file trigger a new event
+      if (prettified === true) return;
 
-    file = null;
+      file = null;
+    }
   }
 
   let jsFiles = file
