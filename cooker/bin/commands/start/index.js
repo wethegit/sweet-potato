@@ -46,7 +46,7 @@ async function start(options) {
       process.exit();
     });
 
-  console.clear();
+  if (!CONSTS.CONFIG.verbose) console.clear();
 
   liveServer.start({
     root: CONSTS.BUILD_DIRECTORY,
