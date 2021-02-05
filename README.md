@@ -6,6 +6,10 @@ The goal is to be simple and allow the composing and styling of pages without ge
 🎨    [Sass](https://sass-lang.com/) for styling  
 😇    and vanilla Javascript
 
+
+## Requirements
+- [Node](https://nodejs.org/en/) v12+
+
 ## Quick start
 Use the [swee-potato-peeler](https://github.com/wethegit/sweet-potato/tree/main/peeler) to quickly scaffold a new project and get started.
 ```sh
