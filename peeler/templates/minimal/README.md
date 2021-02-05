@@ -16,3 +16,7 @@ You will also see any lint errors in the console.
 
 Builds a static copy of your site to the `build/` folder.
 Your app is ready to be deployed!
+
+### npm run compress
+
+Compresses all images inside `public/`.
