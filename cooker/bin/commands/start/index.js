@@ -35,7 +35,7 @@ async function start(options) {
     await buildAll(process.env.NODE_ENV);
   } catch (error) {
     logger.error("Failed to build local files", error);
-    process.exit();
+    process.exit(1);
   }
 
   watch();
@@ -43,7 +43,7 @@ async function start(options) {
   if (options["asset-logger"])
     process.on("SIGINT", async function () {
       await assetsLogger();
-      process.exit();
+      process.exit(1);
     });
 
   if (!CONSTS.CONFIG.verbose) console.clear();

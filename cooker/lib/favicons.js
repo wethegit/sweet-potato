@@ -68,7 +68,6 @@ const deepObjectKeysCheck = function (origin, toCompare) {
     if (originValue instanceof Object && compareValue instanceof Object) {
       didOriginChange = deepObjectKeysCheck(originValue, compareValue);
     } else if (origin[key] !== toCompare[key]) {
-      console.log(key, origin[key], toCompare[key]);
       didOriginChange = true;
     }
 

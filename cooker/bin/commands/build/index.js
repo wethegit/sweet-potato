@@ -23,7 +23,7 @@ function build() {
     buildAll(process.env.NODE_ENV);
   } catch (error) {
     logger.error("Failed to build local files", error);
-    process.exit();
+    process.exit(1);
   }
 }
 
