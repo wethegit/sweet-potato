@@ -1,31 +1,9 @@
-# sweet-potato-peeler 🍠🍴
+# sweet-potato-components 🍠🧂
 
-Easily create a new sweet-potato project.
+Simple components to help quickstart your development.
 
 ```sh
-npx @wethegit/sweet-potato-peeler my-dir --template default [--use-yarn | --use-pnpm | --no-install]
+npm install @wethegit/sweet-potato-components
 ```
 
-## Available templates
-
-### default
-
-Perfect for projects with multiple localizations and complex page compositions.
-
-### minimal
-
-Ideal for landing pages, anything that won't require complex layouts.
-
-## Github templates
-
-You can also provide a Github URL to a template and even a specific branch.
-
-### Basic
-```sh
-npx @wethegit/sweet-potato-peeler my-dir --template https://github.com/[repo-name]/[branch-name]
-```
-
-### Branch specific
-```sh
-npx @wethegit/sweet-potato-peeler my-dir --template https://github.com/wethegit/[repo-name]/tree/[branch-name]
-```
+Each component has it's own **README** with all the information you need to use them.
