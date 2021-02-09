@@ -63,7 +63,7 @@ function watch() {
     });
 
   // watch for the favicon
-  if (CONSTS.CONFIG.favicon)
+  if (CONSTS.CONFIG.favicon && CONSTS.CONFIG.favicon.SOURCE_FILE)
     chokidar
       .watch(path.join(CONSTS.CWD, CONSTS.CONFIG.favicon.sourceFile), options)
       .on("all", favicons);

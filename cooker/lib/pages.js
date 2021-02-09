@@ -5,6 +5,7 @@ const pug = require("pug");
 const yaml = require("js-yaml");
 const fse = require("fs-extra");
 const path = require("path");
+const resolve = require("resolve");
 
 // local imports
 const logger = require("../utils/logger.js");
@@ -14,6 +15,42 @@ const CONSTS = require("../utils/consts.js");
 
 // consts
 const env = getClientEnvironment();
+
+function npmResolverPlugin() {
+  return {
+    resolve(filename, source, pugOptions) {
+      if (filename.charAt(0) !== "~")
+        return resolve.sync(filename, { basedir: path.dirname(source) });
+
+      const file = path.parse(filename.substring(1));
+
+      console.log("from node please");
+      console.log({
+        file,
+        filename,
+        source,
+        pugOptions,
+        dirname: path.dirname(source),
+      });
+
+      let resolved;
+      try {
+        resolved = resolve.sync(path.join(file.dir, file.name), {
+          basedir: path.join(CONSTS.CWD, "node_modules"),
+          extensions: [".pug"],
+          packageFilter(pkg) {
+            return { ...pkg, main: pkg.pug || pkg.main };
+          },
+        });
+      } catch (err) {
+        logger.error("Error resolving pug module path", err);
+        return "";
+      }
+
+      return resolved;
+    },
+  };
+}
 
 function saveHtml({
   destination,
@@ -31,6 +68,7 @@ function saveHtml({
   let globals = {
     ...env.raw,
     RELATIVE_ROOT: relroot ? relroot : ".",
+    FAVICONS: CONSTS.CONFIG.favicon,
     ...data.globals,
   };
 
@@ -122,7 +160,9 @@ async function pages(event, file) {
     let compiledFunction;
 
     try {
-      compiledFunction = pug.compileFile(file);
+      compiledFunction = pug.compileFile(file, {
+        plugins: [npmResolverPlugin()],
+      });
     } catch (error) {
       logger.error([file, "Error compiling template"], error);
       continue; // skips template file

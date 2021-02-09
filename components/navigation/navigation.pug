@@ -1,0 +1,33 @@
+.main-nav(
+  data-controller="MainNav"
+  role="region"
+  aria-label=globals.main_nav.label
+)
+  .main-nav__bar
+    .main-nav__controls
+      include ../reduce-motion/reduce-motion.pug
+      include ../skippers/skippers.pug
+
+    button.main-nav__toggler(
+      aria-expanded="false"
+      aria-controls="main-nav__nav"
+      aria-live="polite"
+    )
+      span.main-nav__toggler__sr-open.visually-hidden=globals.main_nav.menu.open
+      span.main-nav__toggler__sr-close.visually-hidden=globals.main_nav.menu.close
+      span(aria-hidden="true")=globals.main_nav.menu.label
+  
+  nav#main-nav__nav.main-nav__nav(aria-label=globals.main_nav.title)
+    button.main-nav__close(
+      aria-controls="main-nav__nav"
+    )
+      span.visually-hidden=globals.main_nav.menu.close
+      +icon({ id: 'close' })
+
+    ul.main-nav__list
+      for item in globals.main_nav.items
+        li.main-nav__item
+          +button({ tag: 'a', text: item.label }).main-nav__anchor(
+            href=`${globals.RELATIVE_LOCALE_ROOT}/${item.href}`
+            class=(item.id == globals.selected_nav ? 'is-active' : '')
+          )

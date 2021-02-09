@@ -1,0 +1,6 @@
+{
+  "internal": true,
+  "main": "./navigation.js",
+  "pug": "./navigation.pug",
+  "style": "./navigation.scss"
+}

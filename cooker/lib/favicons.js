@@ -8,8 +8,6 @@ const path = require("path");
 // local imports
 const logger = require("../utils/logger.js");
 const CONSTS = require("../utils/consts.js");
-const getClientEnvironment = require("./env.js");
-const env = getClientEnvironment();
 
 // consts
 const FAVICON_CONFIG = CONSTS.CONFIG.favicon;
@@ -84,11 +82,14 @@ async function favicons(event, file) {
   // check if file was passed and exists
   const SOURCE_FILE = FAVICON_CONFIG.sourceFile;
 
+  if (!SOURCE_FILE) return;
+
   if (!fse.pathExistsSync(SOURCE_FILE)) {
     logger.error(`Couldn't find favicon source: ${SOURCE_FILE}`);
     return;
   }
 
+  console.log(SOURCE_FILE);
   const source = file ? file : SOURCE_FILE;
 
   // if file for some reason got removed or we don't have a main.png
