@@ -19,26 +19,20 @@ const env = getClientEnvironment();
 function npmResolverPlugin() {
   return {
     resolve(filename, source, pugOptions) {
+      // if file doesn't start with ~ we just return the regular resolved path
       if (filename.charAt(0) !== "~")
         return resolve.sync(filename, { basedir: path.dirname(source) });
 
+      // we remove the tilda from the name
       const file = path.parse(filename.substring(1));
-
-      console.log("from node please");
-      console.log({
-        file,
-        filename,
-        source,
-        pugOptions,
-        dirname: path.dirname(source),
-      });
-
       let resolved;
       try {
+        // try to resolve the module from node_modules
         resolved = resolve.sync(path.join(file.dir, file.name), {
           basedir: path.join(CONSTS.CWD, "node_modules"),
           extensions: [".pug"],
           packageFilter(pkg) {
+            // looks for a pug entry inside the package.json
             return { ...pkg, main: pkg.pug || pkg.main };
           },
         });
@@ -68,7 +62,8 @@ function saveHtml({
   let globals = {
     ...env.raw,
     RELATIVE_ROOT: relroot ? relroot : ".",
-    FAVICONS: CONSTS.CONFIG.favicon,
+    // adds the favicon config data
+    FAVICONS: CONSTS.CONFIG.favicon.generatorOptions,
     ...data.globals,
   };
 
