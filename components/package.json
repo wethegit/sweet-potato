@@ -1,6 +1,6 @@
 {
   "name": "@wethegit/sweet-potato-components",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "Components to use with the sweet-potato",
   "files": [
     "navigation"

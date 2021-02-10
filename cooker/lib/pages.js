@@ -101,18 +101,24 @@ async function pages(event, file) {
 
   if (file && !fse.pathExistsSync(file)) return; // if file for some reason got removed
 
-  logger.start("Started templates compilation");
-
   let pugFiles;
   let singleLocale;
 
   if (file) {
     let fileInfo = path.parse(file);
 
-    if (fileInfo.ext === ".pug" && file.includes(CONSTS.PAGES_DIRECTORY)) {
-      // if we are dealing with anything inside /pages
-      // we only compiled that specific template and locales
-      pugFiles = [file];
+    if (fileInfo.ext === ".pug") {
+      const prettified = await helpers.prettify(file, { parser: "pug" });
+
+      // if it had linting issues we don't continue and let the
+      // updates to the file trigger a new event
+      if (prettified === true) return;
+
+      if (file.includes(CONSTS.PAGES_DIRECTORY)) {
+        // if we are dealing with anything inside /pages
+        // we only compiled that specific template and locales
+        pugFiles = [file];
+      }
     } else if (fileInfo.ext === ".yaml") {
       // if we have a locale file then we save that specific language
       // that way we only compiled that language template
@@ -125,13 +131,12 @@ async function pages(event, file) {
           path.join(fileInfo.dir, "..", "*.pug")
         );
 
-        if (!pugFiles) {
-          logger.finish("Locale without template.");
-          return;
-        }
+        if (!pugFiles) return;
       }
     }
   }
+
+  logger.start("Started templates compilation");
 
   // If we don't have any files, then we query them all
   // this means that we are either dealing with a master pug file
@@ -144,6 +149,15 @@ async function pages(event, file) {
   // go throught all of them
   let promises = [];
   for (const file of pugFiles) {
+    const prettified = await helpers.prettify(file, { parser: "pug" });
+
+    // if it had linting issues we don't continue and let the
+    // updates to the file trigger a new event
+    if (prettified === true) {
+      pugFiles.push(file);
+      continue;
+    }
+
     // get the file information and locale files
     const templateInfo = path.parse(file);
 

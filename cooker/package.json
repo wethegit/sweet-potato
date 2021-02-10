@@ -1,6 +1,6 @@
 {
   "name": "@wethegit/sweet-potato-cooker",
-  "version": "0.6.9",
+  "version": "0.7.0",
   "description": "We The Collective Bootstrap CLI",
   "main": "bin/index.js",
   "bin": {
@@ -23,6 +23,7 @@
     "directory": "cooker"
   },
   "dependencies": {
+    "@prettier/plugin-pug": "^1.13.3",
     "chalk": "^4.1.0",
     "chokidar": "^3.5.1",
     "clone-deep": "^4.0.1",

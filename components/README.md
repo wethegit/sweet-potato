@@ -1,5 +1,7 @@
 # sweet-potato-components 🍠🧂
 
+⚠️ ⛔️ THIS IS STILL A WORK IN PROGRESS AND NOT READ FOR PRODUCTION
+
 Simple components to help quickstart your development.
 
 ```sh
