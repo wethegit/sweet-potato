@@ -7,6 +7,7 @@
 const path = require("path");
 const fse = require("fs-extra");
 const esbuild = require("esbuild");
+const { ESLint } = require("eslint");
 
 // local imports
 const helpers = require("./helpers.js");
@@ -18,8 +19,32 @@ const CONSTS = require("../utils/consts.js");
 const env = getClientEnvironment();
 const isProduction = process.env.NODE_ENV == "production";
 
+async function lint(file, instance) {
+  // 2. Lint files. This doesn't modify target files.
+  const results = await instance.lintFiles([file]);
+
+  // 3. Modify the files with the fixed code.
+  await ESLint.outputFixes(results);
+
+  // 4. Format the results.
+  const formatter = await instance.loadFormatter("stylish");
+  const resultText = formatter.format(results);
+
+  // 5. Output it.
+  if (resultText) console.log(resultText);
+  return !!resultText;
+}
+
 async function javascripts(event, file) {
   if (event && event === "add") return; // don't do anything for newly added files just yet
+
+  // 1. Create an instance with the `fix` option.
+  const eslint = new ESLint({
+    fix: true,
+    cwd: CONSTS.CWD,
+    cacheLocation: path.join(CONSTS.CACHE_DIRECTORY, ".eslintcache"),
+    overrideConfigFile: path.join(CONSTS.ROOT_DIRECTORY, ".eslintrc.yaml"),
+  });
 
   if (file) {
     if (!fse.pathExistsSync(file)) return; // if file for some reason got removed
@@ -33,6 +58,10 @@ async function javascripts(event, file) {
       // if it had linting issues we don't continue and let the
       // updates to the file trigger a new event
       if (prettified === true) return;
+
+      const linted = await lint(file, eslint);
+
+      if (linted === true) return;
 
       file = null;
     }
@@ -55,6 +84,10 @@ async function javascripts(event, file) {
       // that will trigger another update for this file, not with proper coding style
       // so we skip it here at this moment, and compile it on the second trigger
       if (prettified === true) continue;
+
+      const linted = await lint(file, eslint);
+
+      if (linted === true) continue;
 
       const fileInfo = path.parse(file);
 

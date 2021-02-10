@@ -1,6 +1,6 @@
 {
   "name": "@wethegit/sweet-potato-cooker",
-  "version": "0.7.1",
+  "version": "0.7.2",
   "description": "We The Collective Bootstrap CLI",
   "main": "bin/index.js",
   "bin": {
@@ -31,6 +31,9 @@
     "dotenv": "^8.2.0",
     "dotenv-expand": "^5.1.0",
     "esbuild": "^0.8.36",
+    "eslint": "^7.19.0",
+    "eslint-config-prettier": "^7.2.0",
+    "eslint-plugin-prettier": "^3.3.1",
     "favicons": "^6.2.0",
     "fs-extra": "^9.1.0",
     "glob-fs": "^0.1.7",
