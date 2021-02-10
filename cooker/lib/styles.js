@@ -21,6 +21,7 @@ async function lint(file) {
 
   try {
     result = await stylelint.lint({
+      fix: true,
       files: file,
       syntax: "scss",
       formatter: stylelintFormatter,
