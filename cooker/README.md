@@ -206,3 +206,23 @@ A list of valid [imagemin-gifsicle](https://www.npmjs.com/package/imagemin-gifsi
 ```
 
 A list of valid [imagemin-svgo](https://www.npmjs.com/package/imagemin-svgo) options.
+
+### breakpoints
+
+**Type:** `object`  
+**Default:** `false`
+
+An object with key/value pair where the key is the name of the breakoint and the value is a valid **media query**.  
+These will be passed to `pug`, `scss` and `js` files.
+
+#### Example
+
+```js
+{
+  breakpoints: {
+    'medium-up': '(min-width: 768px)',
+    'large-up': '(min-width: 1024px)',
+    'medium-only': '(min-width: 768px) and (max-width: 1023px)'
+  }
+}
+```

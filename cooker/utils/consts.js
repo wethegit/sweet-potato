@@ -28,6 +28,7 @@ let CONFIG = {
       multipass: true,
     },
   },
+  breakpoints: false,
 };
 
 if (fse.pathExistsSync(CONFIG_PATH)) {

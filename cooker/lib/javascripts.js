@@ -18,6 +18,18 @@ const CONSTS = require("../utils/consts.js");
 // local consts
 const env = getClientEnvironment();
 const isProduction = process.env.NODE_ENV == "production";
+let breakpointsInjectFile;
+
+if (CONSTS.CONFIG.breakpoints) {
+  breakpointsInjectFile = path.join(CONSTS.CACHE_DIRECTORY, "breakpoints.js");
+
+  fse.outputFileSync(
+    breakpointsInjectFile,
+    `export let SWEET_POTATO_BREAKPOINTS = ${JSON.stringify(
+      CONSTS.CONFIG.breakpoints
+    )};`
+  );
+}
 
 async function lint(file, instance) {
   // 2. Lint files. This doesn't modify target files.
@@ -98,7 +110,10 @@ async function javascripts(event, file) {
       );
 
       let DEFINE_VALUES = {
-        RELATIVE_ROOT: `"${path.relative(DEST, CONSTS.BUILD_DIRECTORY)}"`,
+        SWEET_POTATO_RELATIVE_ROOT: `"${path.relative(
+          DEST,
+          CONSTS.BUILD_DIRECTORY
+        )}"`,
       };
 
       for (const [key, value] of Object.entries(env.raw)) {
@@ -116,6 +131,7 @@ async function javascripts(event, file) {
             target: ["es2020"],
             format: "esm",
             define: DEFINE_VALUES,
+            inject: [breakpointsInjectFile],
           })
           .then(() => {
             if (CONSTS.CONFIG.verbose) logger.success([DEST, "Bundled"]);

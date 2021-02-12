@@ -16,6 +16,21 @@ const CONSTS = require("../utils/consts.js");
 
 const isProduction = process.env.NODE_ENV == "production";
 
+const customImporter = function (url) {
+  // This generates a stylesheet from scratch for `@use "big-headers"`.
+  if (!url.includes("sweet-potato:") || !CONSTS.CONFIG.breakpoints) return null;
+
+  let contents = "";
+
+  for (let [key, value] of Object.entries(CONSTS.CONFIG.breakpoints)) {
+    contents += `$${key}: "screen and ${value}";`;
+  }
+
+  return {
+    contents,
+  };
+};
+
 async function lint(file) {
   let result;
 
@@ -117,7 +132,7 @@ async function styles(event, file) {
           outFile: outFile,
           includePaths: ["node_modules"],
           outputStyle: "compressed",
-          importer: packageImporter(),
+          importer: [packageImporter(), customImporter],
           functions: assetFunctions({
             images_path: CONSTS.BUILD_DIRECTORY,
           }),

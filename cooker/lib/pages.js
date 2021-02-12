@@ -64,6 +64,7 @@ function saveHtml({
     RELATIVE_ROOT: relroot ? relroot : ".",
     // adds the favicon config data
     FAVICONS: CONSTS.CONFIG.favicon.generatorOptions,
+    BREAKPOINTS: CONSTS.CONFIG.breakpoints || {},
     ...data.globals,
   };
 
