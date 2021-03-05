@@ -209,7 +209,12 @@ build/
 
 All files inside a `public/` directory in the root of the project are considered static and will be copied over to the `build/` directory. It's the perfect place to add fonts, images, videos and any other file that should be public.
 You should also add any `.css` or `.js` files that doesn't have to be pre-processed.  
-The [sweet-potato-cooker](https://github.com/wethegit/sweet-potato/blob/main/cooker/README.md#compressing-and-optimizing-assets) also offers a way to optimize your images.
+
+### Asset optimization
+The [sweet-potato-cooker](https://github.com/wethegit/sweet-potato/blob/main/cooker/README.md#compressing-and-optimizing-assets) also offers a way to optimize your images. Simply run:  
+```sh
+npx sweet-potato-cooker compress
+```
 
 ## Environment and global variables
 
