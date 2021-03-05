@@ -19,7 +19,7 @@ mkdir pages
 touch pages/index.pug
 ```
 
-### Serve your project locally
+### 🍽 Serve your project locally
 
 This builds a local version of the website into a `build/` directory, serves it and watches for changes on the project.
 
@@ -27,7 +27,7 @@ This builds a local version of the website into a `build/` directory, serves it 
 npx sweet-potato-cooker start
 ```
 
-### Build your project
+### 👷‍♀️ Build your project
 
 This builds your project into a static `build/` directory that you can deploy anywhere.
 
@@ -46,7 +46,7 @@ Note: for a quicker setup it's recommended to add these scripts to `package.json
 
 Then just run `npm start/build`
 
-### Compressing and optimizing assets
+### 🗜 Compressing and optimizing assets
 
 ⚠️ This command is destructive and will overwrite the original files.  
 This compresses and optimizes all `.jpg`, `.png`, `.svg`, `.gif` files in a given directory, default is `public/`.
