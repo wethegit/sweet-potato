@@ -6,11 +6,12 @@ html(lang=(globals.localeKey === 'default' ? 'en-US' : globals.localeKey))
     meta(name="viewport" content="width=device-width, initial-scale=1, user-scalable=1, minimum-scale=1")
     meta(http-equiv="X-UA-Compatible" content="ie=edge")
     
-    meta(name="description" content=(globals.meta.title || page.meta.title))
-    title=`${globals.meta.title} | ${page.meta.title}`
-    
+    block metas
+      meta(name="description" content=(globals.meta.title || page.meta.title))
+      title=`${globals.meta.title} | ${page.meta.title}`
+      
     block styles
-      link(rel="stylesheet" href=`${globals.relativeRoot}/global.css`)
+      link(rel="stylesheet" href=`${globals.RELATIVE_ROOT}/global.css`)
     
   body
     include ../components/navigation/navigation
@@ -24,4 +25,4 @@ html(lang=(globals.localeKey === 'default' ? 'en-US' : globals.localeKey))
     block main
     
     block scripts
-      script(type="module" src=`${globals.relativeRoot}/global.js`)
+      script(type="module" src=`${globals.RELATIVE_ROOT}/global.js`)
