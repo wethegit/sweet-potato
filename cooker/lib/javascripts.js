@@ -131,7 +131,7 @@ async function javascripts(event, file) {
             target: ["es2020"],
             format: "esm",
             define: DEFINE_VALUES,
-            inject: [breakpointsInjectFile],
+            inject: breakpointsInjectFile ? [breakpointsInjectFile] : [],
           })
           .then(() => {
             if (CONSTS.CONFIG.verbose) logger.success([DEST, "Bundled"]);
