@@ -135,6 +135,10 @@ async function styles(event, file) {
           importer: [packageImporter(), customImporter],
           functions: assetFunctions({
             images_path: CONSTS.BUILD_DIRECTORY,
+            http_images_path: path.relative(
+              path.parse(outFile).dir,
+              CONSTS.BUILD_DIRECTORY
+            ),
           }),
           ...CONSTS.CONFIG.sassOptions(!isProduction, file),
         },
