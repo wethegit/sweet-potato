@@ -122,6 +122,13 @@ async function styles(event, file) {
       ext: ".css",
     });
 
+    let relativeOutput = path.relative(
+      path.parse(outFile).dir,
+      CONSTS.BUILD_DIRECTORY
+    );
+    if (!relativeOutput) relativeOutput = ".";
+    relativeOutput += "/";
+
     // render file and push promise
     const promise = new Promise(function (resolve, reject) {
       sass.render(
@@ -135,10 +142,7 @@ async function styles(event, file) {
           importer: [packageImporter(), customImporter],
           functions: assetFunctions({
             images_path: CONSTS.BUILD_DIRECTORY,
-            http_images_path: path.relative(
-              path.parse(outFile).dir,
-              CONSTS.BUILD_DIRECTORY
-            ),
+            http_images_path: relativeOutput,
           }),
           ...CONSTS.CONFIG.sassOptions(!isProduction, file),
         },
