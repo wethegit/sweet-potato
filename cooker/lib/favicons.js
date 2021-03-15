@@ -89,7 +89,6 @@ async function favicons(event, file) {
     return;
   }
 
-  console.log(SOURCE_FILE);
   const source = file ? file : SOURCE_FILE;
 
   // if file for some reason got removed or we don't have a main.png
