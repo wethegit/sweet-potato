@@ -1,7 +1,9 @@
 // The purpose os this command is generate a production build of the website
 "use strict";
 
-function build() {
+const logger = require("../../../utils/logger.js");
+
+async function build() {
   // consts
   process.env.BABEL_ENV = "production";
   process.env.NODE_ENV = "production";
@@ -20,7 +22,8 @@ function build() {
   const buildAll = require("../../../lib/build-all.js");
 
   try {
-    buildAll(process.env.NODE_ENV);
+    await buildAll(process.env.NODE_ENV);
+    logger.finish("Finished building.");
   } catch (error) {
     logger.error("Failed to build local files", error);
     process.exit(1);

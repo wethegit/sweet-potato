@@ -75,21 +75,16 @@ const deepObjectKeysCheck = function (origin, toCompare) {
   return didOriginChange;
 };
 
-async function favicons(event, file) {
+async function favicons(file) {
   // check existance of favicon config
   if (!FAVICON_CONFIG) return;
 
-  // check if file was passed and exists
-  const SOURCE_FILE = FAVICON_CONFIG.sourceFile;
+  const source = file ? file : FAVICON_CONFIG.sourceFile;
 
-  if (!SOURCE_FILE) return;
-
-  if (!fse.pathExistsSync(SOURCE_FILE)) {
-    logger.error(`Couldn't find favicon source: ${SOURCE_FILE}`);
+  if (!source || !fse.pathExistsSync(source)) {
+    logger.error(`Couldn't find favicon source: ${source}`);
     return;
   }
-
-  const source = file ? file : SOURCE_FILE;
 
   // if file for some reason got removed or we don't have a main.png
   if (source && !fse.pathExistsSync(source)) return;
@@ -128,9 +123,10 @@ async function favicons(event, file) {
       if (error) logger.error("Error generating favicons", error.message);
 
       try {
-        await writeFiles(response);
-        logger.success(`Favicons generated`);
-        resolve(logger.finish("Ended favicons generation"));
+        const all = await writeFiles(response);
+        if (CONSTS.CONFIG.verbose) logger.success(`Favicons generated`);
+        logger.finish("Ended favicons generation");
+        resolve(all);
       } catch (error) {
         logger.error("Error saving favicons to disk", error.message);
       }

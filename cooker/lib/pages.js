@@ -93,47 +93,44 @@ function saveHtml({
 
   return fse.outputFile(outFile, htmlString).then(() => {
     if (CONSTS.CONFIG.verbose) logger.success([outFile, "Compiled"]);
+    return { destination, filepath, filename, html: htmlString };
   });
 }
 
-async function pages(event, file) {
-  // if the watcher function fires this, then event and file will be populated
-  if (event && event == "add") return; // don't do anything for newly added files just yet
-
-  if (file && !fse.pathExistsSync(file)) return; // if file for some reason got removed
+async function pages(file, localeFile) {
+  if (
+    (file && !fse.pathExistsSync(file)) ||
+    (localeFile && !fse.pathExistsSync(localeFile))
+  )
+    return; // if file for some reason got removed
 
   let pugFiles;
   let singleLocale;
 
   if (file) {
-    let fileInfo = path.parse(file);
+    const prettified = await helpers.prettify(file, { parser: "pug" });
 
-    if (fileInfo.ext === ".pug") {
-      const prettified = await helpers.prettify(file, { parser: "pug" });
+    // if it had linting issues we don't continue and let the
+    // updates to the file trigger a new event
+    if (prettified === true) return;
 
-      // if it had linting issues we don't continue and let the
-      // updates to the file trigger a new event
-      if (prettified === true) return;
+    if (!file.includes(CONSTS.PAGES_DIRECTORY)) return;
 
-      if (file.includes(CONSTS.PAGES_DIRECTORY)) {
-        // if we are dealing with anything inside /pages
-        // we only compiled that specific template and locales
-        pugFiles = [file];
-      }
-    } else if (fileInfo.ext === ".yaml") {
-      // if we have a locale file then we save that specific language
-      // that way we only compiled that language template
-      singleLocale = fileInfo.base;
-      // if we are at not at the root then we find the relative template file
-      // to the locale file
-      if (file.includes(CONSTS.PAGES_DIRECTORY)) {
-        // this assumes that the yaml file lives inside `locales/` just a folder deep
-        pugFiles = await helpers.getFiles(
-          path.join(fileInfo.dir, "..", "*.pug")
-        );
+    // if we are dealing with anything inside /pages
+    // we only compiled that specific template and locales
+    pugFiles = [file];
+  }
 
-        if (!pugFiles) return;
-      }
+  if (localeFile) {
+    let fileInfo = path.parse(localeFile);
+    // if we have a locale file then we save that specific language
+    // that way we only compiled that language template
+    singleLocale = fileInfo.base;
+    // if we are at not at the root then we find the relative template file
+    // to the locale file
+    if (!pugFiles && localeFile.includes(CONSTS.PAGES_DIRECTORY)) {
+      // this assumes that the yaml file lives inside `locales/` just a folder deep
+      pugFiles = await helpers.getFiles(path.join(fileInfo.dir, "..", "*.pug"));
     }
   }
 
@@ -236,12 +233,14 @@ async function pages(event, file) {
           );
 
         let mainYaml = {};
+
         if (fse.pathExistsSync(mainYamlFile)) {
           try {
             mainYaml = await fse
               .readFile(mainYamlFile, "utf8")
               .then((contents) => yaml.load(contents));
           } catch (error) {
+            logger.error("main yaml error", error);
             // silently skips it
           }
         }
@@ -253,6 +252,7 @@ async function pages(event, file) {
               .readFile(locale, "utf8")
               .then((contents) => yaml.load(contents));
           } catch (error) {
+            logger.error("page yaml error", error);
             // silently skips it
           }
         }
@@ -280,9 +280,10 @@ async function pages(event, file) {
     }
   }
 
-  return Promise.all(promises).then(() => {
+  return Promise.all(promises).then((res) => {
     // done 🎉
     logger.finish("Ended templates compilation");
+    return res;
   });
 }
 

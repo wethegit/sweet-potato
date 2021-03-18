@@ -7,19 +7,33 @@ const assets = require("./assets.js");
 const favicons = require("./favicons.js");
 const sitemap = require("./sitemap.js");
 
+const CONSTS = require("../utils/consts.js");
+const logger = require("../utils/logger.js");
+
 async function buildAll(env) {
   await clean();
   await assets();
 
-  let processes = Promise.all([pages(), styles(), javascripts(), favicons()]);
+  const pagesPromise = pages();
+  const stylesPromise = styles();
+  const javascriptsPromise = javascripts();
+  const faviconsPromise = favicons();
+  const allPromises = [
+    pagesPromise,
+    stylesPromise,
+    javascriptsPromise,
+    faviconsPromise,
+  ];
 
   // sitemap is generated after templates
   if (env === "production") {
-    await processes;
-    return sitemap();
+    await pagesPromise;
+    allPromises.push(sitemap());
   }
 
-  return processes;
+  return Promise.all(allPromises).then(() => {
+    if (CONSTS.CONFIG.verbose) logger.success(`Finished building files`);
+  });
 }
 
 module.exports = buildAll;

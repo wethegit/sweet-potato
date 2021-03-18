@@ -9,7 +9,7 @@ async function compress(options) {
   process.on("unhandledRejection", (err) => {
     throw err;
   });
-  
+
   const path = require("path");
   const fse = require("fs-extra");
 
@@ -30,7 +30,7 @@ async function compress(options) {
   const toCompress = [".jpg", ".jpeg", ".png", ".svg", ".gif"];
 
   // The cache file that shows what images have already been compressed and records their current size
-  const CACHE_FILE = path.join(CONSTS.CACHE_DIRECTORY, "compress.json")
+  const CACHE_FILE = path.join(CONSTS.CACHE_DIRECTORY, "compress.json");
   const images = fse.pathExistsSync(CACHE_FILE)
     ? fse.readJsonSync(CACHE_FILE)
     : {};
@@ -45,12 +45,12 @@ async function compress(options) {
     // If a record exists in the images cache and the difference in file sizes is less than a KB, just resolve straight away
     // Don't recompress
     if (images[ID]) {
-      const hash = md5File.sync(file);      
+      const hash = md5File.sync(file);
       if (hash === images[ID]) return;
     }
-    
+
     const COMPRESSION_OPTIONS = CONSTS.compress;
-      
+
     await imagemin([file], {
       destination: outFile,
       plugins: [
@@ -60,7 +60,7 @@ async function compress(options) {
         imageminSvgo(COMPRESSION_OPTIONS.imageminSvgo),
       ],
     });
-    
+
     const outStats = fse.statSync(path.join(outFile, fileInfo.base));
     const outFileSizeInBytes = outStats["size"];
     const outFileSizeInKb = Math.floor(outFileSizeInBytes / 1000);
@@ -81,7 +81,11 @@ async function compress(options) {
   logger.start("Started assets compression");
 
   // if a file is passed use it instead of querying for all
-  const ASSETS = await helpers.getFiles(options['directory'] ? path.join(CONSTS.CWD, options['directory']) : CONSTS.PUBLIC_DIRECTORY);
+  const ASSETS = await helpers.getFiles(
+    options["directory"]
+      ? path.join(CONSTS.CWD, options["directory"])
+      : CONSTS.PUBLIC_DIRECTORY
+  );
 
   // save all promises here to callback completion
   let promises = [];
@@ -91,7 +95,7 @@ async function compress(options) {
     const fileInfo = path.parse(file);
 
     // If the file is an image, compress it.
-    if (toCompress.indexOf(fileInfo.ext) > -1) 
+    if (toCompress.indexOf(fileInfo.ext) > -1)
       promises.push(compressFile(file, path.dirname(file), fileInfo));
   }
 

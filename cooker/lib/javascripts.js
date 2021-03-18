@@ -47,8 +47,8 @@ async function lint(file, instance) {
   return !!resultText;
 }
 
-async function javascripts(event, file) {
-  if (event && event === "add") return; // don't do anything for newly added files just yet
+async function javascripts(file) {
+  if (file && !fse.pathExistsSync(file)) return; // if file for some reason got removed
 
   // 1. Create an instance with the `fix` option.
   const eslint = new ESLint({
@@ -59,8 +59,6 @@ async function javascripts(event, file) {
   });
 
   if (file) {
-    if (!fse.pathExistsSync(file)) return; // if file for some reason got removed
-
     if (path.parse(file).base === "sweet-potato-cooker.config.js") return;
 
     // If we pass a file and it's outside website, we still need to prettify
@@ -127,14 +125,16 @@ async function javascripts(event, file) {
             bundle: true,
             outfile: DEST,
             minify: isProduction,
-            sourcemap: !isProduction,
+            sourcemap: !isProduction ? "inline" : false,
             target: ["es2020"],
             format: "esm",
             define: DEFINE_VALUES,
             inject: breakpointsInjectFile ? [breakpointsInjectFile] : [],
           })
-          .then(() => {
+          .then(() => fse.readFile(DEST, "utf8"))
+          .then((data) => {
             if (CONSTS.CONFIG.verbose) logger.success([DEST, "Bundled"]);
+            return { destination: DEST, js: data };
           })
       );
     }
@@ -143,10 +143,11 @@ async function javascripts(event, file) {
   }
 
   // create promise and render both versions of file
-  return Promise.all(promises).then(() => {
+  return Promise.all(promises).then((res) => {
     // done 🎉
     service.stop();
     logger.finish("Ended javascript bundling");
+    return res;
   });
 }
 

@@ -24,6 +24,7 @@ prog
     false
   )
   .option("--port", "Port to bind", 8080)
+  .option("--clean", "Delete cache and build folders before starting", false)
   .option("--host", "Hostname to bind", "localhost")
   .option("--open", "Automatic web browser launching", false)
   .action(commands.start);
@@ -35,5 +36,10 @@ prog
   )
   .option("--directory", "Directory to look for images", "/public")
   .action(commands.compress);
+
+prog
+  .command("clean")
+  .describe("Cleans cache and build folders")
+  .action(commands.clean);
 
 prog.parse(process.argv);

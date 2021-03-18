@@ -71,6 +71,7 @@ async function sitemap() {
 
       // done 🎉
       logger.finish("Ended sitemap generation");
+      return dest;
     });
   } catch (err) {
     console.log(err);

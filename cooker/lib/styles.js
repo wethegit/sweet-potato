@@ -75,9 +75,7 @@ async function standardize(file) {
   return true;
 }
 
-async function styles(event, file) {
-  if (event && event == "add") return; // don't do anything for newly added files just yet
-
+async function styles(file) {
   if (file && !fse.pathExistsSync(file)) return; // if file for some reason got removed
 
   logger.start("Started styles compilation");
@@ -141,7 +139,7 @@ async function styles(event, file) {
           outputStyle: "compressed",
           importer: [packageImporter(), customImporter],
           functions: assetFunctions({
-            images_path: CONSTS.BUILD_DIRECTORY,
+            images_path: CONSTS.PUBLIC_DIRECTORY,
             http_images_path: relativeOutput,
           }),
           ...CONSTS.CONFIG.sassOptions(!isProduction, file),
@@ -152,24 +150,24 @@ async function styles(event, file) {
               [outFile, "Failed to compile"],
               `Line ${error.line}:${error.column} ${error.message}`
             );
-            resolve(null);
+            reject(error);
             return;
           }
 
-          let finalCSS = result.css;
+          const finalCSS = result.css;
 
           try {
             // output the file
-            fse.outputFile(outFile, finalCSS).then(() => {
-              if (CONSTS.CONFIG.verbose) logger.success([outFile, "Compiled"]);
-              resolve(true);
-            });
+            await fse.outputFile(outFile, finalCSS);
+            const data = await fse.readFile(outFile, "utf8");
+            if (CONSTS.CONFIG.verbose) logger.success([outFile, "Compiled"]);
+            resolve({ destination: outFile, css: data });
           } catch (error) {
             logger.error(
               [outFile, "Failed saving compiled .css"],
               error.message
             );
-            resolve(null);
+            reject(error);
           }
         }
       );
@@ -179,9 +177,10 @@ async function styles(event, file) {
   }
 
   // done 🎉
-  return Promise.all(promises).then(() =>
-    logger.finish("Ended styles compilation")
-  );
+  return Promise.all(promises).then((res) => {
+    logger.finish("Ended styles compilation");
+    return res;
+  });
 }
 
 module.exports = styles;
