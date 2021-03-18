@@ -27,10 +27,12 @@ async function assets(file) {
   if (!fse.pathExistsSync(from)) return;
 
   try {
-    return fse.copy(from, to).then(() => {
-      logger.finish("Ended assets transfer");
-      return { from, to };
-    });
+    return fse
+      .copy(from, to, { overwrite: true, preserveTimestamps: true })
+      .then(() => {
+        logger.finish("Ended assets transfer");
+        return { from, to };
+      });
   } catch (error) {
     logger.error("Failed to copy assets", error);
   }
