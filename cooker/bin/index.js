@@ -13,6 +13,7 @@ prog.version(pkg.version);
 prog
   .command("build")
   .describe("Generates a production build")
+  .option("--env", ".env file to use", "process")
   .action(commands.build);
 
 prog
@@ -24,7 +25,7 @@ prog
     false
   )
   .option("--port", "Port to bind", 8080)
-  .option("--clean", "Delete cache and build folders before starting", false)
+  .option("--clean", "Delete all cache starting", false)
   .option("--host", "Hostname to bind", "localhost")
   .option("--open", "Automatic web browser launching", false)
   .action(commands.start);
@@ -39,7 +40,7 @@ prog
 
 prog
   .command("clean")
-  .describe("Cleans cache and build folders")
+  .describe("Cleans all cache and output folders")
   .action(commands.clean);
 
 prog.parse(process.argv);

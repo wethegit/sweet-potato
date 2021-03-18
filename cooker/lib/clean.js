@@ -6,12 +6,9 @@ const fse = require("fs-extra");
 
 // Locals
 const CONSTS = require("../utils/consts.js");
-const logger = require("../utils/logger.js");
 
 async function clean() {
-  return fse.remove(CONSTS.BUILD_DIRECTORY).then(() => {
-    logger.finish("Finished deleting all files.");
-  });
+  return fse.remove(CONSTS.BUILD_DIRECTORY);
 }
 
 module.exports = clean;

@@ -3,7 +3,7 @@
 
 const logger = require("../../../utils/logger.js");
 
-async function build() {
+async function build(options) {
   // consts
   process.env.BABEL_ENV = "production";
   process.env.NODE_ENV = "production";
@@ -16,7 +16,9 @@ async function build() {
   });
 
   // Ensure environment variables are read.
-  require("../../../lib/env.js");
+  const { loadEnv } = require("../../../lib/env.js");
+
+  loadEnv(options.env);
 
   // local imports
   const buildAll = require("../../../lib/build-all.js");

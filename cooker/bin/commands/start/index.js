@@ -17,7 +17,9 @@ async function start(options) {
   });
 
   // Ensure environment variables are read.
-  require("../../../lib/env.js");
+  const { loadEnv } = require("../../../lib/env.js");
+
+  loadEnv();
 
   const http = require("http");
   const express = require("express");

@@ -11,7 +11,7 @@ const { ESLint } = require("eslint");
 
 // local imports
 const helpers = require("./helpers.js");
-const getClientEnvironment = require("./env.js");
+const { getClientEnvironment } = require("./env.js");
 const logger = require("../utils/logger.js");
 const CONSTS = require("../utils/consts.js");
 

@@ -9,28 +9,31 @@ const path = require("path");
 // local imports
 const CONSTS = require("../utils/consts.js");
 const logger = require("../utils/logger.js");
-const ENV = process.env.NODE_ENV;
 
-// https://github.com/bkeepers/dotenv#what-other-env-files-can-i-use
-var dotenvFiles = [
-  path.join(CONSTS.CWD, `.env.${ENV}.local`),
-  path.join(CONSTS.CWD, `.env.${ENV}`),
-  path.join(CONSTS.CWD, ".env"),
-].filter(Boolean);
+const loadEnv = function (env) {
+  const ENV = !env || env === "process" ? process.env.NODE_ENV : env;
 
-// Load environment variables from .env* files. Suppress warnings using silent
-// if this file is missing. dotenv will never modify any environment variables
-// that have already been set.  Variable expansion is supported in .env files.
-// https://github.com/motdotla/dotenv
-// https://github.com/motdotla/dotenv-expand
-dotenvFiles.forEach((dotenvFile) => {
-  if (fs.existsSync(dotenvFile)) {
-    logger.announce(`Using ${dotenvFile}`);
-    require("dotenv").config({
-      path: dotenvFile,
-    });
-  }
-});
+  // https://github.com/bkeepers/dotenv#what-other-env-files-can-i-use
+  var dotenvFiles = [
+    path.join(CONSTS.CWD, `.env.${ENV}.local`),
+    path.join(CONSTS.CWD, `.env.${ENV}`),
+    path.join(CONSTS.CWD, ".env"),
+  ].filter(Boolean);
+
+  // Load environment variables from .env* files. Suppress warnings using silent
+  // if this file is missing. dotenv will never modify any environment variables
+  // that have already been set.  Variable expansion is supported in .env files.
+  // https://github.com/motdotla/dotenv
+  // https://github.com/motdotla/dotenv-expand
+  dotenvFiles.forEach((dotenvFile) => {
+    if (fs.existsSync(dotenvFile)) {
+      logger.announce(`Using ${dotenvFile}`);
+      require("dotenv").config({
+        path: dotenvFile,
+      });
+    }
+  });
+};
 
 // Grab NODE_ENV and PUBLIC_* environment variables and prepare them to be
 // injected into the application via DefinePlugin in Webpack configuration.
@@ -47,7 +50,7 @@ function getClientEnvironment() {
       },
       {
         // Useful for determining whether we’re running in production mode.
-        NODE_ENV: ENV || "production",
+        NODE_ENV: process.env.NODE_ENV || "production",
       }
     );
   // Stringify all values so we can feed into Webpack DefinePlugin
@@ -61,4 +64,4 @@ function getClientEnvironment() {
   return { raw, stringified };
 }
 
-module.exports = getClientEnvironment;
+module.exports = { getClientEnvironment, loadEnv };

@@ -9,21 +9,6 @@ const path = require("path");
 const CONSTS = require("../utils/consts.js");
 const logger = require("../utils/logger.js");
 
-const copyRecursive = async function (src, dest) {
-  await fse.copy(src, dest);
-
-  if (fse.lstatSync(src).isDirectory()) {
-    let dirs = fse
-      .readdirSync(src)
-      .map((name) => name)
-      .filter((dir) => fse.lstatSync(path.join(src, dir)).isDirectory());
-
-    for (let dir of dirs) {
-      return copyRecursive(path.join(src, dir), path.join(dest, dir));
-    }
-  }
-};
-
 async function assets(file) {
   if (file && !fse.pathExistsSync(file)) return; // if file for some reason got removed
 
@@ -42,7 +27,7 @@ async function assets(file) {
   if (!fse.pathExistsSync(from)) return;
 
   try {
-    return copyRecursive(from, to).then(() => {
+    return fse.copy(from, to).then(() => {
       logger.finish("Ended assets transfer");
       return { from, to };
     });

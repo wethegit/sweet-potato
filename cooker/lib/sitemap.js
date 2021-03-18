@@ -10,7 +10,7 @@ const fse = require("fs-extra");
 // local imports
 const logger = require("../utils/logger.js");
 const helpers = require("./helpers.js");
-const getClientEnvironment = require("./env.js");
+const { getClientEnvironment } = require("./env.js");
 const CONSTS = require("../utils/consts.js");
 
 // consts

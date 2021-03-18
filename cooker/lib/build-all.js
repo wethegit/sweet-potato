@@ -7,9 +7,6 @@ const assets = require("./assets.js");
 const favicons = require("./favicons.js");
 const sitemap = require("./sitemap.js");
 
-const CONSTS = require("../utils/consts.js");
-const logger = require("../utils/logger.js");
-
 async function buildAll(env) {
   await clean();
   await assets();
@@ -31,9 +28,7 @@ async function buildAll(env) {
     allPromises.push(sitemap());
   }
 
-  return Promise.all(allPromises).then(() => {
-    if (CONSTS.CONFIG.verbose) logger.success(`Finished building files`);
-  });
+  return Promise.all(allPromises);
 }
 
 module.exports = buildAll;
