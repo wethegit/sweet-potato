@@ -44,8 +44,9 @@ async function lint(file) {
     });
 
     if (result.errored || result.maxWarningsExceeded) {
-      spinners.fail("styles", {
+      spinners.add(`${file}-e`, {
         text: `Failed linting\n${file}\n${result.output}`,
+        status: "non-spinnable",
       });
       return false;
     }
@@ -57,8 +58,9 @@ async function lint(file) {
       });
     }
   } catch (error) {
-    spinners.fail("styles", {
+    spinners.add(`${file}-f`, {
       text: `Failed to lint\n${file}\n${error.message}`,
+      status: "non-spinnable",
     });
     return false;
   }
@@ -84,7 +86,9 @@ async function standardize(file) {
 async function styles(file) {
   if (file && !fse.pathExistsSync(file)) return; // if file for some reason got removed
 
-  spinners.add("styles", { text: "Compiling styles", indent: 2 });
+  const mainSpinnerName = file ? file : "styles";
+  if (!spinners.pick(mainSpinnerName))
+    spinners.add(mainSpinnerName, { text: "Compiling styles", indent: 2 });
 
   // if it's a file com a component or someplace else we
   // need to compiled all dependencies
@@ -99,7 +103,7 @@ async function styles(file) {
       // directory, we want to compile everything again
       file = null;
     } catch (error) {
-      spinners.fail("style", {
+      spinners.fail(mainSpinnerName, {
         text: `Failed to standardize\n${file}\n${error.message}`,
       });
       return;
@@ -155,8 +159,9 @@ async function styles(file) {
         },
         async function (error, result) {
           if (error) {
-            spinners.fail("styles", {
+            spinners.add(file, {
               text: `Failed to compile\n${outFile}\nLine ${error.line}:${error.column} ${error.message}`,
+              status: "non-spinnable",
             });
             reject(error);
             return;
@@ -170,10 +175,12 @@ async function styles(file) {
             const data = await fse.readFile(outFile, "utf8");
             resolve({ destination: outFile, css: data });
           } catch (error) {
-            spinners.fail("styles", {
+            spinners.add(file, {
               text: `Failed saving file${outFile}${error.message}`,
+              status: "non-spinnable",
             });
             reject(error);
+            return;
           }
         }
       );
@@ -184,7 +191,7 @@ async function styles(file) {
 
   // done 🎉
   return Promise.all(promises).then((res) => {
-    spinners.succeed("styles", { text: "Done compiling styles" });
+    spinners.succeed(mainSpinnerName, { text: "Done compiling styles" });
     return res;
   });
 }

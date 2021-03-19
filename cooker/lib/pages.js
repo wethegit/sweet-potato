@@ -87,8 +87,9 @@ function saveHtml({
       page: data.page,
     });
   } catch (error) {
-    spinners.fail("pages", {
+    spinners.fail(`${outFile}-ss`, {
       text: `Failed to compiled template with locale variables.\n${outFile}\n${error.message}`,
+      status: "non-spinnable",
     });
     return;
   }
@@ -172,7 +173,7 @@ async function pages(file, localeFile) {
         plugins: [npmResolverPlugin()],
       });
     } catch (error) {
-      spinners.fail(file, {
+      spinners.fail(`${file}-c`, {
         text: `Error compiling template\n${file}\n${error.message}`,
         status: "non-spinnable",
       });
@@ -211,10 +212,11 @@ async function pages(file, localeFile) {
       try {
         promises.push(saveHtml(outputOptions));
       } catch (error) {
-        spinners.fail("pages", {
+        spinners.fail(`${outputOptions}-d`, {
           text: `Failed to save template to disk\n${JSON.stringify(
             outputOptions
           )}\n${error.message}`,
+          status: "non-spinnable",
         });
         return;
       }
@@ -286,7 +288,7 @@ async function pages(file, localeFile) {
         try {
           promises.push(saveHtml(options));
         } catch (error) {
-          spinners.fail(options.destination, {
+          spinners.fail(`${options.destination}-s`, {
             text: `Failed to save template to disk\n${options.destinations}\n${error.message}`,
             status: "non-spinnable",
           });

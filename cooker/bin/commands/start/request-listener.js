@@ -133,7 +133,11 @@ async function requestListener(req, res) {
           CONSTS.PAGES_DIRECTORY,
           pathname.replace(ext, extMap[ext])
         );
-        contents = await _css(file);
+        try {
+          contents = await _css(file);
+        } catch (er) {
+          console.log(er);
+        }
         break;
 
       case ".js":
@@ -162,10 +166,7 @@ async function requestListener(req, res) {
         // we first try the page locale
         let locale = path.join(pageLocalePath, `${potentialLocale}.yaml`);
 
-        console.log("page locale", locale);
         if (!fse.pathExistsSync(locale)) {
-          console.log({ potentialLocale, pagePath });
-
           // we are probably dealig with
           // a regular page
           file = path.join(
@@ -180,7 +181,7 @@ async function requestListener(req, res) {
             "locales",
             "default.yaml"
           );
-          console.log("default page locale", locale);
+
           if (!fse.pathExistsSync(locale)) locale = null;
         } else
           file = path.join(
@@ -188,8 +189,6 @@ async function requestListener(req, res) {
             "..",
             pageName.replace("html", "pug")
           );
-
-        console.log({ file, locale, pageName });
 
         if (!fse.pathExistsSync(file)) {
           _error(res, file, "Couldn't find file for this route");
