@@ -6,7 +6,7 @@ const generator = require("favicons");
 const path = require("path");
 
 // local imports
-const logger = require("../utils/logger.js");
+const spinners = require("../utils/spinners.js");
 const CONSTS = require("../utils/consts.js");
 
 // consts
@@ -34,8 +34,10 @@ const writeFiles = async function (response) {
     const htmlResponse = response.html.join("\n");
 
     if (FAVICON_CONFIG.outputTags === "log") {
-      logger.announce("Favicons output tags");
-      console.log(htmlResponse);
+      spinners.add("favicons-output", {
+        text: `Favicons output tags\n${htmlResponse}`,
+        status: "non-spinnable",
+      });
     } else
       promises.push(
         fse.outputFile(
@@ -81,15 +83,14 @@ async function favicons(file) {
 
   const source = file ? file : FAVICON_CONFIG.sourceFile;
 
+  spinners.add("favicons", { text: "Generating favicons", indent: 2 });
+
   if (!source || !fse.pathExistsSync(source)) {
-    logger.error(`Couldn't find favicon source: ${source}`);
+    spinners.fail("favicons", {
+      text: `Couldn't find favicon source: ${source}`,
+    });
     return;
   }
-
-  // if file for some reason got removed or we don't have a main.png
-  if (source && !fse.pathExistsSync(source)) return;
-
-  logger.start("Started favicons generation");
 
   if (process.env.NODE_ENV !== "production") {
     // get the last modified date from the file and create cache json
@@ -103,7 +104,7 @@ async function favicons(file) {
 
       // if it's the same, we skip
       if (!didChange) {
-        logger.finish(["Ended favicons generation.", "No Change"]);
+        spinners.succeed("favicons", { text: "Done generating favicons" });
         return;
       }
 
@@ -120,15 +121,20 @@ async function favicons(file) {
   return new Promise(function (resolve, reject) {
     generator(source, GENERATOR_CONFIG, async function (error, response) {
       // Error description e.g. "An unknown error has occurred"
-      if (error) logger.error("Error generating favicons", error.message);
+      if (error)
+        spinners.fail("favicons", {
+          text: `Failed to generate favicons ${error.message}`,
+        });
 
       try {
         const all = await writeFiles(response);
-        if (CONSTS.CONFIG.verbose) logger.success(`Favicons generated`);
-        logger.finish("Ended favicons generation");
+        spinners.succeed("favicons", { text: "Done generating favicons" });
         resolve(all);
       } catch (error) {
-        logger.error("Error saving favicons to disk", error.message);
+        spinners.fail("favicons", {
+          text: `Failed saving favicons to disk ${error.message}`,
+        });
+        reject(error);
       }
     });
   });

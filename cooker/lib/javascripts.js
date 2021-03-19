@@ -12,7 +12,7 @@ const { ESLint } = require("eslint");
 // local imports
 const helpers = require("./helpers.js");
 const { getClientEnvironment } = require("./env.js");
-const logger = require("../utils/logger.js");
+const spinners = require("../utils/spinners.js");
 const CONSTS = require("../utils/consts.js");
 
 // local consts
@@ -43,7 +43,8 @@ async function lint(file, instance) {
   const resultText = formatter.format(results);
 
   // 5. Output it.
-  if (resultText) console.log(resultText);
+  if (resultText)
+    spinners.add(`${file}-l`, { text: resultText, status: "non-spinnable" });
   return !!resultText;
 }
 
@@ -83,7 +84,10 @@ async function javascripts(file) {
 
   if (jsFiles.length <= 0) return;
 
-  logger.start("Started javascripts bundling");
+  spinners.add("javascripts", {
+    text: "Bundling javascripts",
+    indent: 2,
+  });
 
   let promises = [];
   let service = await esbuild.startService();
@@ -133,20 +137,21 @@ async function javascripts(file) {
           })
           .then(() => fse.readFile(DEST, "utf8"))
           .then((data) => {
-            if (CONSTS.CONFIG.verbose) logger.success([DEST, "Bundled"]);
             return { destination: DEST, js: data };
           })
       );
     }
   } catch (error) {
-    logger.error("Failed to save bundle javascript file", error);
+    spinners.error("javascripts", {
+      text: `Failed to bundle javascript\n${error.message}`,
+    });
   }
 
   // create promise and render both versions of file
   return Promise.all(promises).then((res) => {
     // done 🎉
     service.stop();
-    logger.finish("Ended javascript bundling");
+    spinners.succeed("javascripts", { text: "Done bundling javascripts" });
     return res;
   });
 }

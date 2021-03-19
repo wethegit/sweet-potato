@@ -1,4 +1,7 @@
 // local imports
+const spinners = require("../utils/spinners.js");
+const CONSTS = require("../utils/consts.js");
+
 const clean = require("./clean.js");
 const pages = require("./pages.js");
 const styles = require("./styles.js");
@@ -8,6 +11,8 @@ const favicons = require("./favicons.js");
 const sitemap = require("./sitemap.js");
 
 async function buildAll(env) {
+  spinners.add("build", { text: "Generating production build" });
+
   await clean();
   await assets();
 
@@ -15,6 +20,7 @@ async function buildAll(env) {
   const stylesPromise = styles();
   const javascriptsPromise = javascripts();
   const faviconsPromise = favicons();
+
   const allPromises = [
     pagesPromise,
     stylesPromise,
@@ -28,7 +34,11 @@ async function buildAll(env) {
     allPromises.push(sitemap());
   }
 
-  return Promise.all(allPromises);
+  return Promise.all(allPromises).then(() => {
+    spinners.succeed("build", {
+      text: `Done generating production build`,
+    });
+  });
 }
 
 module.exports = buildAll;

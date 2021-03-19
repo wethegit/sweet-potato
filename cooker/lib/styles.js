@@ -10,7 +10,7 @@ const assetFunctions = require("node-sass-asset-functions");
 const packageImporter = require("node-sass-package-importer");
 
 // local imports
-const logger = require("../utils/logger.js");
+const spinners = require("../utils/spinners.js");
 const helpers = require("./helpers.js");
 const CONSTS = require("../utils/consts.js");
 
@@ -44,16 +44,22 @@ async function lint(file) {
     });
 
     if (result.errored || result.maxWarningsExceeded) {
-      logger.error([file, "Failed on linting"], result.output);
+      spinners.fail("styles", {
+        text: `Failed linting\n${file}\n${result.output}`,
+      });
       return false;
     }
 
     if (result.results[0].warnings > 0) {
-      logger.warning([file, "Linting warnings"]);
-      console.log(result.output);
+      spinners.add(`${file}-w`, {
+        text: `Linting warnings\n${result.output}`,
+        status: "non-spinnable",
+      });
     }
   } catch (error) {
-    logger.error([file, "Failed to lint"], error);
+    spinners.fail("styles", {
+      text: `Failed to lint\n${file}\n${error.message}`,
+    });
     return false;
   }
 
@@ -78,7 +84,7 @@ async function standardize(file) {
 async function styles(file) {
   if (file && !fse.pathExistsSync(file)) return; // if file for some reason got removed
 
-  logger.start("Started styles compilation");
+  spinners.add("styles", { text: "Compiling styles", indent: 2 });
 
   // if it's a file com a component or someplace else we
   // need to compiled all dependencies
@@ -93,7 +99,10 @@ async function styles(file) {
       // directory, we want to compile everything again
       file = null;
     } catch (error) {
-      logger.error([file, "Failed to standardize style asset"], error);
+      spinners.fail("style", {
+        text: `Failed to standardize\n${file}\n${error.message}`,
+      });
+      return;
     }
   }
 
@@ -146,10 +155,9 @@ async function styles(file) {
         },
         async function (error, result) {
           if (error) {
-            logger.error(
-              [outFile, "Failed to compile"],
-              `Line ${error.line}:${error.column} ${error.message}`
-            );
+            spinners.fail("styles", {
+              text: `Failed to compile\n${outFile}\nLine ${error.line}:${error.column} ${error.message}`,
+            });
             reject(error);
             return;
           }
@@ -160,13 +168,11 @@ async function styles(file) {
             // output the file
             await fse.outputFile(outFile, finalCSS);
             const data = await fse.readFile(outFile, "utf8");
-            if (CONSTS.CONFIG.verbose) logger.success([outFile, "Compiled"]);
             resolve({ destination: outFile, css: data });
           } catch (error) {
-            logger.error(
-              [outFile, "Failed saving compiled .css"],
-              error.message
-            );
+            spinners.fail("styles", {
+              text: `Failed saving file${outFile}${error.message}`,
+            });
             reject(error);
           }
         }
@@ -178,7 +184,7 @@ async function styles(file) {
 
   // done 🎉
   return Promise.all(promises).then((res) => {
-    logger.finish("Ended styles compilation");
+    spinners.succeed("styles", { text: "Done compiling styles" });
     return res;
   });
 }

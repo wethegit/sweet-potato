@@ -7,12 +7,12 @@ const path = require("path");
 
 // local imports
 const CONSTS = require("../utils/consts.js");
-const logger = require("../utils/logger.js");
+const spinners = require("../utils/spinners.js");
 
 async function assets(file) {
   if (file && !fse.pathExistsSync(file)) return; // if file for some reason got removed
 
-  logger.start("Started assets transfer");
+  spinners.add("assets", { text: "Copying assets", indent: 2 });
 
   let from = CONSTS.PUBLIC_DIRECTORY;
   let to = CONSTS.BUILD_DIRECTORY;
@@ -30,11 +30,11 @@ async function assets(file) {
     return fse
       .copy(from, to, { overwrite: true, preserveTimestamps: true })
       .then(() => {
-        logger.finish("Ended assets transfer");
+        spinners.succeed("assets", { text: "Done copying assets" });
         return { from, to };
       });
   } catch (error) {
-    logger.error("Failed to copy assets", error);
+    spinners.fail("assets", { text: `Failed to copy assets ${error.message}` });
   }
 }
 

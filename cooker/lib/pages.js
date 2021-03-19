@@ -8,7 +8,7 @@ const path = require("path");
 const resolve = require("resolve");
 
 // local imports
-const logger = require("../utils/logger.js");
+const spinners = require("../utils/spinners.js");
 const helpers = require("./helpers.js");
 const { getClientEnvironment } = require("./env.js");
 const CONSTS = require("../utils/consts.js");
@@ -37,7 +37,9 @@ function npmResolverPlugin() {
           },
         });
       } catch (err) {
-        logger.error("Error resolving pug module path", err);
+        spinners.fail("pages", {
+          text: `Error resolving pug module path\n${filename}\n${source}\n${err.message}`,
+        });
         return "";
       }
 
@@ -85,14 +87,13 @@ function saveHtml({
       page: data.page,
     });
   } catch (error) {
-    logger.error(
-      [outFile, "Failed to compiled template with locale variables"],
-      error
-    );
+    spinners.fail("pages", {
+      text: `Failed to compiled template with locale variables.\n${outFile}\n${error.message}`,
+    });
+    return;
   }
 
   return fse.outputFile(outFile, htmlString).then(() => {
-    if (CONSTS.CONFIG.verbose) logger.success([outFile, "Compiled"]);
     return { destination, filepath, filename, html: htmlString };
   });
 }
@@ -134,7 +135,7 @@ async function pages(file, localeFile) {
     }
   }
 
-  logger.start("Started templates compilation");
+  spinners.add("pages", { text: "Generating pages", indent: 2 });
 
   // If we don't have any files, then we query them all
   // this means that we are either dealing with a master pug file
@@ -171,7 +172,10 @@ async function pages(file, localeFile) {
         plugins: [npmResolverPlugin()],
       });
     } catch (error) {
-      logger.error([file, "Error compiling template"], error);
+      spinners.fail(file, {
+        text: `Error compiling template\n${file}\n${error.message}`,
+        status: "non-spinnable",
+      });
       continue; // skips template file
     }
 
@@ -207,10 +211,12 @@ async function pages(file, localeFile) {
       try {
         promises.push(saveHtml(outputOptions));
       } catch (error) {
-        logger.error("Failed to save template to disk", {
-          outputOptions,
-          error,
+        spinners.fail("pages", {
+          text: `Failed to save template to disk\n${JSON.stringify(
+            outputOptions
+          )}\n${error.message}`,
         });
+        return;
       }
     } else {
       // go through the locale files
@@ -240,7 +246,10 @@ async function pages(file, localeFile) {
               .readFile(mainYamlFile, "utf8")
               .then((contents) => yaml.load(contents));
           } catch (error) {
-            logger.error("main yaml error", error);
+            spinners.fail(mainYamlFile, {
+              text: `Can't compile global yaml\n${file}\n${error.message}`,
+              status: "non-spinnable",
+            });
             // silently skips it
           }
         }
@@ -252,7 +261,10 @@ async function pages(file, localeFile) {
               .readFile(locale, "utf8")
               .then((contents) => yaml.load(contents));
           } catch (error) {
-            logger.error("page yaml error", error);
+            spinners.fail(locale, {
+              text: `Can't compile page yaml\n${file}\n${error.message}`,
+              status: "non-spinnable",
+            });
             // silently skips it
           }
         }
@@ -274,7 +286,10 @@ async function pages(file, localeFile) {
         try {
           promises.push(saveHtml(options));
         } catch (error) {
-          logger.error("Failed to save template to disk", { options, error });
+          spinners.fail(options.destination, {
+            text: `Failed to save template to disk\n${options.destinations}\n${error.message}`,
+            status: "non-spinnable",
+          });
         }
       }
     }
@@ -282,7 +297,7 @@ async function pages(file, localeFile) {
 
   return Promise.all(promises).then((res) => {
     // done 🎉
-    logger.finish("Ended templates compilation");
+    spinners.succeed("pages", { text: "Done generating pages" });
     return res;
   });
 }

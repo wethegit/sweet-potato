@@ -8,7 +8,7 @@ const path = require("path");
 const fse = require("fs-extra");
 
 // local imports
-const logger = require("../utils/logger.js");
+const spinners = require("../utils/spinners.js");
 const helpers = require("./helpers.js");
 const { getClientEnvironment } = require("./env.js");
 const CONSTS = require("../utils/consts.js");
@@ -19,20 +19,23 @@ const env = getClientEnvironment();
 async function sitemap() {
   if (!CONSTS.CONFIG.sitemap) return;
 
+  spinners.add("sitemap", { text: "Generating sitemap", indent: 2 });
+
   let publicUrl;
   if (typeof CONSTS.CONFIG.sitemap === "string")
     publicUrl = CONSTS.CONFIG.sitemap;
   else if (env.raw.PUBLIC_URL) {
     publicUrl = env.raw.PUBLIC_URL;
 
+    // removes forward slash at the end
     if (publicUrl.charAt(publicUrl.length - 1) === "/")
       publicUrl = publicUrl.substring(0, publicUrl.length - 1);
   }
 
   if (!publicUrl) {
-    logger.error("Tried to generate sitemap.xml but no public url was set.", {
-      message:
-        "https://github.com/wethegit/sweet-potato/tree/main/cooker#sitemap",
+    spinners.fail("sitemap", {
+      text:
+        "Failed to generate sitemap.xml, missing `public url`.\nhttps://github.com/wethegit/sweet-potato/tree/main/cooker#sitemap",
     });
     return;
   }
@@ -43,8 +46,6 @@ async function sitemap() {
   );
 
   if (htmlFiles.length <= 0) return;
-
-  logger.start("Started sitemap generation");
 
   // Creates a sitemap object given the input configuration with URLs
   const sitemap = new SitemapStream({ hostname: publicUrl });
@@ -57,7 +58,7 @@ async function sitemap() {
 
     if (dir === "") dir += "/";
 
-    sitemap.write({ url: `${URL}${dir}`, lastmod });
+    sitemap.write({ url: `${publicUrl}${dir}`, lastmod });
   }
 
   sitemap.end();
@@ -67,14 +68,14 @@ async function sitemap() {
     const dest = path.join(CONSTS.BUILD_DIRECTORY, "sitemap.xml");
 
     return fse.outputFile(dest, sitemapData.toString()).then(() => {
-      if (CONSTS.CONFIG.verbose) logger.success([dest, "Sitemap compiled"]);
-
       // done 🎉
-      logger.finish("Ended sitemap generation");
+      spinners.succeed("sitemap", { text: `Done generating sitemap` });
       return dest;
     });
   } catch (err) {
-    console.log(err);
+    spinners.fail("sitemap", {
+      text: `Failed generating sitemap\n${err.message}`,
+    });
   }
 }
 
