@@ -6,13 +6,18 @@ const pages = require("../../../lib/pages");
 const styles = require("../../../lib/styles");
 const javascripts = require("../../../lib/javascripts.js");
 const CONSTS = require("../../../utils/consts.js");
-const cacheFile = path.join(CONSTS.CACHE_DIRECTORY, "server.json");
 const extMap = {
   ".html": ".pug",
   ".css": ".scss",
   ".js": ".js",
 };
 
+/* TODO:
+ Implement a caching system or even better, a dependency tree 
+ where only the updated files are recompiled
+ *
+ *
+const cacheFile = path.join(CONSTS.CACHE_DIRECTORY, "server.json");
 let cache = {};
 if (fse.pathExistsSync(cacheFile)) cache = fse.readJsonSync(cacheFile);
 
@@ -23,6 +28,7 @@ async function _cache(file) {
   if (cacheMtimeMs === mtimeMs) return true;
   return mtimeMs;
 }
+*/
 
 // appending socket.io listener
 // so we can refresh the page on updates
@@ -104,8 +110,9 @@ async function requestListener(req, res) {
     contentType,
   };
 
-  // if file is static
-  // we just serve the contents
+  // if file is static we just serve the contents
+  // NOTE: this should very rarely happen as express takes care
+  // of static files
   if (isStatic) {
     let file = path.join(CONSTS.PUBLIC_DIRECTORY, pathname);
 
@@ -149,7 +156,7 @@ async function requestListener(req, res) {
         break;
 
       default:
-        // html is more complicated
+        // html is more complicated then css and js
         // we could be dealing with a locale
         // which we have to find the path to
 

@@ -3,12 +3,7 @@ function watch(cb) {
 
   const path = require("path");
   const chokidar = require("chokidar");
-
-  const pages = require("../../../lib/pages");
-  const styles = require("../../../lib/styles");
-  const javascripts = require("../../../lib/javascripts.js");
   const favicons = require("../../../lib/favicons.js");
-  const assets = require("../../../lib/assets.js");
   const CONSTS = require("../../../utils/consts.js");
   const logger = require("../../../utils/logger.js");
 
@@ -34,31 +29,27 @@ function watch(cb) {
   // watch for pages
   chokidar
     .watch(path.join(CONSTS.CWD, "**", "*.pug"), options)
-    .on("all", async (event, file) => {
-      // await pages(file);
+    .on("all", (event, file) => {
       if (cb) cb();
     });
 
   chokidar
     .watch(path.join(CONSTS.CWD, "**", "*.yaml"), options)
-    .on("all", async (event, file) => {
-      // await pages(null, file);
+    .on("all", (event, file) => {
       if (cb) cb();
     });
 
   // watch for styles
   chokidar
     .watch(path.join(CONSTS.CWD, "**", "*.scss"), options)
-    .on("all", async (event, file) => {
-      // await styles(file);
+    .on("all", (event, file) => {
       if (cb) cb();
     });
 
   // watch for javascripts
   chokidar
     .watch(path.join(CONSTS.CWD, "**", "*.js"), options)
-    .on("all", async (event, file) => {
-      // await javascripts(file);
+    .on("all", (event, file) => {
       if (cb) cb();
     });
 
@@ -77,14 +68,6 @@ function watch(cb) {
         await favicons(file);
         if (cb) cb();
       });
-
-  // watch for assets
-  // chokidar
-  //   .watch(path.join(CONSTS.PUBLIC_DIRECTORY, "**", "*"), options)
-  //   .on("all", async (event, file) => {
-  //     await assets(file);
-  //     if (cb) cb();
-  //   });
 }
 
 module.exports = watch;

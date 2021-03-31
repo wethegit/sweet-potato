@@ -11,3 +11,18 @@ html {
 body {
   margin: 0;
 }
+
+h1 {
+  .barfystars-particle::after {
+    content: "🍠";
+    font-size: 30px;
+  }
+
+  .barfystars-particle--2::after {
+    font-size: 20px;
+  }
+
+  .barfystars-particle--3::after {
+    font-size: 25px;
+  }
+}

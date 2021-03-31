@@ -1,4 +1,7 @@
 extends ../../layouts/_main
 
+append styles
+  link(rel="stylesheet" href=`${globals.RELATIVE_ROOT}/about.css`)
+  
 block main
-  h1 🍠
+  p!=page.about

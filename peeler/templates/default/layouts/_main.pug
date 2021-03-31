@@ -7,8 +7,8 @@ html(lang=(globals.localeKey === 'default' ? 'en-US' : globals.localeKey))
     meta(http-equiv="X-UA-Compatible" content="ie=edge")
     
     block metas
-      meta(name="description" content=(globals.meta.title || page.meta.title))
-      title=`${globals.meta.title} | ${page.meta.title}`
+      meta(name="description" content=(globals.meta.description || page.meta.description))
+      title=`${page.meta.title ? page.meta.title + ' | ' : ''}${globals.meta.title}`
       
     block styles
       link(rel="stylesheet" href=`${globals.RELATIVE_ROOT}/global.css`)
@@ -16,13 +16,17 @@ html(lang=(globals.localeKey === 'default' ? 'en-US' : globals.localeKey))
   body
     include ../components/navigation/navigation
     
-    code
-      pre!=JSON.stringify(globals, null, 2)
+    //- All available variables
+    //- code
+    //-   pre!=JSON.stringify(globals, null, 2)
     
-    code 
-      pre!=JSON.stringify(page, null, 2)
+    //- code 
+    //-   pre!=JSON.stringify(page, null, 2)
+    
+    main
+      h1(data-config='{ "numUniqueParticles": 3, "action": false }')!=page.title
       
-    block main
+      block main
     
     block scripts
       script(type="module" src=`${globals.RELATIVE_ROOT}/global.js`)
