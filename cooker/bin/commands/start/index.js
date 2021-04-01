@@ -17,45 +17,41 @@ async function start(options) {
   });
 
   // Ensure environment variables are read.
-  require("../../../lib/env.js");
+  const { loadEnv } = require("../../../lib/env.js");
 
-  const liveServer = require("live-server");
-  const CONSTS = require("../../../utils/consts.js");
-  const watch = require("../../../lib/watch.js");
-  const logger = require("../../../utils/logger.js");
-  const {
-    assetsMiddleware,
-    assetsLogger,
-  } = require("./assets-logger-middleware.js");
+  loadEnv();
 
-  // local imports
-  const buildAll = require("../../../lib/build-all.js");
+  const http = require("http");
+  const express = require("express");
 
-  try {
-    await buildAll(process.env.NODE_ENV);
-  } catch (error) {
-    logger.error("Failed to build local files", error);
-    process.exit(1);
+  const CONSTS = require("../../../utils/consts");
+  const assets = require("../../../lib/assets.js");
+  const clean = require("../../../lib/clean.js");
+  const watch = require("./watch.js");
+  const requestListener = require("./request-listener.js");
+
+  const app = express();
+
+  app.use(express.static(CONSTS.PUBLIC_DIRECTORY));
+  app.get("*", requestListener);
+
+  const server = http.createServer(app);
+  const io = require("socket.io")(server);
+
+  const host = options.host || "localhost";
+  const port = options.port || 8080;
+
+  if (options.clean) {
+    await clean();
+    await assets();
   }
 
-  watch();
+  watch(() => {
+    io.sockets.emit("browserReload");
+  });
 
-  if (options["asset-logger"])
-    process.on("SIGINT", async function () {
-      await assetsLogger();
-      process.exit(1);
-    });
-
-  if (!CONSTS.CONFIG.verbose) console.clear();
-
-  liveServer.start({
-    root: CONSTS.BUILD_DIRECTORY,
-    wait: 1000,
-    logLevel: 1,
-    open: options["asset-logger"] || false,
-    middleware: options["asset-logger"] ? [assetsMiddleware] : [],
-    host: options.host || "localhost",
-    port: options.port || 8080,
+  server.listen(port, host, () => {
+    console.log(`Server is running on http://${host}:${port}`);
   });
 }
 

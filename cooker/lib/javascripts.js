@@ -11,8 +11,8 @@ const { ESLint } = require("eslint");
 
 // local imports
 const helpers = require("./helpers.js");
-const getClientEnvironment = require("./env.js");
-const logger = require("../utils/logger.js");
+const { getClientEnvironment } = require("./env.js");
+const spinners = require("../utils/spinners.js");
 const CONSTS = require("../utils/consts.js");
 
 // local consts
@@ -43,12 +43,13 @@ async function lint(file, instance) {
   const resultText = formatter.format(results);
 
   // 5. Output it.
-  if (resultText) console.log(resultText);
+  if (resultText)
+    spinners.add(`${file}-l`, { text: resultText, status: "non-spinnable" });
   return !!resultText;
 }
 
-async function javascripts(event, file) {
-  if (event && event === "add") return; // don't do anything for newly added files just yet
+async function javascripts(file) {
+  if (file && !fse.pathExistsSync(file)) return; // if file for some reason got removed
 
   // 1. Create an instance with the `fix` option.
   const eslint = new ESLint({
@@ -59,8 +60,6 @@ async function javascripts(event, file) {
   });
 
   if (file) {
-    if (!fse.pathExistsSync(file)) return; // if file for some reason got removed
-
     if (path.parse(file).base === "sweet-potato-cooker.config.js") return;
 
     // If we pass a file and it's outside website, we still need to prettify
@@ -85,41 +84,47 @@ async function javascripts(event, file) {
 
   if (jsFiles.length <= 0) return;
 
-  logger.start("Started javascripts bundling");
+  const mainSpinnerName = file ? file : "javascripts";
+  if (!spinners.pick(mainSpinnerName))
+    spinners.add(mainSpinnerName, {
+      text: "Bundling javascripts",
+      indent: 2,
+    });
 
   let promises = [];
   let service = await esbuild.startService();
-  try {
-    for (let file of jsFiles) {
-      const prettified = await helpers.prettify(file, { parser: "babel" });
-      // we prettified the file and wrote it on disk again,
-      // that will trigger another update for this file, not with proper coding style
-      // so we skip it here at this moment, and compile it on the second trigger
-      if (prettified === true) continue;
 
-      const linted = await lint(file, eslint);
+  for (let file of jsFiles) {
+    const prettified = await helpers.prettify(file, { parser: "babel" });
+    // we prettified the file and wrote it on disk again,
+    // that will trigger another update for this file, not with proper coding style
+    // so we skip it here at this moment, and compile it on the second trigger
+    if (prettified === true) continue;
 
-      if (linted === true) continue;
+    const linted = await lint(file, eslint);
 
-      const fileInfo = path.parse(file);
+    if (linted === true) continue;
 
-      const DEST = path.join(
-        CONSTS.BUILD_DIRECTORY,
-        fileInfo.dir.replace(CONSTS.PAGES_DIRECTORY, ""),
-        fileInfo.base
-      );
+    const fileInfo = path.parse(file);
 
-      let DEFINE_VALUES = {
-        SWEET_POTATO_RELATIVE_ROOT: `"${path.relative(
-          DEST,
-          CONSTS.BUILD_DIRECTORY
-        )}"`,
-      };
+    const DEST = path.join(
+      CONSTS.BUILD_DIRECTORY,
+      fileInfo.dir.replace(CONSTS.PAGES_DIRECTORY, ""),
+      fileInfo.base
+    );
 
-      for (const [key, value] of Object.entries(env.raw)) {
-        DEFINE_VALUES[key] = typeof value === "string" ? `"${value}"` : value;
-      }
+    let DEFINE_VALUES = {
+      SWEET_POTATO_RELATIVE_ROOT: `"${path.relative(
+        DEST,
+        CONSTS.BUILD_DIRECTORY
+      )}"`,
+    };
 
+    for (const [key, value] of Object.entries(env.raw)) {
+      DEFINE_VALUES[key] = typeof value === "string" ? `"${value}"` : value;
+    }
+
+    try {
       promises.push(
         service
           .build({
@@ -127,26 +132,31 @@ async function javascripts(event, file) {
             bundle: true,
             outfile: DEST,
             minify: isProduction,
-            sourcemap: !isProduction,
+            sourcemap: !isProduction ? "inline" : false,
             target: ["es2020"],
             format: "esm",
             define: DEFINE_VALUES,
             inject: breakpointsInjectFile ? [breakpointsInjectFile] : [],
           })
-          .then(() => {
-            if (CONSTS.CONFIG.verbose) logger.success([DEST, "Bundled"]);
+          .then(() => fse.readFile(DEST, "utf8"))
+          .then((data) => {
+            return { destination: DEST, js: data };
           })
       );
+    } catch (error) {
+      spinners.add(file, {
+        text: `Failed to bundle javascript\n${error.message}`,
+        status: "non-spinnable",
+      });
     }
-  } catch (error) {
-    logger.error("Failed to save bundle javascript file", error);
   }
 
   // create promise and render both versions of file
-  return Promise.all(promises).then(() => {
+  return Promise.all(promises).then((res) => {
     // done 🎉
     service.stop();
-    logger.finish("Ended javascript bundling");
+    spinners.succeed(mainSpinnerName, { text: "Done bundling javascripts" });
+    return res;
   });
 }
 

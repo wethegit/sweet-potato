@@ -8,9 +8,9 @@ const path = require("path");
 const resolve = require("resolve");
 
 // local imports
-const logger = require("../utils/logger.js");
+const spinners = require("../utils/spinners.js");
 const helpers = require("./helpers.js");
-const getClientEnvironment = require("./env.js");
+const { getClientEnvironment } = require("./env.js");
 const CONSTS = require("../utils/consts.js");
 
 // consts
@@ -37,7 +37,9 @@ function npmResolverPlugin() {
           },
         });
       } catch (err) {
-        logger.error("Error resolving pug module path", err);
+        spinners.fail("pages", {
+          text: `Error resolving pug module path\n${filename}\n${source}\n${err.message}`,
+        });
         return "";
       }
 
@@ -85,59 +87,56 @@ function saveHtml({
       page: data.page,
     });
   } catch (error) {
-    logger.error(
-      [outFile, "Failed to compiled template with locale variables"],
-      error
-    );
+    spinners.fail(`${outFile}-ss`, {
+      text: `Failed to compiled template with locale variables.\n${outFile}\n${error.message}`,
+      status: "non-spinnable",
+    });
+    return;
   }
 
   return fse.outputFile(outFile, htmlString).then(() => {
-    if (CONSTS.CONFIG.verbose) logger.success([outFile, "Compiled"]);
+    return { destination, filepath, filename, html: htmlString };
   });
 }
 
-async function pages(event, file) {
-  // if the watcher function fires this, then event and file will be populated
-  if (event && event == "add") return; // don't do anything for newly added files just yet
-
-  if (file && !fse.pathExistsSync(file)) return; // if file for some reason got removed
+async function pages(file, localeFile) {
+  if (
+    (file && !fse.pathExistsSync(file)) ||
+    (localeFile && !fse.pathExistsSync(localeFile))
+  )
+    return; // if file for some reason got removed
 
   let pugFiles;
   let singleLocale;
 
   if (file) {
-    let fileInfo = path.parse(file);
+    const prettified = await helpers.prettify(file, { parser: "pug" });
 
-    if (fileInfo.ext === ".pug") {
-      const prettified = await helpers.prettify(file, { parser: "pug" });
+    // if it had linting issues we don't continue and let the
+    // updates to the file trigger a new event
+    if (prettified === true) return;
 
-      // if it had linting issues we don't continue and let the
-      // updates to the file trigger a new event
-      if (prettified === true) return;
+    if (!file.includes(CONSTS.PAGES_DIRECTORY)) return;
 
-      if (file.includes(CONSTS.PAGES_DIRECTORY)) {
-        // if we are dealing with anything inside /pages
-        // we only compiled that specific template and locales
-        pugFiles = [file];
-      }
-    } else if (fileInfo.ext === ".yaml") {
-      // if we have a locale file then we save that specific language
-      // that way we only compiled that language template
-      singleLocale = fileInfo.base;
-      // if we are at not at the root then we find the relative template file
-      // to the locale file
-      if (file.includes(CONSTS.PAGES_DIRECTORY)) {
-        // this assumes that the yaml file lives inside `locales/` just a folder deep
-        pugFiles = await helpers.getFiles(
-          path.join(fileInfo.dir, "..", "*.pug")
-        );
+    // if we are dealing with anything inside /pages
+    // we only compiled that specific template and locales
+    pugFiles = [file];
+  }
 
-        if (!pugFiles) return;
-      }
+  if (localeFile) {
+    let fileInfo = path.parse(localeFile);
+    // if we have a locale file then we save that specific language
+    // that way we only compiled that language template
+    singleLocale = fileInfo.base;
+    // if we are at not at the root then we find the relative template file
+    // to the locale file
+    if (!pugFiles && localeFile.includes(CONSTS.PAGES_DIRECTORY)) {
+      // this assumes that the yaml file lives inside `locales/` just a folder deep
+      pugFiles = await helpers.getFiles(path.join(fileInfo.dir, "..", "*.pug"));
     }
   }
 
-  logger.start("Started templates compilation");
+  spinners.add("pages", { text: "Generating pages", indent: 2 });
 
   // If we don't have any files, then we query them all
   // this means that we are either dealing with a master pug file
@@ -174,7 +173,10 @@ async function pages(event, file) {
         plugins: [npmResolverPlugin()],
       });
     } catch (error) {
-      logger.error([file, "Error compiling template"], error);
+      spinners.fail(`${file}-c`, {
+        text: `Error compiling template\n${file}\n${error.message}`,
+        status: "non-spinnable",
+      });
       continue; // skips template file
     }
 
@@ -210,10 +212,13 @@ async function pages(event, file) {
       try {
         promises.push(saveHtml(outputOptions));
       } catch (error) {
-        logger.error("Failed to save template to disk", {
-          outputOptions,
-          error,
+        spinners.fail(`${outputOptions}-d`, {
+          text: `Failed to save template to disk\n${JSON.stringify(
+            outputOptions
+          )}\n${error.message}`,
+          status: "non-spinnable",
         });
+        return;
       }
     } else {
       // go through the locale files
@@ -236,12 +241,17 @@ async function pages(event, file) {
           );
 
         let mainYaml = {};
+
         if (fse.pathExistsSync(mainYamlFile)) {
           try {
             mainYaml = await fse
               .readFile(mainYamlFile, "utf8")
               .then((contents) => yaml.load(contents));
           } catch (error) {
+            spinners.fail(mainYamlFile, {
+              text: `Can't compile global yaml\n${file}\n${error.message}`,
+              status: "non-spinnable",
+            });
             // silently skips it
           }
         }
@@ -253,6 +263,10 @@ async function pages(event, file) {
               .readFile(locale, "utf8")
               .then((contents) => yaml.load(contents));
           } catch (error) {
+            spinners.fail(locale, {
+              text: `Can't compile page yaml\n${file}\n${error.message}`,
+              status: "non-spinnable",
+            });
             // silently skips it
           }
         }
@@ -274,15 +288,19 @@ async function pages(event, file) {
         try {
           promises.push(saveHtml(options));
         } catch (error) {
-          logger.error("Failed to save template to disk", { options, error });
+          spinners.fail(`${options.destination}-s`, {
+            text: `Failed to save template to disk\n${options.destinations}\n${error.message}`,
+            status: "non-spinnable",
+          });
         }
       }
     }
   }
 
-  return Promise.all(promises).then(() => {
+  return Promise.all(promises).then((res) => {
     // done 🎉
-    logger.finish("Ended templates compilation");
+    spinners.succeed("pages", { text: "Done generating pages" });
+    return res;
   });
 }
 

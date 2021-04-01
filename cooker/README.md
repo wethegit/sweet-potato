@@ -63,12 +63,12 @@ npx sweet-potato-cooker --help
 
 ## Config
 
-The cooker can be customized to an extent.
-Create a `sweet-potato-cooker.config.js` in the root of the project, same level as `package.json`.
+Create a `sweet-potato-cooker.config.js` in the root of the project same level as `package.json` and export a config object.
 
 ```js
 module.exports = {
   // Options
+  buildDirectory: "dist/",
 };
 ```
 

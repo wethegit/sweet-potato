@@ -21,11 +21,13 @@ Ideal for landing pages, anything that won't require complex layouts.
 You can also provide a Github URL to a template and even a specific branch.
 
 ### Basic
+
 ```sh
 npx @wethegit/sweet-potato-peeler my-dir --template https://github.com/[user]/[repo-name]
 ```
 
 ### Branch specific
+
 ```sh
 npx @wethegit/sweet-potato-peeler my-dir --template https://github.com/[user]/[repo-name]/tree/[branch-name]
 ```

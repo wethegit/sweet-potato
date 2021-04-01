@@ -1,6 +1,5 @@
 nav.navigation
   ul
-    li
-      a(href=`${globals.RELATIVE_ROOT}/`) Home
-    li
-      a(href=`${globals.RELATIVE_ROOT}/about/`) About
+    each item in globals.components.navigation
+      li
+        a(href=`${globals.RELATIVE_LOCALE_ROOT}${item.href}`)!=item.label
