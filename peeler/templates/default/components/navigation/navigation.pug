@@ -2,4 +2,7 @@ nav.navigation
   ul
     each item in globals.components.navigation
       li
-        a(href=`${globals.RELATIVE_LOCALE_ROOT}${item.href}`)!=item.label
+        a(href=`${globals.RELATIVE_LOCALE_ROOT}${item.href}`)!= item.label
+
+  - const isDefaultLocale = globals.LOCALE_KEY === 'default';
+  a(href=`${globals.RELATIVE_ROOT}${isDefaultLocale ? `/pt-br/` : ''}`)= isDefaultLocale ? 'pt-BR' : 'en-US'

@@ -1,7 +1,7 @@
 extends ../layouts/_main
 
-append styles
-  link(rel="stylesheet" href=`${globals.RELATIVE_ROOT}/index.css`)
+block append styles
+  link(rel="stylesheet", href=`${globals.RELATIVE_ROOT}/index.css`)
 
 block main
-  p!=page.about
+  p!= page.about

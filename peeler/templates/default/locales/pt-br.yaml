@@ -6,5 +6,7 @@ components:
   navigation:
     - label: Início
       href: /
+      navigation_key: home
     - label: Sobre
       href: /about/
+      navigation_key: about
