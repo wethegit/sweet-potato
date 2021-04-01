@@ -63,7 +63,7 @@ pages/
           |-- es.yaml
 ```
 
-#### Usage:
+#### Usage
 
 Let's say your `pages/locales/default.yaml` looked like this…
 
@@ -148,7 +148,7 @@ nav.main-nav(aria-label=globals.nav.label)
 All `.js` files will be transpiled and bundled with [esbuild](https://esbuild.github.io/) with the assumption that you are supporting modern browsers that have support for [ESM](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Modules).  
 Files outside the `pages/` folder won't generate an output but they will still be prettified and linted. Vendor and any other scripts that don't require bundling should be placed inside `public/` in the root of the project.
 
-### Usage:
+### Usage
 
 ```
 components/
@@ -177,7 +177,7 @@ build/
 
 Files outside the `pages/` folder won't generate an output but they will still be prettified and linted. If using `.css` instead of `.scss`, place your files inside `public/` in the root of the project.
 
-### Usage:
+### Usage
 
 ```
 components/
@@ -247,7 +247,7 @@ The only available global variable for styles is the **breakpoints** one, set in
 - **breakpoints =** breakpoints object set inside the config
 
 
-### Usage:
+### Usage
 
 `.env`:
 
