@@ -242,13 +242,10 @@ In addition to values from `.env` files Pug templates and Javascript files will 
 
 #### Styles
 
-To use global variales inside `.scss` files, you have to import them, please the **Usage** section bellow.
+The only available global variable for styles is the **breakpoints** one, set inside the config. It needs to be imported first before you can use, see **Usage** below.  
 
 - **breakpoints =** breakpoints object set inside the config
 
-```scss
-@import "sweet-potato:breakpoints";
-```
 
 ### Usage:
 
