@@ -99,8 +99,8 @@ A function that will receive the file and environment as parameters and must ret
 
 ### favicon
 
-**Type:** `object`  
-**Default:** `{}`  
+**Type:** `object || boolean`  
+**Default:** `false`  
 Given a `sourceFile` all modern and standard favicon images will be generated into the given `destination` directory inside the `buildDirectory` provided above.
 
 #### favicon.sourceFile
@@ -130,7 +130,7 @@ A list of valid [favicons](https://www.npmjs.com/package/favicons) options.
 
 ### sitemap
 
-**Type:** `string|boolean`  
+**Type:** `string || boolean`  
 **Default:** `false`  
 If set, will generate a `sitemap.xml` during the production build.  
 If a `string` is provided, will use it as the base url.  

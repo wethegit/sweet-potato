@@ -11,7 +11,12 @@ const CONSTS = require("../utils/consts.js");
 async function clean(shouldDeleteCache = false) {
   let promises = [];
 
-  spinners.add("clean-build", { text: "Deleting build directory", indent: 2 });
+  spinners.add("clean", { text: "Cleaning project destination", indent: 2 });
+
+  spinners.add("clean-build", {
+    text: "Deleting build directory",
+    indent: 4,
+  });
 
   promises.push(
     fse.remove(CONSTS.BUILD_DIRECTORY).then(() => {
@@ -23,8 +28,8 @@ async function clean(shouldDeleteCache = false) {
 
   if (shouldDeleteCache) {
     spinners.add("clean-cache", {
-      text: "Deleting build directory",
-      indent: 2,
+      text: "Deleting cache directory",
+      indent: 4,
     });
 
     promises.push(
@@ -36,7 +41,11 @@ async function clean(shouldDeleteCache = false) {
     );
   }
 
-  return promises;
+  return Promise.all(promises).then(() => {
+    spinners.succeed("clean", {
+      text: "Done cleaning project destination",
+    });
+  });
 }
 
 module.exports = clean;

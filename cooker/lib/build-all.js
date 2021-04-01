@@ -13,7 +13,7 @@ const sitemap = require("./sitemap.js");
 async function buildAll(env) {
   spinners.add("build", { text: "Generating production build" });
 
-  await clean();
+  await clean(true);
   await assets();
 
   const pagesPromise = pages();

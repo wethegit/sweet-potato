@@ -5,15 +5,9 @@ const spinners = require("../../../utils/spinners.js");
 const clean = require("../../../lib/clean");
 
 async function cleanCommand() {
-  spinners.add("clean", { text: "Deleting files" });
-
   try {
     await clean(true);
-    spinners.succeed("clean", { text: "Finished deleting all files." });
   } catch (error) {
-    spinners.fail("clean", {
-      text: `Failed to clean folders\n${error.message}`,
-    });
     process.exit(1);
   }
 }

@@ -12,7 +12,7 @@ let CONFIG = {
   sassOptions: () => {
     return {};
   },
-  favicon: {},
+  favicon: false,
   sitemap: false,
   compress: {
     imageminMozjpeg: {

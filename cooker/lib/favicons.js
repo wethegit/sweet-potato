@@ -13,10 +13,12 @@ const CONSTS = require("../utils/consts.js");
 const FAVICON_CONFIG = CONSTS.CONFIG.favicon;
 
 // build destination and options
-const FAVICONS_DIRECTORY = path.join(
-  CONSTS.BUILD_DIRECTORY,
-  FAVICON_CONFIG.destination ? FAVICON_CONFIG.destination : "favicons"
-);
+const FAVICONS_DIRECTORY = FAVICON_CONFIG
+  ? path.join(
+      CONSTS.BUILD_DIRECTORY,
+      FAVICON_CONFIG.destination ? FAVICON_CONFIG.destination : "favicons"
+    )
+  : null;
 const FAVICONS_CACHE = path.join(CONSTS.CACHE_DIRECTORY, "favicons.json");
 const GENERATOR_CONFIG = FAVICON_CONFIG.generatorOptions || {};
 

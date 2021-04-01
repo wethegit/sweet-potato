@@ -12,8 +12,6 @@ const spinners = require("../utils/spinners.js");
 async function assets(file) {
   if (file && !fse.pathExistsSync(file)) return; // if file for some reason got removed
 
-  spinners.add("assets", { text: "Copying assets", indent: 2 });
-
   let from = CONSTS.PUBLIC_DIRECTORY;
   let to = CONSTS.BUILD_DIRECTORY;
 
@@ -26,7 +24,11 @@ async function assets(file) {
 
   if (!fse.pathExistsSync(from)) return;
 
+  spinners.add("assets", { text: "Copying assets", indent: 2 });
+
   try {
+    fse.ensureDirSync(CONSTS.BUILD_DIRECTORY);
+
     return fse
       .copy(from, to, { overwrite: true, preserveTimestamps: true })
       .then(() => {
