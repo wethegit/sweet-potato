@@ -237,8 +237,8 @@ In addition to values from `.env` files Pug templates and Javascript files will 
 #### Javascript
 
 - **NODE_ENV =** current environment mode
-- **RELATIVE_ROOT =** relative path from file to `build/`
-- **BREAKPOINTS =** breakpoints object set inside the config
+- **SWEET_POTATO_RELATIVE_ROOT =** relative path from file to `build/`
+- **SWEET_POTATO_BREAKPOINTS =** breakpoints object set inside the config
 
 #### Styles
 
