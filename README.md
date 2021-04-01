@@ -124,16 +124,16 @@ nav:
     - label: Home
       url: /
     - label: About
-      url: /about
+      url: /about/
     - label: Contact
-      url: /contact
+      url: /contact/
 ```
 
 You could then access this data from within any of your Pug files, by using the `globals` variable:
 
 ```pug
 //-
-  pages/main.pug
+  layouts/_main.pug
   Let's assume this is a top-level template which gets extended on a per-page basis.
 
 nav.main-nav(aria-label=globals.nav.label)
@@ -242,13 +242,10 @@ In addition to values from `.env` files Pug templates and Javascript files will 
 
 #### Styles
 
-To use global variales inside `.scss` files, you have to import them, please the **Usage** section bellow.
+The only available global variable for styles is the **breakpoints** one, set inside the config. It needs to be imported first before you can use, see **Usage** below.  
 
 - **breakpoints =** breakpoints object set inside the config
 
-```scss
-@import "sweet-potato:breakpoints";
-```
 
 ### Usage:
 
