@@ -2,12 +2,13 @@
 "use strict";
 
 const spinners = require("../../../utils/spinners.js");
+const clean = require("../../../lib/clean");
 
-async function clean() {
+async function cleanCommand() {
   spinners.add("clean", { text: "Deleting files" });
 
   try {
-    await Promise.all([clean(), fse.remove(CONSTS.CACHE_DIRECTORY)]);
+    await clean(true);
     spinners.succeed("clean", { text: "Finished deleting all files." });
   } catch (error) {
     spinners.fail("clean", {
@@ -17,4 +18,4 @@ async function clean() {
   }
 }
 
-module.exports = clean;
+module.exports = cleanCommand;

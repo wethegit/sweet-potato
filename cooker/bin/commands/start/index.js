@@ -4,7 +4,7 @@
 // and also fires a local server.
 "use strict";
 
-async function start(options) {
+async function startCommand(options) {
   // Do this as the first thing so that any code reading it knows the right env.
   process.env.BABEL_ENV = "development";
   process.env.NODE_ENV = "development";
@@ -25,7 +25,6 @@ async function start(options) {
   const express = require("express");
 
   const CONSTS = require("../../../utils/consts");
-  const assets = require("../../../lib/assets.js");
   const clean = require("../../../lib/clean.js");
   const watch = require("./watch.js");
   const requestListener = require("./request-listener.js");
@@ -41,10 +40,7 @@ async function start(options) {
   const host = options.host || "localhost";
   const port = options.port || 8080;
 
-  if (options.clean) {
-    await clean();
-    await assets();
-  }
+  if (options.clean) clean();
 
   watch(() => {
     io.sockets.emit("browserReload");
@@ -55,4 +51,4 @@ async function start(options) {
   });
 }
 
-module.exports = start;
+module.exports = startCommand;

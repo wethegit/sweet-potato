@@ -140,6 +140,12 @@ async function requestListener(req, res) {
           CONSTS.PAGES_DIRECTORY,
           pathname.replace(ext, extMap[ext])
         );
+
+        if (!fse.pathExistsSync(file)) {
+          _doesntExist(res, file);
+          return;
+        }
+
         try {
           contents = await _css(file);
         } catch (er) {
@@ -152,7 +158,17 @@ async function requestListener(req, res) {
           CONSTS.PAGES_DIRECTORY,
           pathname.replace(ext, extMap[ext])
         );
-        contents = await _js(file);
+
+        if (!fse.pathExistsSync(file)) {
+          _doesntExist(res, file);
+          return;
+        }
+
+        try {
+          contents = await _js(file);
+        } catch (er) {
+          console.log(er);
+        }
         break;
 
       default:
@@ -198,7 +214,7 @@ async function requestListener(req, res) {
           );
 
         if (!fse.pathExistsSync(file)) {
-          _error(res, file, "Couldn't find file for this route");
+          _doesntExist(res, file);
           break;
         }
 

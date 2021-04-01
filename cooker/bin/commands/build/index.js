@@ -1,7 +1,7 @@
 // The purpose os this command is generate a production build of the website
 "use strict";
 
-async function build(options) {
+async function buildCommand(options) {
   // consts
   process.env.BABEL_ENV = "production";
   process.env.NODE_ENV = "production";
@@ -29,4 +29,4 @@ async function build(options) {
   }
 }
 
-module.exports = build;
+module.exports = buildCommand;
