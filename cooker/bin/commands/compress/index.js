@@ -107,7 +107,7 @@ async function compressCommand(options) {
 
   await Promise.all(promises);
 
-  fse.writeJsonSync(CACHE_FILE, images);
+  fse.outputJsonSync(CACHE_FILE, images);
 
   // done 🎉
   spinners.succeed("compress", {
