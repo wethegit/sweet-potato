@@ -218,7 +218,11 @@ async function requestListener(req, res) {
           break;
         }
 
-        contents = await _html(file, locale, pageName);
+        try {
+          contents = await _html(file, locale, pageName);
+        } catch (er) {
+          console.log(er);
+        }
         break;
     }
   } catch (err) {

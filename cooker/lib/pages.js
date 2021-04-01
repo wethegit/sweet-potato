@@ -48,14 +48,15 @@ function npmResolverPlugin() {
   };
 }
 
-function saveHtml({
-  destination,
-  filepath,
-  filename,
-  pugFunction,
-  data,
-  locale,
-}) {
+function saveHtml(outputOptions, { spinnerName, source }) {
+  const {
+    destination,
+    filepath,
+    filename,
+    pugFunction,
+    data,
+    locale,
+  } = outputOptions;
   // page dest
   const dest = path.join(destination, filepath);
 
@@ -87,14 +88,15 @@ function saveHtml({
       page: data.page,
     });
   } catch (error) {
-    spinners.fail(`${outFile}-ss`, {
-      text: `Failed to compiled template with locale variables.\n${outFile}\n${error.message}`,
+    spinners.fail(spinnerName, {
+      text: `Failed to compile template with locale variables.\n${error.message}`,
       status: "non-spinnable",
     });
     return;
   }
 
   return fse.outputFile(outFile, htmlString).then(() => {
+    spinners.succeed(spinnerName, { text: `Done compiling ${source}` });
     return { destination, filepath, filename, html: htmlString };
   });
 }
@@ -158,6 +160,9 @@ async function pages(file, localeFile) {
       continue;
     }
 
+    const fileSpinnerName = `${file}-c`;
+    spinners.add(fileSpinnerName, { text: `Compiling ${file}`, indent: 4 });
+
     // get the file information and locale files
     const templateInfo = path.parse(file);
 
@@ -173,7 +178,7 @@ async function pages(file, localeFile) {
         plugins: [npmResolverPlugin()],
       });
     } catch (error) {
-      spinners.fail(`${file}-c`, {
+      spinners.fail(fileSpinnerName, {
         text: `Error compiling template\n${file}\n${error.message}`,
         status: "non-spinnable",
       });
@@ -208,13 +213,43 @@ async function pages(file, localeFile) {
     };
 
     if (localeFiles.length <= 0) {
+      let mainYamlFile = path.join(
+        CONSTS.SOURCE_DIRECTORY,
+        "locales",
+        "default.yaml"
+      );
+
+      let mainYaml = {};
+
+      if (fse.pathExistsSync(mainYamlFile)) {
+        try {
+          mainYaml = await fse
+            .readFile(mainYamlFile, "utf8")
+            .then((contents) => yaml.load(contents));
+        } catch (error) {
+          spinners.fail(fileSpinnerName, {
+            text: `Can't compile global yaml\n${file}\n${error.message}`,
+            status: "non-spinnable",
+          });
+        }
+      }
+
+      outputOptions.data.globals = mainYaml;
+
       // render the html with the data and save it
       try {
-        promises.push(saveHtml(outputOptions));
+        promises.push(
+          saveHtml(outputOptions, {
+            spinnerName: fileSpinnerName,
+            source: file,
+          })
+        );
       } catch (error) {
-        spinners.fail(`${outputOptions}-d`, {
+        spinners.fail(fileSpinnerName, {
           text: `Failed to save template to disk\n${JSON.stringify(
-            outputOptions
+            outputOptions,
+            null,
+            2
           )}\n${error.message}`,
           status: "non-spinnable",
         });
@@ -248,7 +283,7 @@ async function pages(file, localeFile) {
               .readFile(mainYamlFile, "utf8")
               .then((contents) => yaml.load(contents));
           } catch (error) {
-            spinners.fail(mainYamlFile, {
+            spinners.fail(fileSpinnerName, {
               text: `Can't compile global yaml\n${file}\n${error.message}`,
               status: "non-spinnable",
             });
@@ -263,7 +298,7 @@ async function pages(file, localeFile) {
               .readFile(locale, "utf8")
               .then((contents) => yaml.load(contents));
           } catch (error) {
-            spinners.fail(locale, {
+            spinners.fail(fileSpinnerName, {
               text: `Can't compile page yaml\n${file}\n${error.message}`,
               status: "non-spinnable",
             });
@@ -286,9 +321,14 @@ async function pages(file, localeFile) {
         };
 
         try {
-          promises.push(saveHtml(options));
+          promises.push(
+            saveHtml(options, {
+              spinnerName: fileSpinnerName,
+              source: file,
+            })
+          );
         } catch (error) {
-          spinners.fail(`${options.destination}-s`, {
+          spinners.fail(fileSpinnerName, {
             text: `Failed to save template to disk\n${options.destinations}\n${error.message}`,
             status: "non-spinnable",
           });
