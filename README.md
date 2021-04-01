@@ -124,16 +124,16 @@ nav:
     - label: Home
       url: /
     - label: About
-      url: /about
+      url: /about/
     - label: Contact
-      url: /contact
+      url: /contact/
 ```
 
 You could then access this data from within any of your Pug files, by using the `globals` variable:
 
 ```pug
 //-
-  pages/main.pug
+  layouts/_main.pug
   Let's assume this is a top-level template which gets extended on a per-page basis.
 
 nav.main-nav(aria-label=globals.nav.label)
