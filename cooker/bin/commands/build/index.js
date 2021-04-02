@@ -20,9 +20,11 @@ async function buildCommand(options) {
 
   // local imports
   const buildAll = require("../../../lib/build-all.js");
+  const clean = require("../../../lib/clean.js");
 
   try {
-    await buildAll(process.env.NODE_ENV);
+    await clean(true);
+    await buildAll();
   } catch (error) {
     console.log(error);
     process.exit(1);

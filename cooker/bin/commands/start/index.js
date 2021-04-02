@@ -24,8 +24,7 @@ async function startCommand(options) {
   const http = require("http");
   const express = require("express");
 
-  const CONSTS = require("../../../utils/consts");
-  const clean = require("../../../lib/clean.js");
+  const CONSTS = require("../../../utils/consts.js");
   const watch = require("./watch.js");
   const requestListener = require("./request-listener.js");
 
@@ -40,10 +39,12 @@ async function startCommand(options) {
   const host = options.host || "localhost";
   const port = options.port || 8080;
 
-  if (options.clean) clean();
-
+  let debouncer;
   watch(() => {
-    io.sockets.emit("browserReload");
+    clearTimeout(debouncer);
+    debouncer = setTimeout(() => {
+      io.sockets.emit("browserReload");
+    }, 300);
   });
 
   server.listen(port, host, () => {

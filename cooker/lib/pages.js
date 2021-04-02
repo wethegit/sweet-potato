@@ -65,8 +65,6 @@ function saveHtml(outputOptions, { spinnerName, source }) {
   let globals = {
     ...env.raw,
     RELATIVE_ROOT: relroot ? relroot : ".",
-    // adds the favicon config data
-    FAVICONS: CONSTS.CONFIG.favicon.generatorOptions,
     BREAKPOINTS: CONSTS.CONFIG.breakpoints || {},
     ...data.globals,
   };
@@ -138,8 +136,6 @@ async function pages(file, localeFile) {
     }
   }
 
-  spinners.add("pages", { text: "Generating pages", indent: 2 });
-
   // If we don't have any files, then we query them all
   // this means that we are either dealing with a master pug file
   // or a master locale file
@@ -148,8 +144,11 @@ async function pages(file, localeFile) {
       path.join(CONSTS.PAGES_DIRECTORY, "**", "*.pug")
     );
 
+  spinners.add("pages", { text: "Generating pages", indent: 2 });
+
   // go throught all of them
   let promises = [];
+
   for (const file of pugFiles) {
     const prettified = await helpers.prettify(file, { parser: "pug" });
 
