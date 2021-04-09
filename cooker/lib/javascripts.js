@@ -25,9 +25,7 @@ if (CONSTS.CONFIG.breakpoints) {
 
   fse.outputFileSync(
     breakpointsInjectFile,
-    `export let SWEET_POTATO_BREAKPOINTS = ${JSON.stringify(
-      CONSTS.CONFIG.breakpoints
-    )};`
+    `export let BREAKPOINTS = ${JSON.stringify(CONSTS.CONFIG.breakpoints)};`
   );
 }
 
@@ -114,10 +112,7 @@ async function javascripts(file) {
     );
 
     let DEFINE_VALUES = {
-      SWEET_POTATO_RELATIVE_ROOT: `"${path.relative(
-        DEST,
-        CONSTS.BUILD_DIRECTORY
-      )}"`,
+      RELATIVE_ROOT: `"${path.relative(DEST, CONSTS.BUILD_DIRECTORY)}"`,
     };
 
     for (const [key, value] of Object.entries(env.raw)) {
