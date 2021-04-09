@@ -3,7 +3,7 @@ function watch(cb) {
 
   const path = require("path");
   const chokidar = require("chokidar");
-  const favicons = require("../../../lib/favicons.js");
+
   const CONSTS = require("../../../utils/consts.js");
   const logger = require("../../../utils/logger.js");
 
@@ -12,6 +12,9 @@ function watch(cb) {
     path.join(CONSTS.CWD, ".git"),
     path.join(CONSTS.CWD, "build"),
     path.join(CONSTS.CWD, ".vscode"),
+    path.join(CONSTS.CWD, "package.json"),
+    path.join(CONSTS.CWD, "package-lock.json"),
+    path.join(CONSTS.CWD, "yarn-lock.json"),
   ];
 
   if (CONSTS.CONFIG.ignoreOnWatch) {
@@ -21,53 +24,32 @@ function watch(cb) {
 
   const options = {
     persistent: true,
-    interval: 300,
     ignoreInitial: true,
     ignored: pathsToIgnore,
   };
 
   // watch for pages
-  chokidar
-    .watch(path.join(CONSTS.CWD, "**", "*.pug"), options)
-    .on("all", (event, file) => {
-      if (cb) cb();
-    });
+  chokidar.watch(path.join(CONSTS.CWD, "**", "*.pug"), options).on("all", cb);
 
-  chokidar
-    .watch(path.join(CONSTS.CWD, "**", "*.yaml"), options)
-    .on("all", (event, file) => {
-      if (cb) cb();
-    });
+  chokidar.watch(path.join(CONSTS.CWD, "**", "*.yaml"), options).on("all", cb);
 
   // watch for styles
-  chokidar
-    .watch(path.join(CONSTS.CWD, "**", "*.scss"), options)
-    .on("all", (event, file) => {
-      if (cb) cb();
-    });
+  chokidar.watch(path.join(CONSTS.CWD, "**", "*.scss"), options).on("all", cb);
 
   // watch for javascripts
+  chokidar.watch(path.join(CONSTS.CWD, "**", "*.js"), options).on("all", cb);
+
+  // watch for assets
   chokidar
-    .watch(path.join(CONSTS.CWD, "**", "*.js"), options)
-    .on("all", (event, file) => {
-      if (cb) cb();
-    });
+    .watch(path.join(CONSTS.PUBLIC_DIRECTORY, "**", "*"), options)
+    .on("all", cb);
 
   // watch for the config file
   chokidar
     .watch(path.join(CONSTS.CWD, "sweet-potato-cooker.config.js"), options)
-    .on("all", function () {
+    .on("all", () => {
       logger.warning("Detected changes to config. Please restart.");
     });
-
-  // watch for the favicon
-  if (CONSTS.CONFIG.favicon && CONSTS.CONFIG.favicon.SOURCE_FILE)
-    chokidar
-      .watch(path.join(CONSTS.CWD, CONSTS.CONFIG.favicon.sourceFile), options)
-      .on("all", async (event, file) => {
-        await favicons(file);
-        if (cb) cb();
-      });
 }
 
 module.exports = watch;

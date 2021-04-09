@@ -2,8 +2,8 @@ const path = require("path");
 const fse = require("fs-extra");
 const mime = require("mime-types");
 
-const pages = require("../../../lib/pages");
-const styles = require("../../../lib/styles");
+const pages = require("../../../lib/pages.js");
+const styles = require("../../../lib/styles.js");
 const javascripts = require("../../../lib/javascripts.js");
 const CONSTS = require("../../../utils/consts.js");
 const extMap = {

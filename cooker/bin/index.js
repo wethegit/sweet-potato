@@ -25,7 +25,6 @@ prog
     false
   )
   .option("--port", "Port to bind", 8080)
-  .option("--clean", "Delete all cache starting", false)
   .option("--host", "Hostname to bind", "localhost")
   .option("--open", "Automatic web browser launching", false)
   .action(commands.start);
@@ -40,7 +39,8 @@ prog
 
 prog
   .command("clean")
-  .describe("Cleans all cache and output folders")
+  .describe("Deletes all cache and output folders")
+  .option("--cache", "Deletes cache", true)
   .action(commands.clean);
 
 prog.parse(process.argv);
