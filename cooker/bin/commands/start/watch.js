@@ -15,6 +15,8 @@ function watch(cb) {
     path.join(CONSTS.CWD, "package.json"),
     path.join(CONSTS.CWD, "package-lock.json"),
     path.join(CONSTS.CWD, "yarn-lock.json"),
+    path.join(CONSTS.BUILD_DIRECTORY),
+    path.join(CONSTS.CACHE_DIRECTORY),
   ];
 
   if (CONSTS.CONFIG.ignoreOnWatch) {
