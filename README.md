@@ -21,15 +21,6 @@ $ cd my-website
 $ npm start
 ```
 
-### Production
-When you are ready to deploy, just generate a production build:
-
-```sh
-$ npm run build
-```
-
-A `build/` directory will be genrated and will contain all of the files ready to be deployed to your edge of choice.  
-
 ## Pages
 
 Adding pages to your site is as easy as creating folders for each of them within the `pages/` directory, and placing an `index.pug` file in each. The "root" or "home" page of your site does not need to live in its own folder—it will just need an `index.pug` file at the root of `pages/`. A site with a homepage, about page, and contact page might have a `pages/` structure like this:
@@ -290,7 +281,16 @@ p=globals.PUBLIC_URL //- from .env
 }
 ```
 
-## Options and customization
+## Deploy
+When you are ready to deploy, just generate a production build:
+
+```sh
+$ npm run build
+```
+
+A `build/` directory will be genrated and will contain all of the files ready to be deployed to your edge of choice.  
+
+### Options and customization
 
 Under the hood, sweet-potato uses [sweet-potato-cooker](https://github.com/wethegit/sweet-potato/tree/main/cooker) to serve, bundle and optimize assets.  
 For a list of all the available options check the [docs](https://github.com/wethegit/sweet-potato/tree/main/cooker#config).
