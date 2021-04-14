@@ -1,7 +1,8 @@
 # sweet-potato-cooker 🍠👩‍🍳
 
 An opinionated static site generator that uses [Pug](https://pugjs.org/api/getting-started.html) as a template engine with `yaml` files for localization and [Sass](https://sass-lang.com/) for styles.  
-For information on how to structure the project check the [sweet-potato docs](https://github.com/wethegit/sweet-potato).
+
+> `sweet-potato-cooker` is part of the `sweet-potato` suite of tools. For information on how to structure the project check the [sweet-potato docs](https://github.com/wethegit/sweet-potato).
 
 ## Usage
 
