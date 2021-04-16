@@ -7,6 +7,6 @@
   },
   "dependencies": {},
   "devDependencies": {
-    "@wethegit/sweet-potato-cooker": "^0.9.0"
+    "@wethegit/sweet-potato-cooker": "^0.9.4"
   }
 }
