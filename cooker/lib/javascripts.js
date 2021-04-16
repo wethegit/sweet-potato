@@ -20,15 +20,6 @@ const env = getClientEnvironment();
 const isProduction = process.env.NODE_ENV == "production";
 let breakpointsInjectFile;
 
-if (CONSTS.CONFIG.breakpoints) {
-  breakpointsInjectFile = path.join(CONSTS.CACHE_DIRECTORY, "breakpoints.js");
-
-  fse.outputFileSync(
-    breakpointsInjectFile,
-    `export let BREAKPOINTS = ${JSON.stringify(CONSTS.CONFIG.breakpoints)};`
-  );
-}
-
 async function lint(file, instance) {
   // 2. Lint files. This doesn't modify target files.
   const results = await instance.lintFiles([file]);
@@ -48,6 +39,15 @@ async function lint(file, instance) {
 
 async function javascripts(file) {
   if (file && !fse.pathExistsSync(file)) return; // if file for some reason got removed
+
+  if (CONSTS.CONFIG.breakpoints && !breakpointsInjectFile) {
+    breakpointsInjectFile = path.join(CONSTS.CACHE_DIRECTORY, "breakpoints.js");
+
+    fse.outputFileSync(
+      breakpointsInjectFile,
+      `export let BREAKPOINTS = ${JSON.stringify(CONSTS.CONFIG.breakpoints)};`
+    );
+  }
 
   // 1. Create an instance with the `fix` option.
   const eslint = new ESLint({
