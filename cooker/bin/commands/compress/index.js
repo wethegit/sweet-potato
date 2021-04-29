@@ -49,7 +49,7 @@ async function compressCommand(options) {
       if (hash === images[ID]) return;
     }
 
-    const COMPRESSION_OPTIONS = CONSTS.compress;
+    const COMPRESSION_OPTIONS = CONSTS.CONFIG.compress;
 
     spinners.add(`compress-${ID}`, {
       text: `Compressing ${file}`,
