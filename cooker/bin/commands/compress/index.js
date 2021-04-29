@@ -89,8 +89,8 @@ async function compressCommand(options) {
   // if a file is passed use it instead of querying for all
   const ASSETS = await helpers.getFiles(
     options["directory"]
-      ? path.join(CONSTS.CWD, options["directory"])
-      : CONSTS.PUBLIC_DIRECTORY
+      ? path.join(CONSTS.CWD, options["directory"], "**", "*")
+      : path.join(CONSTS.PUBLIC_DIRECTORY, "**", "*")
   );
 
   // save all promises here to callback completion
