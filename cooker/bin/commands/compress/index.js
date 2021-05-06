@@ -30,7 +30,7 @@ async function compressCommand(options) {
   const toCompress = [".jpg", ".jpeg", ".png", ".svg", ".gif"];
 
   // The cache file that shows what images have already been compressed and records their current size
-  const CACHE_FILE = path.join(CONSTS.CACHE_DIRECTORY, "compress.json");
+  const CACHE_FILE = path.join(CONSTS.CWD, "sweet-potato-compression.cache.json");
   const images = fse.pathExistsSync(CACHE_FILE)
     ? fse.readJsonSync(CACHE_FILE)
     : {};
