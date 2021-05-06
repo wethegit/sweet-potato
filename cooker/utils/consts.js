@@ -36,7 +36,6 @@ if (fse.pathExistsSync(CONFIG_PATH)) {
 }
 
 const BUILD_DIRECTORY = path.join(CWD, CONFIG.buildDirectory);
-const CACHE_DIRECTORY = path.join(CWD, ".cache", "sweet-potato-cooker");
 
 const SOURCE_DIRECTORY = path.join(CWD, CONFIG.sourceDirectory);
 const PAGES_DIRECTORY = path.join(SOURCE_DIRECTORY, "pages");
@@ -52,7 +51,6 @@ module.exports = {
   CONFIG,
   ROOT_DIRECTORY,
   BUILD_DIRECTORY,
-  CACHE_DIRECTORY,
   SOURCE_DIRECTORY,
   PAGES_DIRECTORY,
   PUBLIC_DIRECTORY,
