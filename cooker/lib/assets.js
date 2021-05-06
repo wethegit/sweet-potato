@@ -7,25 +7,10 @@ const path = require("path");
 
 // local imports
 const CONSTS = require("../utils/consts.js");
-const logger = require("../utils/logger.js");
+const spinners = require("../utils/spinners.js");
 
-const copyRecursive = async function (src, dest) {
-  await fse.copy(src, dest);
-
-  if (fse.lstatSync(src).isDirectory())
-    fse
-      .readdirSync(src)
-      .map((name) => name)
-      .filter((dir) => fse.lstatSync(path.join(src, dir)).isDirectory())
-      .forEach((dir) => {
-        copyRecursive(path.join(src, dir), path.join(dest, dir));
-      });
-};
-
-async function assets(event, file) {
+async function assets(file) {
   if (file && !fse.pathExistsSync(file)) return; // if file for some reason got removed
-
-  logger.start("Started assets transfer");
 
   let from = CONSTS.PUBLIC_DIRECTORY;
   let to = CONSTS.BUILD_DIRECTORY;
@@ -39,11 +24,19 @@ async function assets(event, file) {
 
   if (!fse.pathExistsSync(from)) return;
 
+  spinners.add("assets", { text: "Copying assets", indent: 2 });
+
   try {
-    await copyRecursive(from, to);
-    logger.finish("Ended assets transfer");
+    fse.ensureDirSync(CONSTS.BUILD_DIRECTORY);
+
+    return fse
+      .copy(from, to, { overwrite: true, preserveTimestamps: true })
+      .then(() => {
+        spinners.succeed("assets", { text: "Done copying assets" });
+        return { from, to };
+      });
   } catch (error) {
-    logger.error("Failed to copy assets", error);
+    spinners.fail("assets", { text: `Failed to copy assets ${error.message}` });
   }
 }
 

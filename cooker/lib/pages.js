@@ -8,9 +8,9 @@ const path = require("path");
 const resolve = require("resolve");
 
 // local imports
-const logger = require("../utils/logger.js");
+const spinners = require("../utils/spinners.js");
 const helpers = require("./helpers.js");
-const getClientEnvironment = require("./env.js");
+const { getClientEnvironment } = require("./env.js");
 const CONSTS = require("../utils/consts.js");
 
 // consts
@@ -37,7 +37,9 @@ function npmResolverPlugin() {
           },
         });
       } catch (err) {
-        logger.error("Error resolving pug module path", err);
+        spinners.fail("pages", {
+          text: `Error resolving pug module path\n${filename}\n${source}\n${err.message}`,
+        });
         return "";
       }
 
@@ -46,14 +48,15 @@ function npmResolverPlugin() {
   };
 }
 
-function saveHtml({
-  destination,
-  filepath,
-  filename,
-  pugFunction,
-  data,
-  locale,
-}) {
+function saveHtml(outputOptions, { spinnerName, source }) {
+  const {
+    destination,
+    filepath,
+    filename,
+    pugFunction,
+    data,
+    locale,
+  } = outputOptions;
   // page dest
   const dest = path.join(destination, filepath);
 
@@ -62,8 +65,6 @@ function saveHtml({
   let globals = {
     ...env.raw,
     RELATIVE_ROOT: relroot ? relroot : ".",
-    // adds the favicon config data
-    FAVICONS: CONSTS.CONFIG.favicon.generatorOptions,
     BREAKPOINTS: CONSTS.CONFIG.breakpoints || {},
     ...data.globals,
   };
@@ -85,59 +86,55 @@ function saveHtml({
       page: data.page,
     });
   } catch (error) {
-    logger.error(
-      [outFile, "Failed to compiled template with locale variables"],
-      error
-    );
+    spinners.fail(spinnerName, {
+      text: `Failed to compile template with locale variables.\n${error.message}`,
+      status: "non-spinnable",
+    });
+    return;
   }
 
   return fse.outputFile(outFile, htmlString).then(() => {
-    if (CONSTS.CONFIG.verbose) logger.success([outFile, "Compiled"]);
+    spinners.succeed(spinnerName, { text: `Done compiling ${source}` });
+    return { destination, filepath, filename, html: htmlString };
   });
 }
 
-async function pages(event, file) {
-  // if the watcher function fires this, then event and file will be populated
-  if (event && event == "add") return; // don't do anything for newly added files just yet
-
-  if (file && !fse.pathExistsSync(file)) return; // if file for some reason got removed
+async function pages(file, localeFile) {
+  if (
+    (file && !fse.pathExistsSync(file)) ||
+    (localeFile && !fse.pathExistsSync(localeFile))
+  )
+    return; // if file for some reason got removed
 
   let pugFiles;
   let singleLocale;
 
   if (file) {
-    let fileInfo = path.parse(file);
+    const prettified = await helpers.prettify(file, { parser: "pug" });
 
-    if (fileInfo.ext === ".pug") {
-      const prettified = await helpers.prettify(file, { parser: "pug" });
+    // if it had linting issues we don't continue and let the
+    // updates to the file trigger a new event
+    if (prettified === true) return;
 
-      // if it had linting issues we don't continue and let the
-      // updates to the file trigger a new event
-      if (prettified === true) return;
+    if (!file.includes(CONSTS.PAGES_DIRECTORY)) return;
 
-      if (file.includes(CONSTS.PAGES_DIRECTORY)) {
-        // if we are dealing with anything inside /pages
-        // we only compiled that specific template and locales
-        pugFiles = [file];
-      }
-    } else if (fileInfo.ext === ".yaml") {
-      // if we have a locale file then we save that specific language
-      // that way we only compiled that language template
-      singleLocale = fileInfo.base;
-      // if we are at not at the root then we find the relative template file
-      // to the locale file
-      if (file.includes(CONSTS.PAGES_DIRECTORY)) {
-        // this assumes that the yaml file lives inside `locales/` just a folder deep
-        pugFiles = await helpers.getFiles(
-          path.join(fileInfo.dir, "..", "*.pug")
-        );
-
-        if (!pugFiles) return;
-      }
-    }
+    // if we are dealing with anything inside /pages
+    // we only compiled that specific template and locales
+    pugFiles = [file];
   }
 
-  logger.start("Started templates compilation");
+  if (localeFile) {
+    let fileInfo = path.parse(localeFile);
+    // if we have a locale file then we save that specific language
+    // that way we only compiled that language template
+    singleLocale = fileInfo.base;
+    // if we are at not at the root then we find the relative template file
+    // to the locale file
+    if (!pugFiles && localeFile.includes(CONSTS.PAGES_DIRECTORY)) {
+      // this assumes that the yaml file lives inside `locales/` just a folder deep
+      pugFiles = await helpers.getFiles(path.join(fileInfo.dir, "..", "*.pug"));
+    }
+  }
 
   // If we don't have any files, then we query them all
   // this means that we are either dealing with a master pug file
@@ -147,8 +144,11 @@ async function pages(event, file) {
       path.join(CONSTS.PAGES_DIRECTORY, "**", "*.pug")
     );
 
+  spinners.add("pages", { text: "Generating pages", indent: 2 });
+
   // go throught all of them
   let promises = [];
+
   for (const file of pugFiles) {
     const prettified = await helpers.prettify(file, { parser: "pug" });
 
@@ -158,6 +158,9 @@ async function pages(event, file) {
       pugFiles.push(file);
       continue;
     }
+
+    const fileSpinnerName = `${file}-c`;
+    spinners.add(fileSpinnerName, { text: `Compiling ${file}`, indent: 4 });
 
     // get the file information and locale files
     const templateInfo = path.parse(file);
@@ -174,7 +177,10 @@ async function pages(event, file) {
         plugins: [npmResolverPlugin()],
       });
     } catch (error) {
-      logger.error([file, "Error compiling template"], error);
+      spinners.fail(fileSpinnerName, {
+        text: `Error compiling template\n${file}\n${error.message}`,
+        status: "non-spinnable",
+      });
       continue; // skips template file
     }
 
@@ -206,14 +212,47 @@ async function pages(event, file) {
     };
 
     if (localeFiles.length <= 0) {
+      let mainYamlFile = path.join(
+        CONSTS.SOURCE_DIRECTORY,
+        "locales",
+        "default.yaml"
+      );
+
+      let mainYaml = {};
+
+      if (fse.pathExistsSync(mainYamlFile)) {
+        try {
+          mainYaml = await fse
+            .readFile(mainYamlFile, "utf8")
+            .then((contents) => yaml.load(contents));
+        } catch (error) {
+          spinners.fail(fileSpinnerName, {
+            text: `Can't compile global yaml\n${file}\n${error.message}`,
+            status: "non-spinnable",
+          });
+        }
+      }
+
+      outputOptions.data.globals = mainYaml;
+
       // render the html with the data and save it
       try {
-        promises.push(saveHtml(outputOptions));
+        promises.push(
+          saveHtml(outputOptions, {
+            spinnerName: fileSpinnerName,
+            source: file,
+          })
+        );
       } catch (error) {
-        logger.error("Failed to save template to disk", {
-          outputOptions,
-          error,
+        spinners.fail(fileSpinnerName, {
+          text: `Failed to save template to disk\n${JSON.stringify(
+            outputOptions,
+            null,
+            2
+          )}\n${error.message}`,
+          status: "non-spinnable",
         });
+        return;
       }
     } else {
       // go through the locale files
@@ -236,12 +275,17 @@ async function pages(event, file) {
           );
 
         let mainYaml = {};
+
         if (fse.pathExistsSync(mainYamlFile)) {
           try {
             mainYaml = await fse
               .readFile(mainYamlFile, "utf8")
               .then((contents) => yaml.load(contents));
           } catch (error) {
+            spinners.fail(fileSpinnerName, {
+              text: `Can't compile global yaml\n${file}\n${error.message}`,
+              status: "non-spinnable",
+            });
             // silently skips it
           }
         }
@@ -253,6 +297,10 @@ async function pages(event, file) {
               .readFile(locale, "utf8")
               .then((contents) => yaml.load(contents));
           } catch (error) {
+            spinners.fail(fileSpinnerName, {
+              text: `Can't compile page yaml\n${file}\n${error.message}`,
+              status: "non-spinnable",
+            });
             // silently skips it
           }
         }
@@ -272,17 +320,26 @@ async function pages(event, file) {
         };
 
         try {
-          promises.push(saveHtml(options));
+          promises.push(
+            saveHtml(options, {
+              spinnerName: fileSpinnerName,
+              source: file,
+            })
+          );
         } catch (error) {
-          logger.error("Failed to save template to disk", { options, error });
+          spinners.fail(fileSpinnerName, {
+            text: `Failed to save template to disk\n${options.destinations}\n${error.message}`,
+            status: "non-spinnable",
+          });
         }
       }
     }
   }
 
-  return Promise.all(promises).then(() => {
+  return Promise.all(promises).then((res) => {
     // done 🎉
-    logger.finish("Ended templates compilation");
+    spinners.succeed("pages", { text: "Done generating pages" });
+    return res;
   });
 }
 

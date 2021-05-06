@@ -1,7 +1,8 @@
 # sweet-potato-cooker 🍠👩‍🍳
 
 An opinionated static site generator that uses [Pug](https://pugjs.org/api/getting-started.html) as a template engine with `yaml` files for localization and [Sass](https://sass-lang.com/) for styles.  
-For information on how to structure the project check the [sweet-potato docs](https://github.com/wethegit/sweet-potato).
+
+> `sweet-potato-cooker` is part of the `sweet-potato` suite of tools. For information on how to structure the project check the [sweet-potato docs](https://github.com/wethegit/sweet-potato).
 
 ## Usage
 
@@ -63,12 +64,12 @@ npx sweet-potato-cooker --help
 
 ## Config
 
-The cooker can be customized to an extent.
-Create a `sweet-potato-cooker.config.js` in the root of the project, same level as `package.json`.
+Create a `sweet-potato-cooker.config.js` in the root of the project same level as `package.json` and export a config object.
 
 ```js
 module.exports = {
   // Options
+  buildDirectory: "dist/",
 };
 ```
 
@@ -97,40 +98,9 @@ A function that will receive the file and environment as parameters and must ret
 }
 ```
 
-### favicon
-
-**Type:** `object`  
-**Default:** `{}`  
-Given a `sourceFile` all modern and standard favicon images will be generated into the given `destination` directory inside the `buildDirectory` provided above.
-
-#### favicon.sourceFile
-
-**Type:** `string`  
-**Default:** `''`  
-Path to a PNG with the minimum of 512x512px dimension.
-
-#### favicon.destination
-
-**Type:** `string`  
-**Default:** `favicons`  
-The directory inside the `buildDirectory` to save the generated images to.
-
-#### favicon.outputTags
-
-**Type:** `string`  
-**Default:** `log`  
-If provided a path to a directory, it will save a `favicons.html` file with all the meta tags from the output.  
-`log` will output the tags to terminal.
-
-#### favicon.generatorOptions
-
-**Type:** `object`  
-**Default:** `{}`  
-A list of valid [favicons](https://www.npmjs.com/package/favicons) options.
-
 ### sitemap
 
-**Type:** `string|boolean`  
+**Type:** `string || boolean`  
 **Default:** `false`  
 If set, will generate a `sitemap.xml` during the production build.  
 If a `string` is provided, will use it as the base url.  
@@ -224,5 +194,29 @@ These will be passed to `pug`, `scss` and `js` files.
     'large-up': '(min-width: 1024px)',
     'medium-only': '(min-width: 768px) and (max-width: 1023px)'
   }
+}
+```
+
+### ignoreOnWatch
+
+**Type:** `array`  
+**Default:** `false`
+
+Defines files/paths to be ignored during local development.  
+By default the following are ignored:
+
+- "node_modules"
+- ".git"
+- "build"
+- ".vscode"
+- "package.json"
+- "package-lock.json"
+- "yarn-lock.json"
+
+#### Example
+
+```js
+{
+  ignoreOnWatch: ["Dockerfile", "server/"];
 }
 ```

@@ -4,7 +4,7 @@
 // and also fires a local server.
 "use strict";
 
-async function start(options) {
+async function startCommand(options) {
   // Do this as the first thing so that any code reading it knows the right env.
   process.env.BABEL_ENV = "development";
   process.env.NODE_ENV = "development";
@@ -17,46 +17,39 @@ async function start(options) {
   });
 
   // Ensure environment variables are read.
-  require("../../../lib/env.js");
+  const { loadEnv } = require("../../../lib/env.js");
 
-  const liveServer = require("live-server");
+  loadEnv();
+
+  const http = require("http");
+  const express = require("express");
+
   const CONSTS = require("../../../utils/consts.js");
-  const watch = require("../../../lib/watch.js");
-  const logger = require("../../../utils/logger.js");
-  const {
-    assetsMiddleware,
-    assetsLogger,
-  } = require("./assets-logger-middleware.js");
+  const watch = require("./watch.js");
+  const requestListener = require("./request-listener.js");
 
-  // local imports
-  const buildAll = require("../../../lib/build-all.js");
+  const app = express();
 
-  try {
-    await buildAll(process.env.NODE_ENV);
-  } catch (error) {
-    logger.error("Failed to build local files", error);
-    process.exit(1);
-  }
+  app.use(express.static(CONSTS.PUBLIC_DIRECTORY));
+  app.get("*", requestListener);
 
-  watch();
+  const server = http.createServer(app);
+  const io = require("socket.io")(server);
 
-  if (options["asset-logger"])
-    process.on("SIGINT", async function () {
-      await assetsLogger();
-      process.exit(1);
-    });
+  const host = options.host || "localhost";
+  const port = options.port || 8080;
 
-  if (!CONSTS.CONFIG.verbose) console.clear();
+  let debouncer;
+  watch(() => {
+    clearTimeout(debouncer);
+    debouncer = setTimeout(() => {
+      io.sockets.emit("browserReload");
+    }, 300);
+  });
 
-  liveServer.start({
-    root: CONSTS.BUILD_DIRECTORY,
-    wait: 1000,
-    logLevel: 1,
-    open: options["asset-logger"] || false,
-    middleware: options["asset-logger"] ? [assetsMiddleware] : [],
-    host: options.host || "localhost",
-    port: options.port || 8080,
+  server.listen(port, host, () => {
+    console.log(`Server is running on http://${host}:${port}`);
   });
 }
 
-module.exports = start;
+module.exports = startCommand;

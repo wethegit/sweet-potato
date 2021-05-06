@@ -13,6 +13,7 @@ prog.version(pkg.version);
 prog
   .command("build")
   .describe("Generates a production build")
+  .option("--env", ".env file to use", "process")
   .action(commands.build);
 
 prog
@@ -35,5 +36,11 @@ prog
   )
   .option("--directory", "Directory to look for images", "/public")
   .action(commands.compress);
+
+prog
+  .command("clean")
+  .describe("Deletes all cache and output folders")
+  .option("--cache", "Deletes cache", true)
+  .action(commands.clean);
 
 prog.parse(process.argv);

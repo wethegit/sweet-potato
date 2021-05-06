@@ -1,7 +1,7 @@
 // The purpose os this command is generate a production build of the website
 "use strict";
 
-function build() {
+async function buildCommand(options) {
   // consts
   process.env.BABEL_ENV = "production";
   process.env.NODE_ENV = "production";
@@ -14,17 +14,21 @@ function build() {
   });
 
   // Ensure environment variables are read.
-  require("../../../lib/env.js");
+  const { loadEnv } = require("../../../lib/env.js");
+
+  loadEnv(options.env);
 
   // local imports
   const buildAll = require("../../../lib/build-all.js");
+  const clean = require("../../../lib/clean.js");
 
   try {
-    buildAll(process.env.NODE_ENV);
+    await clean(true);
+    await buildAll();
   } catch (error) {
-    logger.error("Failed to build local files", error);
+    console.log(error);
     process.exit(1);
   }
 }
 
-module.exports = build;
+module.exports = buildCommand;

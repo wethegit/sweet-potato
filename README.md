@@ -63,7 +63,7 @@ pages/
           |-- es.yaml
 ```
 
-#### Usage:
+#### Usage
 
 Let's say your `pages/locales/default.yaml` looked like this…
 
@@ -124,16 +124,16 @@ nav:
     - label: Home
       url: /
     - label: About
-      url: /about
+      url: /about/
     - label: Contact
-      url: /contact
+      url: /contact/
 ```
 
 You could then access this data from within any of your Pug files, by using the `globals` variable:
 
 ```pug
 //-
-  pages/main.pug
+  layouts/_main.pug
   Let's assume this is a top-level template which gets extended on a per-page basis.
 
 nav.main-nav(aria-label=globals.nav.label)
@@ -148,7 +148,7 @@ nav.main-nav(aria-label=globals.nav.label)
 All `.js` files will be transpiled and bundled with [esbuild](https://esbuild.github.io/) with the assumption that you are supporting modern browsers that have support for [ESM](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Modules).  
 Files outside the `pages/` folder won't generate an output but they will still be prettified and linted. Vendor and any other scripts that don't require bundling should be placed inside `public/` in the root of the project.
 
-### Usage:
+### Usage
 
 ```
 components/
@@ -177,7 +177,7 @@ build/
 
 Files outside the `pages/` folder won't generate an output but they will still be prettified and linted. If using `.css` instead of `.scss`, place your files inside `public/` in the root of the project.
 
-### Usage:
+### Usage
 
 ```
 components/
@@ -242,15 +242,12 @@ In addition to values from `.env` files Pug templates and Javascript files will 
 
 #### Styles
 
-To use global variales inside `.scss` files, you have to import them, please the **Usage** section bellow.
+The only available global variable for styles is the **breakpoints** one, set inside the config. It needs to be imported first before you can use, see **Usage** below.  
 
 - **breakpoints =** breakpoints object set inside the config
 
-```scss
-@import "sweet-potato:breakpoints";
-```
 
-### Usage:
+### Usage
 
 `.env`:
 
@@ -284,7 +281,16 @@ p=globals.PUBLIC_URL //- from .env
 }
 ```
 
-## Options and customization
+## Deploy
+When you are ready to deploy, just generate a production build:
+
+```sh
+$ npm run build
+```
+
+A `build/` directory will be genrated and will contain all of the files ready to be deployed to your edge of choice.  
+
+### Options and customization
 
 Under the hood, sweet-potato uses [sweet-potato-cooker](https://github.com/wethegit/sweet-potato/tree/main/cooker) to serve, bundle and optimize assets.  
 For a list of all the available options check the [docs](https://github.com/wethegit/sweet-potato/tree/main/cooker#config).

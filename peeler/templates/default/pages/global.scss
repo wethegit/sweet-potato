@@ -1,13 +1,29 @@
 :root {
-  --color-main: #5c524e;
+  --color-body: #272726;
 }
 
+@import "https://unpkg.com/modern-normalize@1.0.0/modern-normalize.css";
+@import "https://cdn.skypack.dev/wtc-barfystars/dist/wtc-barfystars.css";
 @import "../components/navigation/navigation";
 
-html {
-  font-size: 16px;
+body {
+  color: var(--color-body);
+  text-align: center;
 }
 
-body {
-  margin: 0;
+.main-title {
+  margin-top: 2em;
+
+  .barfystars-particle::after {
+    content: "🍠";
+    font-size: 30px;
+  }
+
+  .barfystars-particle--2::after {
+    font-size: 20px;
+  }
+
+  .barfystars-particle--3::after {
+    font-size: 25px;
+  }
 }

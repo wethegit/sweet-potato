@@ -10,7 +10,7 @@ const assetFunctions = require("node-sass-asset-functions");
 const packageImporter = require("node-sass-package-importer");
 
 // local imports
-const logger = require("../utils/logger.js");
+const spinners = require("../utils/spinners.js");
 const helpers = require("./helpers.js");
 const CONSTS = require("../utils/consts.js");
 
@@ -44,16 +44,24 @@ async function lint(file) {
     });
 
     if (result.errored || result.maxWarningsExceeded) {
-      logger.error([file, "Failed on linting"], result.output);
+      spinners.add(`${file}-e`, {
+        text: `Failed linting\n${file}\n${result.output}`,
+        status: "non-spinnable",
+      });
       return false;
     }
 
     if (result.results[0].warnings > 0) {
-      logger.warning([file, "Linting warnings"]);
-      console.log(result.output);
+      spinners.add(`${file}-w`, {
+        text: `Linting warnings\n${result.output}`,
+        status: "non-spinnable",
+      });
     }
   } catch (error) {
-    logger.error([file, "Failed to lint"], error);
+    spinners.add(`${file}-f`, {
+      text: `Failed to lint\n${file}\n${error.message}`,
+      status: "non-spinnable",
+    });
     return false;
   }
 
@@ -75,12 +83,12 @@ async function standardize(file) {
   return true;
 }
 
-async function styles(event, file) {
-  if (event && event == "add") return; // don't do anything for newly added files just yet
-
+async function styles(file) {
   if (file && !fse.pathExistsSync(file)) return; // if file for some reason got removed
 
-  logger.start("Started styles compilation");
+  const mainSpinnerName = file ? file : "styles";
+  if (!spinners.pick(mainSpinnerName))
+    spinners.add(mainSpinnerName, { text: "Compiling styles", indent: 2 });
 
   // if it's a file com a component or someplace else we
   // need to compiled all dependencies
@@ -95,7 +103,10 @@ async function styles(event, file) {
       // directory, we want to compile everything again
       file = null;
     } catch (error) {
-      logger.error([file, "Failed to standardize style asset"], error);
+      spinners.fail(mainSpinnerName, {
+        text: `Failed to standardize\n${file}\n${error.message}`,
+      });
+      return;
     }
   }
 
@@ -141,35 +152,35 @@ async function styles(event, file) {
           outputStyle: "compressed",
           importer: [packageImporter(), customImporter],
           functions: assetFunctions({
-            images_path: CONSTS.BUILD_DIRECTORY,
+            images_path: CONSTS.PUBLIC_DIRECTORY,
             http_images_path: relativeOutput,
           }),
           ...CONSTS.CONFIG.sassOptions(!isProduction, file),
         },
         async function (error, result) {
           if (error) {
-            logger.error(
-              [outFile, "Failed to compile"],
-              `Line ${error.line}:${error.column} ${error.message}`
-            );
-            resolve(null);
+            spinners.add(file, {
+              text: `Failed to compile\n${outFile}\nLine ${error.line}:${error.column} ${error.message}`,
+              status: "non-spinnable",
+            });
+            reject(error);
             return;
           }
 
-          let finalCSS = result.css;
+          const finalCSS = result.css;
 
           try {
             // output the file
-            fse.outputFile(outFile, finalCSS).then(() => {
-              if (CONSTS.CONFIG.verbose) logger.success([outFile, "Compiled"]);
-              resolve(true);
-            });
+            await fse.outputFile(outFile, finalCSS);
+            const data = await fse.readFile(outFile, "utf8");
+            resolve({ destination: outFile, css: data });
           } catch (error) {
-            logger.error(
-              [outFile, "Failed saving compiled .css"],
-              error.message
-            );
-            resolve(null);
+            spinners.add(file, {
+              text: `Failed saving file${outFile}${error.message}`,
+              status: "non-spinnable",
+            });
+            reject(error);
+            return;
           }
         }
       );
@@ -179,9 +190,10 @@ async function styles(event, file) {
   }
 
   // done 🎉
-  return Promise.all(promises).then(() =>
-    logger.finish("Ended styles compilation")
-  );
+  return Promise.all(promises).then((res) => {
+    spinners.succeed(mainSpinnerName, { text: "Done compiling styles" });
+    return res;
+  });
 }
 
 module.exports = styles;

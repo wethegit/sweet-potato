@@ -2,14 +2,14 @@
 // NOTE: This is destructive, it will overwrite the original file.
 "use strict";
 
-async function compress(options) {
+async function compressCommand(options) {
   // Makes the script crash on unhandled rejections instead of silently
   // ignoring them. In the future, promise rejections that are not handled will
   // terminate the Node.js process with a non-zero exit code.
   process.on("unhandledRejection", (err) => {
     throw err;
   });
-  
+
   const path = require("path");
   const fse = require("fs-extra");
 
@@ -22,15 +22,15 @@ async function compress(options) {
   const md5File = require("md5-file");
 
   // local imports
+  const spinners = require("../../../utils/spinners.js");
   const CONSTS = require("../../../utils/consts.js");
-  const logger = require("../../../utils/logger");
   const helpers = require("../../../lib/helpers.js");
 
   // consts
   const toCompress = [".jpg", ".jpeg", ".png", ".svg", ".gif"];
 
   // The cache file that shows what images have already been compressed and records their current size
-  const CACHE_FILE = path.join(CONSTS.CACHE_DIRECTORY, "compress.json")
+  const CACHE_FILE = path.join(CONSTS.CACHE_DIRECTORY, "compress.json");
   const images = fse.pathExistsSync(CACHE_FILE)
     ? fse.readJsonSync(CACHE_FILE)
     : {};
@@ -45,12 +45,17 @@ async function compress(options) {
     // If a record exists in the images cache and the difference in file sizes is less than a KB, just resolve straight away
     // Don't recompress
     if (images[ID]) {
-      const hash = md5File.sync(file);      
+      const hash = md5File.sync(file);
       if (hash === images[ID]) return;
     }
-    
-    const COMPRESSION_OPTIONS = CONSTS.compress;
-      
+
+    const COMPRESSION_OPTIONS = CONSTS.CONFIG.compress;
+
+    spinners.add(`compress-${ID}`, {
+      text: `Compressing ${file}`,
+      indent: 2,
+    });
+
     await imagemin([file], {
       destination: outFile,
       plugins: [
@@ -60,7 +65,7 @@ async function compress(options) {
         imageminSvgo(COMPRESSION_OPTIONS.imageminSvgo),
       ],
     });
-    
+
     const outStats = fse.statSync(path.join(outFile, fileInfo.base));
     const outFileSizeInBytes = outStats["size"];
     const outFileSizeInKb = Math.floor(outFileSizeInBytes / 1000);
@@ -71,17 +76,22 @@ async function compress(options) {
     images[ID] = hash;
     totalSavings += savings;
 
-    logger.success([
-      ID,
-      `Compressed ${Math.floor(savings)}%`,
-      `${fileSizeInKb}kb | ${outFileSizeInKb}kb`,
-    ]);
+    spinners.succeed(`compress-${ID}`, {
+      text: `Compressed ${file}\n${Math.floor(
+        savings
+      )}% - ${fileSizeInKb}kb | ${outFileSizeInKb}kb`,
+      indent: 2,
+    });
   };
 
-  logger.start("Started assets compression");
+  spinners.add("compress", { text: "Compressing assets" });
 
   // if a file is passed use it instead of querying for all
-  const ASSETS = await helpers.getFiles(options['directory'] ? path.join(CONSTS.CWD, options['directory']) : CONSTS.PUBLIC_DIRECTORY);
+  const ASSETS = await helpers.getFiles(
+    options["directory"]
+      ? path.join(CONSTS.CWD, options["directory"], "**", "*")
+      : path.join(CONSTS.PUBLIC_DIRECTORY, "**", "*")
+  );
 
   // save all promises here to callback completion
   let promises = [];
@@ -91,19 +101,20 @@ async function compress(options) {
     const fileInfo = path.parse(file);
 
     // If the file is an image, compress it.
-    if (toCompress.indexOf(fileInfo.ext) > -1) 
+    if (toCompress.indexOf(fileInfo.ext) > -1)
       promises.push(compressFile(file, path.dirname(file), fileInfo));
   }
 
   await Promise.all(promises);
 
-  fse.writeJsonSync(CACHE_FILE, images);
+  fse.outputJsonSync(CACHE_FILE, images);
 
   // done 🎉
-  logger.success([
-    "Finished compressing all images.",
-    `Total compressed: ${Math.floor(totalSavings)}%`,
-  ]);
+  spinners.succeed("compress", {
+    text: `Done compressing assets\nTotal compressed: ${Math.floor(
+      totalSavings
+    )}%`,
+  });
 }
 
-module.exports = compress;
+module.exports = compressCommand;

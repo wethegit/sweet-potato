@@ -1,20 +1,33 @@
 doctype html
-html(lang=(globals.localeKey === 'default' ? 'en-US' : globals.localeKey))
+html(lang="en-US")
   head
     meta(charset="UTF-8")
-    meta(name="viewport" content="width=device-width, initial-scale=1.0")
-    meta(name="viewport" content="width=device-width, initial-scale=1, user-scalable=1, minimum-scale=1")
-    meta(http-equiv="X-UA-Compatible" content="ie=edge")
-    
-    meta(name="description" content="Your first Sweet Potato project!")
-    title Sweet Potato
-    
-    link(rel="stylesheet" href="./index.css")
+    meta(name="viewport", content="width=device-width, initial-scale=1.0")
+    meta(
+      name="viewport",
+      content="width=device-width, initial-scale=1, user-scalable=1, minimum-scale=1"
+    )
+    meta(http-equiv="X-UA-Compatible", content="ie=edge")
+
+    meta(
+      name="description",
+      content="Qui amet nostrud irure ut do minim laborum eu voluptate Lorem."
+    )
+    title sweet-potato
+
+    link(rel="stylesheet", href="./index.css")
+
   body
-    code
-      pre!=JSON.stringify(globals, null, 2)
-      
-    h1 You just peeled the sweet potato!
-    p All set and ready to go. Have fun.
-    
-    script(src="./index.js" type="module")
+    //- All available variables
+    //- code
+    //-   pre!=JSON.stringify(globals, null, 2)
+
+    //- code 
+    //-   pre!=JSON.stringify(page, null, 2)
+
+    main
+      h1.main-title(
+        data-config="{ \"numUniqueParticles\": 3, \"action\": false }"
+      ) sweet-potato
+
+    script(type="module", src="./index.js")
