@@ -208,10 +208,12 @@ build/
 ## Static assets
 
 All files inside a `public/` directory in the root of the project are considered static and will be copied over to the `build/` directory. It's the perfect place to add fonts, images, videos and any other file that should be public.
-You should also add any `.css` or `.js` files that doesn't have to be pre-processed.  
+You should also add any `.css` or `.js` files that doesn't have to be pre-processed.
 
 ### Asset optimization
-The [sweet-potato-cooker](https://github.com/wethegit/sweet-potato/blob/main/cooker/README.md#compressing-and-optimizing-assets) also offers a way to optimize your images. Simply run:  
+
+The [sweet-potato-cooker](https://github.com/wethegit/sweet-potato/blob/main/cooker/README.md#compressing-and-optimizing-assets) also offers a way to optimize your images. Simply run:
+
 ```sh
 npx sweet-potato-cooker compress
 ```
@@ -233,6 +235,7 @@ In addition to values from `.env` files Pug templates and Javascript files will 
 - **RELATIVE_LOCALE_ROOT =** relative path to locale root
 - **LOCALE_KEY =** locale key name
 - **BREAKPOINTS =** breakpoints object set inside the config
+- **PAGE_SLUG =** current page's slug
 
 #### Javascript
 
@@ -242,10 +245,9 @@ In addition to values from `.env` files Pug templates and Javascript files will 
 
 #### Styles
 
-The only available global variable for styles is the **breakpoints** one, set inside the config. It needs to be imported first before you can use, see **Usage** below.  
+The only available global variable for styles is the **breakpoints** one, set inside the config. It needs to be imported first before you can use, see **Usage** below.
 
 - **breakpoints =** breakpoints object set inside the config
-
 
 ### Usage
 
@@ -282,13 +284,14 @@ p=globals.PUBLIC_URL //- from .env
 ```
 
 ## Deploy
+
 When you are ready to deploy, just generate a production build:
 
 ```sh
 $ npm run build
 ```
 
-A `build/` directory will be genrated and will contain all of the files ready to be deployed to your edge of choice.  
+A `build/` directory will be genrated and will contain all of the files ready to be deployed to your edge of choice.
 
 ### Options and customization
 
