@@ -60,12 +60,16 @@ function saveHtml(outputOptions, { spinnerName, source }) {
   // page dest
   const dest = path.join(destination, filepath);
 
+  let slug = filepath.split("/");
+  slug = slug[slug.length - 1];
+
   // globals
   const relroot = path.relative(dest, CONSTS.BUILD_DIRECTORY);
   let globals = {
     ...env.raw,
     RELATIVE_ROOT: relroot ? relroot : ".",
     BREAKPOINTS: CONSTS.CONFIG.breakpoints || {},
+    PAGE_SLUG: slug,
     ...data.globals,
   };
 

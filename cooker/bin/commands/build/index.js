@@ -13,6 +13,12 @@ async function buildCommand(options) {
     throw err;
   });
 
+  process.on("SIGINT", function () {
+    console.log("\nGracefully shutting down from SIGINT (Ctrl-C)");
+    // some other closing procedures go here
+    process.exit(1);
+  });
+
   // Ensure environment variables are read.
   const { loadEnv } = require("../../../lib/env.js");
 

@@ -10,6 +10,12 @@ async function compressCommand(options) {
     throw err;
   });
 
+  process.on("SIGINT", function () {
+    console.log("\nGracefully shutting down from SIGINT (Ctrl-C)");
+    // some other closing procedures go here
+    process.exit(1);
+  });
+
   const path = require("path");
   const fse = require("fs-extra");
 
@@ -30,7 +36,10 @@ async function compressCommand(options) {
   const toCompress = [".jpg", ".jpeg", ".png", ".svg", ".gif"];
 
   // The cache file that shows what images have already been compressed and records their current size
-  const CACHE_FILE = path.join(CONSTS.CWD, "sweet-potato-compression.cache.json");
+  const CACHE_FILE = path.join(
+    CONSTS.CWD,
+    "sweet-potato-compression.cache.json"
+  );
   const images = fse.pathExistsSync(CACHE_FILE)
     ? fse.readJsonSync(CACHE_FILE)
     : {};
