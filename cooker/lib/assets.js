@@ -8,6 +8,9 @@ const path = require("path");
 // local imports
 const CONSTS = require("../utils/consts.js");
 const spinners = require("../utils/spinners.js");
+const logger = require("../utils/logger");
+
+const ISVERBOSE = CONSTS.CONFIG.verbose;
 
 async function assets(file) {
   if (file && !fse.pathExistsSync(file)) return; // if file for some reason got removed
@@ -24,7 +27,8 @@ async function assets(file) {
 
   if (!fse.pathExistsSync(from)) return;
 
-  spinners.add("assets", { text: "Copying assets", indent: 2 });
+  if (ISVERBOSE) logger.start("Copying assets");
+  else spinners.add("assets", { text: "Copying assets", indent: 2 });
 
   try {
     fse.ensureDirSync(CONSTS.BUILD_DIRECTORY);
@@ -32,11 +36,16 @@ async function assets(file) {
     return fse
       .copy(from, to, { overwrite: true, preserveTimestamps: true })
       .then(() => {
-        spinners.succeed("assets", { text: "Done copying assets" });
+        if (ISVERBOSE) logger.finish("Done copying assets");
+        else spinners.succeed("assets", { text: "Done copying assets" });
         return { from, to };
       });
   } catch (error) {
-    spinners.fail("assets", { text: `Failed to copy assets ${error.message}` });
+    if (ISVERBOSE) logger.error("Failed to copy assets", error);
+    else
+      spinners.fail("assets", {
+        text: `Failed to copy assets ${error.message}`,
+      });
   }
 }
 

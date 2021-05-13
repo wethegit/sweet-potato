@@ -12,6 +12,9 @@ const spinners = require("../utils/spinners.js");
 const helpers = require("./helpers.js");
 const { getClientEnvironment } = require("./env.js");
 const CONSTS = require("../utils/consts.js");
+const logger = require("../utils/logger");
+
+const ISVERBOSE = CONSTS.CONFIG.verbose;
 
 // consts
 const env = getClientEnvironment();
@@ -19,7 +22,8 @@ const env = getClientEnvironment();
 async function sitemap() {
   if (!CONSTS.CONFIG.sitemap) return;
 
-  spinners.add("sitemap", { text: "Generating sitemap", indent: 2 });
+  if (ISVERBOSE) logger.start("Generating sitemap");
+  else spinners.add("sitemap", { text: "Generating sitemap", indent: 2 });
 
   let publicUrl;
   if (typeof CONSTS.CONFIG.sitemap === "string")
@@ -33,10 +37,15 @@ async function sitemap() {
   }
 
   if (!publicUrl) {
-    spinners.fail("sitemap", {
-      text:
-        "Failed to generate sitemap.xml, missing `public url`.\nhttps://github.com/wethegit/sweet-potato/tree/main/cooker#sitemap",
-    });
+    if (ISVERBOSE)
+      logger.error(
+        "Failed to generate sitemap.xml, missing `public url`.\nhttps://github.com/wethegit/sweet-potato/tree/main/cooker#sitemap"
+      );
+    else
+      spinners.fail("sitemap", {
+        text:
+          "Failed to generate sitemap.xml, missing `public url`.\nhttps://github.com/wethegit/sweet-potato/tree/main/cooker#sitemap",
+      });
     return;
   }
 
@@ -69,13 +78,16 @@ async function sitemap() {
 
     return fse.outputFile(dest, sitemapData.toString()).then(() => {
       // done 🎉
-      spinners.succeed("sitemap", { text: `Done generating sitemap` });
+      if (ISVERBOSE) logger.finish("Done generating sitemap");
+      else spinners.succeed("sitemap", { text: `Done generating sitemap` });
       return dest;
     });
   } catch (err) {
-    spinners.fail("sitemap", {
-      text: `Failed generating sitemap\n${err.message}`,
-    });
+    if (ISVERBOSE) logger.error("Failed generating sitemap", err);
+    else
+      spinners.fail("sitemap", {
+        text: `Failed generating sitemap\n${err.message}`,
+      });
   }
 }
 

@@ -11,10 +11,12 @@ const packageImporter = require("node-sass-package-importer");
 
 // local imports
 const spinners = require("../utils/spinners.js");
+const logger = require("../utils/logger");
 const helpers = require("./helpers.js");
 const CONSTS = require("../utils/consts.js");
 
 const isProduction = process.env.NODE_ENV == "production";
+const ISVERBOSE = CONSTS.CONFIG.verbose;
 
 const customImporter = function (url) {
   // This generates a stylesheet from scratch for `@use "big-headers"`.
@@ -44,24 +46,31 @@ async function lint(file) {
     });
 
     if (result.errored || result.maxWarningsExceeded) {
-      spinners.add(`${file}-e`, {
-        text: `Failed linting\n${file}\n${result.output}`,
-        status: "non-spinnable",
-      });
+      if (ISVERBOSE) logger.error(["Failed linting", file], result.output);
+      else
+        spinners.add(`${file}-e`, {
+          text: `Failed linting\n${file}\n${result.output}`,
+          status: "non-spinnable",
+        });
       return false;
     }
 
     if (result.results[0].warnings > 0) {
-      spinners.add(`${file}-w`, {
-        text: `Linting warnings\n${result.output}`,
-        status: "non-spinnable",
-      });
+      if (ISVERBOSE) logger.warning(["Linting warnings", file], result.output);
+      else
+        spinners.add(`${file}-w`, {
+          text: `Linting warnings\n${result.output}`,
+          status: "non-spinnable",
+        });
     }
   } catch (error) {
-    spinners.add(`${file}-f`, {
-      text: `Failed to lint\n${file}\n${error.message}`,
-      status: "non-spinnable",
-    });
+    if (ISVERBOSE) logger.error(["Failed to lint", file], error);
+    else
+      spinners.add(`${file}-f`, {
+        text: `Failed to lint\n${file}\n${error.message}`,
+        status: "non-spinnable",
+      });
+
     return false;
   }
 
@@ -87,25 +96,35 @@ async function styles(file) {
   if (file && !fse.pathExistsSync(file)) return; // if file for some reason got removed
 
   const mainSpinnerName = file ? file : "styles";
-  if (!spinners.pick(mainSpinnerName))
+
+  if (ISVERBOSE) {
+    if (!file) logger.start("Started styles compilation");
+  } else if (!spinners.pick(mainSpinnerName))
     spinners.add(mainSpinnerName, { text: "Compiling styles", indent: 2 });
 
   // if it's a file com a component or someplace else we
   // need to compiled all dependencies
   if (file && !file.includes(CONSTS.PAGES_DIRECTORY)) {
     try {
+      if (ISVERBOSE) logger.announce(["Checking linting and prettier", file]);
+
       const inStandards = await standardize(file);
       // if it had linting issues we don't continue and let the
       // updates to the file trigger a new event
-      if (!inStandards) return;
+      if (!inStandards) {
+        if (ISVERBOSE) logger.error(["Didn't pass check", file]);
+        return;
+      }
 
       // if it's all good, because we are outside the pages
       // directory, we want to compile everything again
       file = null;
     } catch (error) {
-      spinners.fail(mainSpinnerName, {
-        text: `Failed to standardize\n${file}\n${error.message}`,
-      });
+      if (ISVERBOSE) logger.error(["Failed to standardize", file], error);
+      else
+        spinners.fail(mainSpinnerName, {
+          text: `Failed to standardize\n${file}\n${error.message}`,
+        });
       return;
     }
   }
@@ -118,9 +137,20 @@ async function styles(file) {
   let promises = [];
 
   // go through files
+
   for (const file of sassFiles) {
+    if (ISVERBOSE) {
+      logger.start(["Compiling", file]);
+      logger.announce(["Checking linting and prettier", file]);
+    }
+
     const inStandards = await standardize(file);
-    if (!inStandards) continue;
+
+    if (!inStandards) {
+      if (ISVERBOSE) logger.error(["Didn't pass check, skipping", file]);
+
+      continue;
+    }
 
     const fileInfo = path.parse(file);
 
@@ -137,6 +167,7 @@ async function styles(file) {
       path.parse(outFile).dir,
       CONSTS.BUILD_DIRECTORY
     );
+
     if (!relativeOutput) relativeOutput = ".";
     relativeOutput += "/";
 
@@ -159,10 +190,13 @@ async function styles(file) {
         },
         async function (error, result) {
           if (error) {
-            spinners.add(file, {
-              text: `Failed to compile\n${outFile}\nLine ${error.line}:${error.column} ${error.message}`,
-              status: "non-spinnable",
-            });
+            if (ISVERBOSE) logger.error(["Failed to compile", file], error);
+            else
+              spinners.add(file, {
+                text: `Failed to compile\n${outFile}\nLine ${error.line}:${error.column} ${error.message}`,
+                status: "non-spinnable",
+              });
+
             reject(error);
             return;
           }
@@ -174,11 +208,16 @@ async function styles(file) {
             await fse.outputFile(outFile, finalCSS);
             const data = await fse.readFile(outFile, "utf8");
             resolve({ destination: outFile, css: data });
+            if (ISVERBOSE) logger.success(["Compiled", file, outFile]);
           } catch (error) {
-            spinners.add(file, {
-              text: `Failed saving file${outFile}${error.message}`,
-              status: "non-spinnable",
-            });
+            if (ISVERBOSE)
+              logger.error(["Failed saving", file, outFile], error);
+            else
+              spinners.add(file, {
+                text: `Failed saving file${outFile}${error.message}`,
+                status: "non-spinnable",
+              });
+
             reject(error);
             return;
           }
@@ -191,7 +230,11 @@ async function styles(file) {
 
   // done 🎉
   return Promise.all(promises).then((res) => {
-    spinners.succeed(mainSpinnerName, { text: "Done compiling styles" });
+    // go through files
+    if (ISVERBOSE) {
+      if (res.length > 1) logger.finish("Finished compiling styles");
+    } else spinners.succeed(mainSpinnerName, { text: "Done compiling styles" });
+
     return res;
   });
 }
