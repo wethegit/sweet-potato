@@ -3,161 +3,139 @@
 // NOTE: This is destructive, it will overwrite the original file.
 "use strict";
 
-const deepObjectKeysCheck = function (origin, toCompare) {
-  let didOriginChange = false;
-  const originKeys = Object.keys(origin);
+// Makes the script crash on unhandled rejections instead of silently
+// ignoring them. In the future, promise rejections that are not handled will
+// terminate the Node.js process with a non-zero exit code.
+process.on("unhandledRejection", (err) => {
+  throw err;
+});
 
-  for (let i = 0; i < originKeys.length; i++) {
-    const key = originKeys[i];
-    const originValue = origin[key];
-    const compareValue = toCompare[key];
+process.on("SIGINT", function () {
+  console.log("\nGracefully shutting down from SIGINT (Ctrl-C)");
+  process.exit(1);
+});
 
-    if (originValue instanceof Object && compareValue instanceof Object) {
-      didOriginChange = deepObjectKeysCheck(originValue, compareValue);
-    } else if (origin[key] !== toCompare[key]) {
-      didOriginChange = true;
-    }
+const path = require("path");
+const fse = require("fs-extra");
+const yargs = require("yargs-parser");
 
-    if (didOriginChange) break;
-  }
+const md5File = require("md5-file");
+const { getFiles, config, logger } = require("@wethegit/sweet-potato-utensils");
 
-  return didOriginChange;
-};
+const deepObjectKeysCheck = require("../lib/deepObjectKeysCheck");
+const compressFile = require("../lib/compressFile");
 
-(async () => {
-  // Makes the script crash on unhandled rejections instead of silently
-  // ignoring them. In the future, promise rejections that are not handled will
-  // terminate the Node.js process with a non-zero exit code.
-  process.on("unhandledRejection", (err) => {
-    throw err;
-  });
+const ISVERBOSE = config.OPTIONS.verbose;
+const COMPRESSION_OPTIONS = config.OPTIONS.compress;
 
-  process.on("SIGINT", function () {
-    console.log("\nGracefully shutting down from SIGINT (Ctrl-C)");
-    // some other closing procedures go here
-    process.exit(1);
-  });
-
-  const path = require("path");
-  const fse = require("fs-extra");
-  const yargs = require("yargs-parser");
-  const imagemin = require("imagemin");
-  const imageminMozjpeg = require("imagemin-mozjpeg");
-  const imageminPngquant = require("imagemin-pngquant");
-  const imageminSvgo = require("imagemin-svgo");
-  const imageminGifsicle = require("imagemin-gifsicle");
-  const md5File = require("md5-file");
-  const {
-    getFiles,
-    config,
-    logger,
-  } = require("@wethegit/sweet-potato-utensils");
+if (ISVERBOSE) {
   const pkg = require(path.join(__dirname, "..", "package.json"));
 
-  if (config.OPTIONS.verbose)
-    logger.announce(`sweet-potato-masher v${pkg.version}`);
+  logger.announce(`sweet-potato-masher v${pkg.version}`);
+}
 
-  // consts
-  const ALLOWED_EXTENSIONS = ".jpg, .jpeg, .png, .svg, .gif";
+// consts
+const ALLOWED_EXTENSIONS = ".jpg, .jpeg, .png, .svg, .gif";
 
-  // set the directory to traverse
-  let { directory } = yargs(process.argv);
-  if (directory) directory = path.join(config.CWD, directory);
-  else directory = config.PUBLIC_DIRECTORY;
-  directory = path.join(directory, "**", `*{${ALLOWED_EXTENSIONS}}`);
+// set the directory to traverse
+let { directory } = yargs(process.argv);
+// if the user set a directory, we just resolve it
+if (directory) directory = path.resolve(config.CWD, directory);
+else directory = config.PUBLIC_DIRECTORY;
 
-  // get all assets from directory
-  const ASSETS = await getFiles(directory);
-  const TOTAL_ASSETS = ASSETS.length;
+(async () => {
+  // get all files from the directory
+  const FILES = await getFiles(
+    path.join(directory, "**", `*{${ALLOWED_EXTENSIONS}}`)
+  );
 
-  if (TOTAL_ASSETS <= 0) {
+  // no files, end process
+  if (FILES.length <= 0) {
     logger.announce(
       `No files with extensions ${ALLOWED_EXTENSIONS} were found at ${directory}.`
     );
 
-    process.exit(1);
+    return;
   }
 
-  // The cache file that shows what images have already been compressed and records their current size, it needs to be added to git
+  // The cache file contains the MD5 hash of all files and config options
+  // from the previously compression run
   const CACHE_FILE = path.join(config.CWD, "sweet-potato-masher.cache.json");
-  let DID_OPTIONS_CHANGE = false;
-  let COMPRESSED = [];
+  let didOptionsChange = false;
+  let previouslyCompressed = [];
 
+  // if the cache files exists
   if (fse.pathExistsSync(CACHE_FILE)) {
     const { items = [], options = {} } = fse.readJsonSync(CACHE_FILE);
-    DID_OPTIONS_CHANGE = deepObjectKeysCheck(config.OPTIONS.compress, options);
-    COMPRESSED = items;
+
+    // compare the options and check if they changed
+    // because even if a file has already been compressed
+    // the options (level of compression, etc) might have changed
+    // and we need to compress it again
+    didOptionsChange = deepObjectKeysCheck(COMPRESSION_OPTIONS, options);
+    previouslyCompressed = items;
   }
 
-  let totalSavings = 0;
-  let totalFilesCompressed = 0;
-  const compressFile = async (file, outFile) => {
-    const fileInfo = path.parse(file);
-    const stats = fse.statSync(file);
-    const fileSizeInBytes = stats["size"];
-    const fileSizeInKb = Math.floor(fileSizeInBytes / 1000);
-    let ID = md5File.sync(file);
-    const PRETTY_PATH = fileInfo.dir.replace(config.CWD, "") + fileInfo.base;
-    const COMPRESSION_OPTIONS = config.OPTIONS.compress;
+  // if options on the config didn't change
+  // we go through the files and check if
+  // we don't already have all of them compressed and cached
+  let toCompress = FILES;
+  if (!didOptionsChange) {
+    toCompress = FILES.filter(function (file) {
+      const HASH = md5File.sync(file);
 
-    // If a record exists in the images cache and the difference in file sizes is less than a KB, just resolve straight away
-    // Don't recompress
-    if (COMPRESSED.includes(ID) && !DID_OPTIONS_CHANGE) {
-      logger.announce(["Already optmized", PRETTY_PATH, `${fileSizeInKb}kb`]);
-      return;
-    }
-
-    totalFilesCompressed++;
-
-    await imagemin([file], {
-      destination: outFile,
-      plugins: [
-        imageminMozjpeg(COMPRESSION_OPTIONS.imageminMozjpeg),
-        imageminPngquant(COMPRESSION_OPTIONS.imageminPngquant),
-        imageminGifsicle(COMPRESSION_OPTIONS.imageminGifsicle),
-        imageminSvgo(COMPRESSION_OPTIONS.imageminSvgo),
-      ],
+      if (!previouslyCompressed.includes(HASH)) return true;
     });
 
-    const out = path.join(outFile, fileInfo.base);
-    const outStats = fse.statSync(out);
-    const outFileSizeInBytes = outStats["size"];
-    const outFileSizeInKb = Math.floor(outFileSizeInBytes / 1000);
-    const savings =
-      ((fileSizeInBytes - outFileSizeInBytes) / fileSizeInBytes) * 100;
+    if (toCompress.length <= 0) {
+      logger.finish("All files already compressed");
 
-    ID = md5File.sync(out);
-    COMPRESSED.push(ID);
-    totalSavings += savings;
-
-    if (config.OPTIONS.verbose)
-      logger.success([
-        PRETTY_PATH,
-        `${Math.floor(savings)}% - ${fileSizeInKb}kb | ${outFileSizeInKb}kb`,
-      ]);
-  };
+      return;
+    }
+  }
 
   // Start compressing
-  logger.start(`Compressing ${TOTAL_ASSETS} file${TOTAL_ASSETS > 1 && "s"}`);
+  logger.start(
+    `Compressing ${toCompress.length} file${toCompress.length > 1 && "s"}`
+  );
 
-  // go through files and compress each, adding to the array of promises
-  const PROMISES = ASSETS.map(function (file) {
-    return compressFile(file, path.dirname(file));
-  });
+  const COMPRESSED_FILES = await Promise.all(
+    toCompress.map(function (file) {
+      return compressFile(file, path.dirname(file), COMPRESSION_OPTIONS);
+    })
+  );
 
-  await Promise.all(PROMISES);
+  let totalSavings = 0;
+  let hashes = [];
+  for (let compression of COMPRESSED_FILES) {
+    const { percentage, hash } = compression;
+
+    totalSavings += percentage;
+    hashes.push(hash);
+
+    if (ISVERBOSE) {
+      const { file, before, after } = compression;
+
+      const FILE_INFO = path.parse(file);
+      const PRETTY_PATH =
+        FILE_INFO.dir.replace(config.CWD, "") + FILE_INFO.base;
+
+      logger.success([
+        PRETTY_PATH,
+        `${Math.floor(percentage)}% - ${before}kb | ${after}kb`,
+      ]);
+    }
+  }
 
   await fse.outputJson(CACHE_FILE, {
-    items: COMPRESSED,
-    options: config.OPTIONS.compress,
+    items: previouslyCompressed.concat(hashes),
+    options: COMPRESSION_OPTIONS,
   });
 
   // done 🎉
-  if (totalFilesCompressed > 0)
-    logger.finish(
-      `\nFiles compressed: ${totalFilesCompressed}\nTotal savings: ${Math.floor(
-        totalSavings
-      )}%\nFiles skipped: ${TOTAL_ASSETS - totalFilesCompressed}`
-    );
-  else logger.finish(`All files previously compressed`);
+  logger.finish(
+    `\nFiles compressed: ${toCompress.length}\nTotal savings: ${Math.floor(
+      totalSavings
+    )}%`
+  );
 })();
