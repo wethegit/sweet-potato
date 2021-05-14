@@ -1,4 +1,4 @@
-# sweet-potato-peeler 🍠🍴
+# sweet-potato-peeler 🔪
 
 Easily create a new sweet-potato project.
 
