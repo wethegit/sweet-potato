@@ -4,8 +4,10 @@ An opinionated and minimal static website generator.
 The goal is to be simple and allow the composing and styling of pages without getting in the way and with minimal footprint.
 
 🐶 [Pug](https://pugjs.org/api/getting-started.html) for templating  
-🎨 [Sass](https://sass-lang.com/) for styling  
-😇 and vanilla Javascript
+👓 [Sass](https://sass-lang.com/) for styling  
+🍦 Vanilla Javascript
+📚 [YAML](https://learnxinyminutes.com/docs/yaml/) for data
+
 
 ## Requirements
 
