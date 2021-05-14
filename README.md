@@ -11,7 +11,7 @@ The goal is to be simple and allow the composing and styling of pages without ge
 
 ## Requirements
 
-- [Node](https://nodejs.org/en/) v12+
+- [Node](https://nodejs.org/en/) v14+ 
 
 ## Quick start
 
