@@ -214,10 +214,10 @@ You should also add any `.css` or `.js` files that doesn't have to be pre-proces
 
 ### Asset optimization
 
-The [sweet-potato-cooker](https://github.com/wethegit/sweet-potato/blob/main/cooker/README.md#compressing-and-optimizing-assets) also offers a way to optimize your images. Simply run:
+Use the [sweet-potato-masher](https://github.com/wethegit/sweet-potato/tree/main/masher) to optimize yor images. Simply run:
 
 ```sh
-npx sweet-potato-cooker compress
+npx @wethegit/sweet-potato-masher
 ```
 
 ## Environment and global variables
