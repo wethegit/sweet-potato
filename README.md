@@ -5,7 +5,7 @@ The goal is to be simple and allow the composing and styling of pages without ge
 
 🐶 [Pug](https://pugjs.org/api/getting-started.html) for templating  
 👓 [Sass](https://sass-lang.com/) for styling  
-🍦 Vanilla Javascript
+🍦 Vanilla Javascript  
 📚 [YAML](https://learnxinyminutes.com/docs/yaml/) for data
 
 
