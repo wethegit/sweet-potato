@@ -47,15 +47,6 @@ Note: for a quicker setup it's recommended to add these scripts to `package.json
 
 Then just run `npm start/build`
 
-### 🗜 Compressing and optimizing assets
-
-⚠️ This command is destructive and will overwrite the original files.  
-This compresses and optimizes all `.jpg`, `.png`, `.svg`, `.gif` files in a given directory, default is `public/`.
-
-```sh
-npx sweet-potato-cooker compress
-```
-
 ## See all commands & options
 
 ```sh
@@ -64,7 +55,7 @@ npx sweet-potato-cooker --help
 
 ## Config
 
-Create a `sweet-potato-cooker.config.js` in the root of the project same level as `package.json` and export a config object.
+Create a `sweet-potato.config.js` in the root of the project same level as `package.json` and export a config object.
 
 ```js
 module.exports = {
@@ -105,77 +96,6 @@ A function that will receive the file and environment as parameters and must ret
 If set, will generate a `sitemap.xml` during the production build.  
 If a `string` is provided, will use it as the base url.  
 If `true`, will use the `PUBLIC_URL` value from the `.env` file.
-
-### compress
-
-**Type:** `object`  
-**Default:**
-
-```js
-{
-  imageminMozjpeg: {
-    quality: 70,
-  },
-  imageminPngquant: {
-    quality: [0.65, 0.95],
-    speed: 1
-  },
-  imageminGifsicle: {},
-  imageminSvgo: {
-    plugins: [{ removeViewBox: false }],
-    multipass: true,
-  }
-}
-```
-
-Contains all the options to be passed to their respective compressing modules. This is used with the `compress` command.
-
-#### compress.imageminMozjpeg
-
-**Type:** `object`  
-**Default:**
-
-```js
-{
-  quality: 70,
-}
-```
-
-A list of valid [imagemin-mozjpeg](https://www.npmjs.com/package/imagemin-mozjpeg) options.
-
-#### compress.imageminPngquant
-
-**Type:** `object`  
-**Default:**
-
-```js
-{
-  quality: [0.65, 0.95],
-  speed: 1
-}
-```
-
-A list of valid [imagemin-pngquant](https://www.npmjs.com/package/imagemin-pngquant) options.
-
-#### compress.imageminGifsicle
-
-**Type:** `object`  
-**Default:** `{}`
-A list of valid [imagemin-gifsicle](https://www.npmjs.com/package/imagemin-gifsicle) options.
-
-#### compress.imageminSvgo
-
-**Type:** `object`  
-**Default:**
-
-```js
-{
-  plugins: [{ removeViewBox: false }],
-  multipass: true,
-}
-```
-
-A list of valid [imagemin-svgo](https://www.npmjs.com/package/imagemin-svgo) options.
 
 ### breakpoints
 
