@@ -25,7 +25,9 @@ $ npm start
 
 ## Pages
 
-Adding pages to your site is as easy as creating folders for each of them within the `pages/` directory, and placing an `index.pug` file in each. The "root" or "home" page of your site does not need to live in its own folder—it will just need an `index.pug` file at the root of `pages/`. A site with a homepage, about page, and contact page might have a `pages/` structure like this:
+Adding pages to your site is as easy as creating folders for each of them within the `pages/` directory, and placing an `index.pug` file in each.  
+The "root" or "home" page of your site does not need to live in its own folder—it will just need an `index.pug` file at the root of `pages/`.  
+A site with a homepage, about page, and contact page might have a `pages/` structure like this:
 
 ```
 pages/
@@ -38,11 +40,16 @@ pages/
 
 ## Localization
 
-If you're creating localized versions of your pages (different languages), you can have all your data live in YAML files, which are accessible via the Pug templates. This will allow you, for example, to have an English page and a French page; while still only using a single page template.
+If you're creating localized versions of your pages (different languages), you can have all your data live in YAML files, which are accessible via the Pug templates.  
+This will allow you, for example, to have an English page and a French page; while still only using a single page template.
 
 ### Page-specific language data
 
-To create language-specific data files, you must include a `locales/` folder for **each page** at the **same level** as the page's Pug template (`index.pug`). Within this `locales/` folder, you must then create a `default.yaml` file for the default language. Any other languages you need should be created as appropriately-named `YAML` files. For example, the file that lives at `pages/about/locales/fr.yaml` would have a final URL path of `fr/about/`. Here's a full example of file structure, with French and Spanish localizations for each page:
+To create language-specific data files, you must include a `locales/` folder for **each page** at the **same level** as the page's Pug template (`index.pug`).  
+Within this `locales/` folder, you must then create a `default.yaml` file for the default language.  
+Any other languages you need should be created as appropriately-named `YAML` files.  
+For example, the file that lives at `pages/about/locales/fr.yaml` would have a final URL path of `fr/about/`.  
+Here's a full example of file structure, with French and Spanish localizations for each page:
 
 ```
 pages/
@@ -101,7 +108,10 @@ As you can see, all of the page's `YAML` data is available to the Pug template v
 
 ### Global language data
 
-You don't want to have to repeat data on every page for things like site-wide navigation, right? This is where global language data comes in. Create a `locales/` folder in the root directory of your project, which includes—at the very least—a `default.yaml` file, and any locales you want to support. These will now be available to you from within _all_ of your Pug templates, via a variable called `globals`. See the folder structure below:
+You don't want to have to repeat data on every page for things like site-wide navigation, right?  
+This is where global language data comes in. Create a `locales/` folder in the root directory of your project, which includes—at the very least—a `default.yaml` file, and any locales you want to support.  
+These will now be available to you from within _all_ of your Pug templates, via a variable called `globals`.  
+See the folder structure below:
 
 ```
 locales/
@@ -148,7 +158,8 @@ nav.main-nav(aria-label=globals.nav.label)
 ## Javascript
 
 All `.js` files will be transpiled and bundled with [esbuild](https://esbuild.github.io/) with the assumption that you are supporting modern browsers that have support for [ESM](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Modules).  
-Files outside the `pages/` folder won't generate an output but they will still be prettified and linted. Vendor and any other scripts that don't require bundling should be placed inside `public/` in the root of the project.
+Files outside the `pages/` folder won't generate an output.  
+Vendor and any other scripts that don't require bundling should be placed inside `public/` in the root of the project.
 
 ### Usage
 
@@ -177,7 +188,7 @@ build/
 
 ## Styles
 
-Files outside the `pages/` folder won't generate an output but they will still be prettified and linted. If using `.css` instead of `.scss`, place your files inside `public/` in the root of the project.
+Files outside the `pages/` folder won't generate an output. If using regular `.css` instead of `.scss`, place your files inside `public/` in the root of the project.
 
 ### Usage
 
@@ -209,7 +220,8 @@ build/
 
 ## Static assets
 
-All files inside a `public/` directory in the root of the project are considered static and will be copied over to the `build/` directory. It's the perfect place to add fonts, images, videos and any other file that should be public.
+All files inside a `public/` directory in the root of the project are considered static and will be copied over to the `build/` directory.  
+It's the perfect place to add fonts, images, videos and any other file that should be public.  
 You should also add any `.css` or `.js` files that doesn't have to be pre-processed.
 
 ### Asset optimization
@@ -297,5 +309,5 @@ A `build/` directory will be genrated and will contain all of the files ready to
 
 ### Options and customization
 
-Under the hood, sweet-potato uses [sweet-potato-cooker](https://github.com/wethegit/sweet-potato/tree/main/cooker) to serve, bundle and optimize assets.  
+Under the hood, sweet-potato uses [sweet-potato-cooker](https://github.com/wethegit/sweet-potato/tree/main/cooker) to serve and bundle your project.  
 For a list of all the available options check the [docs](https://github.com/wethegit/sweet-potato/tree/main/cooker#config).
