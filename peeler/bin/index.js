@@ -122,8 +122,9 @@ const isBaseTemplate = listOfBaseTemplates.find((file) => {
     return "  " + command.padEnd(17) + chalk.dim(description);
   };
 
-  logger.success("Project peeled");
-  logger.finish("Peeled 🍠");
+  console.log(``);
+  logger.finish("Project peeled 🍠");
+  console.log(``);
 
   // quick help message
   console.log(chalk.bold.underline(`Quickstart:`));
