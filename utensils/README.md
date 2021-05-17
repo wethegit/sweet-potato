@@ -1,6 +1,6 @@
 # sweet-potato-utensils 🥣
 
-Shared utility functions and variables used across the sweet-potato suite of packages.
+Shared utility functions and variables used across the sweet-potato packages.
 
 ## Usage
 
