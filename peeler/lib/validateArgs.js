@@ -1,5 +1,5 @@
+const path = require("path");
 const yargs = require("yargs-parser");
-const { logger } = require("@wethegit/sweet-potato-utensils");
 
 const exitWithError = require("./exitWithError");
 const hasPmInstalled = require("./hasPmInstalled");
