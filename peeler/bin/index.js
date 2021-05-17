@@ -12,6 +12,7 @@ const validateArgs = require("../lib/validateArgs");
 const getRepoInfo = require("../lib/getRepoInfo");
 const cleanProject = require("../lib/cleanProject");
 const installProcess = require("../lib/installProcess");
+const pkg = require("../package.json");
 
 const {
   template,
@@ -38,6 +39,7 @@ const isBaseTemplate = listOfBaseTemplates.find((file) => {
 });
 
 (async () => {
+  logger.announce(`sweet-potato-peeler v${pkg.version}`);
   logger.start("Peeling new project");
   logger.announce(`Using template ${chalk.cyan(template)}`);
   logger.announce(`Creating a new project in ${chalk.cyan(targetDirectory)}`);
