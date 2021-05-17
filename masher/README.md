@@ -1,6 +1,6 @@
 # sweet-potato-masher 🗜
 
-Optmizes and compressed all images on a sweet-potato project.
+Optmizes and compresses all images on a sweet-potato project.
 
 ## Usage
 
@@ -13,8 +13,9 @@ After running the masher, it will create a cache file named `sweet-potato-masher
 That file should be commited with your project so you avoid recompressing the same files.
 
 ## Options
+
 Granular compression options can be set by creating a file named `sweet-potato.config.js` on the root of the project.  
-The same file used by the [`sweet-potato-cooker`](https://github.com/wethegit/sweet-potato/tree/main/cooker#config).  
+The same file used by the [`sweet-potato-cooker`](https://github.com/wethegit/sweet-potato/tree/main/cooker#config).
 
 ```js
 modules.exports {
