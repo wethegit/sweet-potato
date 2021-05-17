@@ -1,5 +1,3 @@
-const colors = require("kleur");
-
 const exitWithError = require("./exitWithError");
 
 module.exports = async function getRepoInfo(url) {
@@ -15,9 +13,7 @@ module.exports = async function getRepoInfo(url) {
 
   if (repoUrl.origin !== "https://github.com") {
     exitWithError(
-      `Invalid URL: ${colors.red(
-        `"${example}"`
-      )}. Only GitHub repositories are supported. Please use a GitHub URL and try again.`
+      `Invalid URL: ${`"${example}"`}. Only GitHub repositories are supported. Please use a GitHub URL and try again.`
     );
   }
 

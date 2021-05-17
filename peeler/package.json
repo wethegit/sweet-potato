@@ -1,6 +1,6 @@
 {
   "name": "@wethegit/sweet-potato-peeler",
-  "version": "0.5.2",
+  "version": "0.5.3",
   "description": "Quickly scaffold sweet-potato projects",
   "main": "bin/index.js",
   "bin": {
