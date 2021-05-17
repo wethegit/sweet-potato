@@ -1,6 +1,6 @@
 const colors = require("kleur");
 
-const logError = require("./logError");
+const exitWithError = require("./exitWithError");
 
 module.exports = async function getRepoInfo(url) {
   let repoUrl;
@@ -8,13 +8,13 @@ module.exports = async function getRepoInfo(url) {
   try {
     repoUrl = new URL(url);
   } catch (error) {
-    if (error.code !== "ERR_INVALID_URL") logError(error);
+    if (error.code !== "ERR_INVALID_URL") exitWithError(error);
   }
 
-  if (!repoUrl) logError("No valid template URL provided.");
+  if (!repoUrl) exitWithError("No valid template URL provided.");
 
   if (repoUrl.origin !== "https://github.com") {
-    logError(
+    exitWithError(
       `Invalid URL: ${colors.red(
         `"${example}"`
       )}. Only GitHub repositories are supported. Please use a GitHub URL and try again.`

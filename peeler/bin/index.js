@@ -4,52 +4,14 @@
 const fs = require("fs");
 const path = require("path");
 const execa = require("execa");
-const yargs = require("yargs-parser");
 const { copy, remove } = require("fs-extra");
-const colors = require("kleur");
+const chalk = require("chalk");
+const { logger } = require("@wethegit/sweet-potato-utensils");
 
-const logError = require("../lib/logError");
-const hasPmInstalled = require("../lib/hasPmInstalled");
+const validateArgs = require("../lib/validateArgs");
 const getRepoInfo = require("../lib/getRepoInfo");
 const cleanProject = require("../lib/cleanProject");
 const installProcess = require("../lib/installProcess");
-
-function validateArgs(args) {
-  const { template, useYarn, usePnpm, force, target, install, _ } = yargs(args);
-  const toInstall = install !== undefined ? install : true;
-
-  if (useYarn && usePnpm) {
-    logError("You can not use Yarn and pnpm at the same time.");
-  }
-
-  if (useYarn && !hasPmInstalled("yarn")) {
-    logError(`Yarn doesn't seem to be installed.`);
-  }
-
-  if (usePnpm && !hasPmInstalled("pnpm")) {
-    logError(`pnpm doesn't seem to be installed.`);
-  }
-
-  if (!target && _.length === 2) {
-    logError("Missing --target directory.");
-  }
-
-  if (_.length > 3) {
-    logError("Unexpected extra arguments.");
-  }
-
-  const targetDirectoryRelative = target || _[2];
-  const targetDirectory = path.resolve(process.cwd(), targetDirectoryRelative);
-
-  return {
-    template: template || "default",
-    useYarn,
-    usePnpm,
-    targetDirectoryRelative,
-    targetDirectory,
-    toInstall,
-  };
-}
 
 const {
   template,
@@ -76,18 +38,21 @@ const isBaseTemplate = listOfBaseTemplates.find((file) => {
 });
 
 (async () => {
-  console.log(`Using template ${colors.cyan(template)}`);
-  console.log(`Creating a new project in ${colors.cyan(targetDirectory)}`);
+  logger.start("Peeling new project");
+  logger.announce(`Using template ${chalk.cyan(template)}`);
+  logger.announce(`Creating a new project in ${chalk.cyan(targetDirectory)}`);
 
   // fetch from npm or GitHub if not local (which will be most of the time)
   if (!isBaseTemplate) {
     const templateInfo = await getRepoInfo(template);
 
     try {
+      // creates the project directory with a temp directory
       const tempPath = path.join(targetDirectoryRelative, "temp");
-
       fs.mkdirSync(tempPath, { recursive: true });
 
+      // clone template
+      // only the specified branch and nothing else
       await execa(
         "git",
         [
@@ -103,77 +68,77 @@ const isBaseTemplate = listOfBaseTemplates.find((file) => {
         }
       );
 
+      // remove the .git from the cloned template
       await remove(path.join(tempPath, ".git"));
 
+      // copy everything to the main directory
       await copy(tempPath, targetDirectory);
 
+      // deletes temp path
       await remove(tempPath);
     } catch (err) {
       // Only log output if the command failed
-      console.error(err.all);
-      throw err;
+      exitWithError("Failed to clone template", err);
     }
   } else {
-    // if (targetDirectoryRelative !== '.')
+    // creates project directory
     fs.mkdirSync(targetDirectoryRelative, { recursive: true });
 
+    // copy base template
     await copy(isBaseTemplate, targetDirectory);
+
+    // deletes and append necessary packages
     await cleanProject(targetDirectory);
   }
 
+  logger.success("Template cloned");
+
   if (toInstall) {
-    console.log(
+    logger.announce(
       `Installing package dependencies. This might take a couple of minutes.\n`
     );
 
-    const npmInstallProcess = installProcess(installer, {
-      cwd: targetDirectory,
-      stdio: "inherit",
-    });
+    try {
+      const npmInstallProcess = installProcess(installer, {
+        cwd: targetDirectory,
+        stdio: "inherit",
+      });
 
-    npmInstallProcess.stdout && npmInstallProcess.stdout.pipe(process.stdout);
-    npmInstallProcess.stderr && npmInstallProcess.stderr.pipe(process.stderr);
+      npmInstallProcess.stdout && npmInstallProcess.stdout.pipe(process.stdout);
+      npmInstallProcess.stderr && npmInstallProcess.stderr.pipe(process.stderr);
 
-    await npmInstallProcess;
-  } else console.log(`Skipping "${installer} install" step`);
+      await npmInstallProcess;
 
-  function formatCommand(command, description) {
-    return "  " + command.padEnd(17) + colors.dim(description);
-  }
+      logger.success("Packages installed");
+    } catch (err) {
+      exitWithError("Failed to installe packages", err);
+    }
+  } else logger.announce(`Skipping "${installer} install" step`);
+
+  // builds competion message
+  const formatCommand = function (command, description) {
+    return "  " + command.padEnd(17) + chalk.dim(description);
+  };
 
   console.log(``);
-  console.log(colors.bold(colors.underline(`Quickstart:`)));
-  console.log(``);
-  console.log(`  cd ${targetDirectoryRelative}`);
-  console.log(`  ${installer} start`);
-  console.log(``);
-  console.log(colors.bold(colors.underline(`All Commands:`)));
-  console.log(``);
-  console.log(
-    formatCommand(
-      `${installer} install`,
-      `Install your dependencies. ${
-        toInstall
-          ? "(We already ran this one for you!)"
-          : "(You asked us to skip this step!)"
-      }`
-    )
-  );
+  logger.success("Project peeled");
+  logger.announce(chalk.bold.underline(`Quickstart:`));
+  logger.announce(`  cd ${targetDirectoryRelative}`);
+  if (!toInstall) logger.announce(`  ${installer} install`);
+  logger.announce(`  ${installer} start`);
 
-  console.log(
+  console.log(``);
+
+  logger.announce(chalk.bold.underline(`All Commands:`));
+  logger.announce(
     formatCommand(`${installer} start`, "Start your development server.")
   );
-
-  console.log(
+  logger.announce(
     formatCommand(
       `${installer} run build`,
       "Build your website for production."
     )
   );
-
-  console.log(
-    formatCommand(`${installer} run compress`, "Compresses all your images.")
-  );
-
   console.log(``);
+  logger.finished("Peeled 🍠");
 })();
