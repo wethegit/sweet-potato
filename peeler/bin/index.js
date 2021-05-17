@@ -122,25 +122,26 @@ const isBaseTemplate = listOfBaseTemplates.find((file) => {
     return "  " + command.padEnd(17) + chalk.dim(description);
   };
 
-  console.log(``);
   logger.success("Project peeled");
-  logger.announce(chalk.bold.underline(`Quickstart:`));
-  logger.announce(`  cd ${targetDirectoryRelative}`);
-  if (!toInstall) logger.announce(`  ${installer} install`);
-  logger.announce(`  ${installer} start`);
+  logger.finish("Peeled 🍠");
+
+  // quick help message
+  console.log(chalk.bold.underline(`Quickstart:`));
+  console.log(`  cd ${targetDirectoryRelative}`);
+  if (!toInstall) console.log(`  ${installer} install`);
+  console.log(`  ${installer} start`);
 
   console.log(``);
 
-  logger.announce(chalk.bold.underline(`All Commands:`));
-  logger.announce(
+  console.log(chalk.bold.underline(`All Commands:`));
+  console.log(
     formatCommand(`${installer} start`, "Start your development server.")
   );
-  logger.announce(
+  console.log(
     formatCommand(
       `${installer} run build`,
       "Build your website for production."
     )
   );
   console.log(``);
-  logger.finished("Peeled 🍠");
 })();
