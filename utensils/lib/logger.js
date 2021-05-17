@@ -11,19 +11,19 @@ const buildMessage = function (icon, message) {
 
 const logger = {
   announce: function (message) {
-    log(chalk.gray(buildMessage("ANNOUNCE::", message)));
+    log(chalk.gray(buildMessage("ANNOUNCE ::", message)));
   },
   error: function (message, details) {
-    log(chalk.red(buildMessage("ERROR::", message)));
+    log(chalk.red(buildMessage("ERROR    ::", message)));
     log(chalk.red("Details:"));
     log(details);
     log(chalk.red("----------------------------"));
   },
   success: function (message) {
-    log(chalk.green(buildMessage("SUCCESS::", message)));
+    log(chalk.green(buildMessage("SUCCESS  ::", message)));
   },
   warning: function (message) {
-    log(chalk.yellow(buildMessage("WARNING::", message)));
+    log(chalk.yellow(buildMessage("WARNING  ::", message)));
   },
   start: function (message) {
     log(chalk.cyan(buildMessage("INITIATED::", message)));
