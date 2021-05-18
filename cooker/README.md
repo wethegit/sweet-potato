@@ -20,17 +20,19 @@ mkdir pages
 touch pages/index.pug
 ```
 
-### 🍽 Serve your project locally
+You are all set!
 
-This builds a local version of the website into a `build/` directory, serves it and watches for changes on the project.
+### 🍽 Development
+
+Serves it and watches for changes on the project:
 
 ```sh
 npx sweet-potato-cooker start
 ```
 
-### 👷‍♀️ Build your project
+### 👷‍♀️ Production
 
-This builds your project into a static `build/` directory that you can deploy anywhere.
+This builds your project into a directory named `build/` that you can deploy to your edge of choice.
 
 ```sh
 npx sweet-potato-cooker build
@@ -44,8 +46,6 @@ Note: for a quicker setup it's recommended to add these scripts to `package.json
   "build": "sweet-potato-cooker build"
 }
 ```
-
-Then just run `npm start/build`
 
 ## See all commands & options
 
