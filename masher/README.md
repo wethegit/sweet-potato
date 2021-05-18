@@ -21,7 +21,8 @@ Granular compression options can be set by creating a file named `sweet-potato.c
 The same file used by the [`sweet-potato-cooker`](https://github.com/wethegit/sweet-potato/tree/main/cooker#config).
 
 ```js
-modules.exports {
+// sweet-potato.config.js
+modules.exports = {
   compress: {
     imageminMozjpeg: {
       quality: 70,
