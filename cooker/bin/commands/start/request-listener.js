@@ -99,18 +99,18 @@ function _respond(
 }
 
 function _doesntExist(res, file) {
+  const prettyPath = path.relative(config.CWD, file);
   const contents = plugSocketIO(
     errorTemplate.replace(
       "<!-- error -->",
       `
       <h1>404</h1>
-      <p>Couldn't find source template <strong>${file.replace(
-        config.PAGES_DIRECTORY,
-        ""
-      )}</strong></p>
+      <p>Couldn't find file <strong>${prettyPath}</strong></p>
     `
     )
   );
+
+  logger.error(["Couldn't find file", prettyPath]);
 
   _respond(res, {
     contentType: "text/html",

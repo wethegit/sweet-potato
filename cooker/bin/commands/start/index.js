@@ -48,6 +48,11 @@ async function startCommand(options) {
   let port = options.port || 8080;
   let attempts = 0;
   const maxAttempts = 3;
+  const start = () => {
+    attempts++;
+    // listen to hits on the host
+    server.listen(port, host);
+  };
 
   // watch for changes
   let debouncer;
@@ -60,37 +65,34 @@ async function startCommand(options) {
     }, 300);
   });
 
-
-  server.on('error', err => {
+  server.on("error", (err) => {
     server.close();
+
     // Check if port is already in use
-    if(err.code === 'EADDRINUSE' && attempts <= maxAttempts) {
-      logger.announce(`Port ${port} already in use, trying another (attempt ${attempts} of ${maxAttempts}) ...`)
-      port++
+    if (err.code === "EADDRINUSE" && attempts <= maxAttempts) {
+      logger.announce(
+        `Port ${port} already in use, trying another (attempt ${attempts} of ${maxAttempts}) ...`
+      );
+      port++;
       // try again on another port
       start(port, host);
-    }
-    else {
-      if(err.code === 'EADDRINUSE') logger.error(`Unable to find a free port after ${maxAttempts} attempts.`, `Try setting your own port using the --port flag.`);
-      else console.error(err);
+    } else {
+      if (err.code === "EADDRINUSE")
+        logger.error(
+          `Unable to find a free port after ${maxAttempts} attempts.\nTry setting your own port using the --port flag.`
+        );
+      else logger.error("Server error", err);
+
       process.exit(1);
     }
   });
-  
-  server.on('listening', () => {
-    if(attempts > 1) logger.warning(`Using port ${port}. (Port ${options.port} is already in use)`);
+
+  server.on("listening", () => {
     logger.start(`Server is running on http://${host}:${port}`);
     logger.announce("Watching for changes...");
-  })
+  });
 
-  const start = () => {
-    attempts++;
-    // listen to hits on the host
-    server.listen(port, host);
-  }
-  
-  start(port, host)
-
+  start(port, host);
 }
 
 module.exports = startCommand;

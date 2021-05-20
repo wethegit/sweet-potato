@@ -15,9 +15,10 @@ const logger = {
   },
   error: function (message, details) {
     log(chalk.red(buildMessage("ERROR    ::", message)));
-    log(chalk.red("Details:"));
-    log(details);
-    log(chalk.red("----------------------------"));
+    if (details) {
+      log(chalk.red("Details:"));
+      log(details);
+    }
   },
   success: function (message) {
     log(chalk.green(buildMessage("SUCCESS  ::", message)));
