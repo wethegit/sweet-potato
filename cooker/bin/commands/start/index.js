@@ -9,9 +9,6 @@ async function startCommand(options) {
   process.env.BABEL_ENV = "development";
   process.env.NODE_ENV = "development";
 
-  let app;
-  let server;
-
   // Makes the script crash on unhandled rejections instead of silently
   // ignoring them. In the future, promise rejections that are not handled will
   // terminate the Node.js process with a non-zero exit code.
@@ -20,13 +17,6 @@ async function startCommand(options) {
   // to the page, so you can just fix it and keep going
   process.on("unhandledRejection", (err) => {
     // throw err;
-  });
-
-  process.on("SIGINT", function () {
-    if (server) server.stop();
-    console.log(` `);
-    console.log("Gracefully shutting down from SIGINT (Ctrl-C)");
-    process.exit(0);
   });
 
   // Ensure environment variables are read.
@@ -40,6 +30,9 @@ async function startCommand(options) {
 
   const watch = require("./watch.js");
   const requestListener = require("./request-listener.js");
+
+  let app;
+  let server;
 
   // Start express app
   app = express();
