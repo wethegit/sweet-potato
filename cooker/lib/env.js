@@ -28,7 +28,7 @@ const loadEnv = function (env) {
   // https://github.com/motdotla/dotenv-expand
   dotenvFiles.forEach((dotenvFile) => {
     if (fs.existsSync(dotenvFile)) {
-      logger.announce(`  Loaded ${chalk.cyan(dotenvFile)}`);
+      logger.announce(`Loaded ${chalk.cyan(dotenvFile)}`);
       require("dotenv").config({
         path: dotenvFile,
       });
