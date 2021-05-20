@@ -19,25 +19,17 @@ const extMap = {
 /* TODO:
  Implement a caching system or even better, a dependency tree 
  where only the updated files are recompiled
- *
- *
- * this was an atempt at a simple cache
-const cacheFile = path.join(CONSTS.CACHE_DIRECTORY, "server.json");
-let cache = {};
-if (fse.pathExistsSync(cacheFile)) cache = fse.readJsonSync(cacheFile);
-
-async function _cache(file) {
-  const cacheMtimeMs = cache[file];
-  const { mtimeMs } = await fse.stat(file);
-
-  if (cacheMtimeMs === mtimeMs) return true;
-  return mtimeMs;
-}
 */
 
-// appending socket.io listener
-// so we can refresh the page on updates
+/**
+ * plugSocketIO
+ * Appends the required socket.io listener so we can refresh the page on updates.
+ *
+ * @param {string} html - HTML content
+ */
 function plugSocketIO(html) {
+  if (!html) return "";
+
   return html.replace(
     "</body>",
     `
@@ -53,18 +45,44 @@ function plugSocketIO(html) {
   );
 }
 
+/**
+ * _css
+ *
+ * Compiles a .scss file
+ *
+ * @param {string} file - Path to a .scss file
+ * @returns {string} CSS
+ */
 async function _css(file) {
   const css = await styles(file);
 
   return css[0].css;
 }
 
+/**
+ * _js
+ *
+ * Compiles and bundles a .js file
+ *
+ * @param {string} file - Path to a .js file
+ * @returns {string} JS
+ */
 async function _js(file) {
   const js = await javascripts(file);
 
   return js[0].js;
 }
 
+/**
+ * _html
+ *
+ * Compiles a .pug file with or without a locale data.
+ *
+ * @param {string} file - Path to a .pug file
+ * @param {string} locale - Path to a locale .yaml file
+ * @param {string} [name="index.html"] - Name of the file to return
+ * @returns {string} HTML with socket.io listener
+ */
 async function _html(file, locale, name = "index.html") {
   let page = await pages(file, locale);
 
@@ -82,12 +100,31 @@ async function _html(file, locale, name = "index.html") {
   return plugSocketIO(page.html);
 }
 
+/**
+ * _static
+ *
+ * Reads the contents of a file
+ *
+ * @param {file} file
+ * @returns {Buffer}
+ */
 async function _static(file) {
   let contents = await fse.readFile(file);
 
   return contents;
 }
 
+/**
+ * _respond
+ *
+ * Writes the head and respond to a request with the given contents
+ *
+ * @param {Response} res
+ * @param {object} responseData
+ * @param {string} responseData.contentType - Type of the response
+ * @param {number} responseData.responseCode - Code of the response
+ * @param {string} responseData.contents - Contents of the response
+ */
 function _respond(
   res,
   { contentType = "text/plain", responseCode = 200, contents = "" }
@@ -98,6 +135,14 @@ function _respond(
   res.end(contents);
 }
 
+/**
+ * _doesntExist
+ *
+ * Writes an error message and respond to a request with a 404
+ *
+ * @param {Response} res
+ * @param {string} file
+ */
 function _doesntExist(res, file) {
   const prettyPath = path.relative(config.CWD, file);
   const contents = plugSocketIO(
@@ -119,6 +164,15 @@ function _doesntExist(res, file) {
   });
 }
 
+/**
+ * _error
+ *
+ * Writes an error message and respond to a request with a 500
+ *
+ * @param {Response} res
+ * @param {string} file
+ * @param {Error} err
+ */
 function _error(res, file, err) {
   const prettyPath = path.relative(config.CWD, file);
   const contents = plugSocketIO(
@@ -145,15 +199,23 @@ function _error(res, file, err) {
   });
 }
 
+/**
+ * requestListener
+ *
+ * Sort and responds requests to the server with the final compiled contents.
+ *
+ * @param {Request} req
+ * @param {Response} res
+ * @returns {Promise}
+ */
 async function requestListener(req, res) {
   const { pathname } = new URL(req.url, `http://${req.headers.host}`);
   const { ext, base } = path.parse(pathname);
   const isStatic = ext && !Object.keys(extMap).includes(ext);
   let file;
 
-  if (config.OPTIONS.verbose) logger.announce(["Resolving", pathname]);
+  logger.announce(["Resolving", pathname]);
 
-  // const inCache = await _cache(file);
   const contentType = mime.lookup(pathname);
   const result = {
     contentType,
@@ -161,7 +223,7 @@ async function requestListener(req, res) {
 
   // if file is static we just serve the contents
   // NOTE: this should very rarely happen as express takes care
-  // of static files
+  // of static files.
   if (isStatic) {
     let file = path.join(config.PUBLIC_DIRECTORY, pathname);
 
@@ -231,7 +293,7 @@ async function requestListener(req, res) {
       const pageLocalePath = path.join(
         config.PAGES_DIRECTORY,
         pagePath.join("/"),
-        "locales"
+        config.OPTIONS.locales.directoryName
       );
 
       let pageName = ext ? base : "index.html";
@@ -247,12 +309,13 @@ async function requestListener(req, res) {
           ext ? pathname.replace(ext, extMap[ext]) : `${pathname}index.pug`
         );
 
+        // try the global locale for the page
         locale = path.resolve(
           config.PAGES_DIRECTORY,
           potentialLocale,
           pagePath.join("/"),
-          "locales",
-          "default.yaml"
+          config.OPTIONS.locales.directoryName,
+          config.OPTIONS.locales.defaultName + ".yaml"
         );
 
         if (!fse.pathExistsSync(locale)) locale = null;
@@ -273,20 +336,6 @@ async function requestListener(req, res) {
 
       break;
   }
-
-  // try {
-  //   // save our cache...
-  //   cache[file] = {
-  //     contents,
-  //     mtimeMs,
-  //   };
-
-  //   // ...but don't wait for file
-  //   fse.outputJson(cacheFile, cache);
-  // } catch (err) {
-  //   _error(res, file, err);
-  //   return;
-  // }
 
   if (contents) _respond(res, { ...result, contents });
 }
