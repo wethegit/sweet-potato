@@ -9,14 +9,21 @@ async function startCommand(options) {
   process.env.BABEL_ENV = "development";
   process.env.NODE_ENV = "development";
 
+  let app;
+  let server;
+
   // Makes the script crash on unhandled rejections instead of silently
   // ignoring them. In the future, promise rejections that are not handled will
   // terminate the Node.js process with a non-zero exit code.
+  // For out server, we don't wanna throw/kill the process
+  // because all the logs will be output to the terminal and also
+  // to the page, so you can just fix it and keep going
   process.on("unhandledRejection", (err) => {
-    throw err;
+    // throw err;
   });
 
   process.on("SIGINT", function () {
+    if (server) server.stop();
     console.log(` `);
     console.log("Gracefully shutting down from SIGINT (Ctrl-C)");
     process.exit(0);

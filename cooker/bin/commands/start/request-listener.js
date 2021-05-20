@@ -136,7 +136,7 @@ function _error(res, file, err) {
     )
   );
 
-  logger.error(["Couldn't process file", prettyPath], err);
+  logger.error(["Couldn't process file", prettyPath]);
 
   _respond(res, {
     contentType: "text/html",
@@ -191,14 +191,14 @@ async function requestListener(req, res) {
 
       if (!fse.pathExistsSync(file)) {
         _doesntExist(res, file);
-        return;
+        break;
       }
 
       try {
         contents = await _css(file);
       } catch (err) {
         _error(res, file, err);
-        return;
+        break;
       }
       break;
 
@@ -210,14 +210,14 @@ async function requestListener(req, res) {
 
       if (!fse.pathExistsSync(file)) {
         _doesntExist(res, file);
-        return;
+        break;
       }
 
       try {
         contents = await _js(file);
       } catch (err) {
         _error(res, file, err);
-        return;
+        break;
       }
       break;
 
@@ -268,8 +268,9 @@ async function requestListener(req, res) {
         contents = await _html(file, locale, pageName);
       } catch (err) {
         _error(res, file, err);
-        return;
+        break;
       }
+
       break;
   }
 
