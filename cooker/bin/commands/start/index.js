@@ -42,15 +42,15 @@ async function startCommand(options) {
   const requestListener = require("./request-listener.js");
 
   // Start express app
-  const app = express();
+  app = express();
 
   app.use(express.static(config.PUBLIC_DIRECTORY));
   app.get("*", requestListener);
 
   // Create our server and socket instance
-  const server = http.createServer(app);
-  const io = require("socket.io")(server);
+  server = http.createServer(app);
 
+  const io = require("socket.io")(server);
   const host = options.host || "localhost";
   let port = options.port || 8080;
   let attempts = 0;
