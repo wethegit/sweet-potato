@@ -22,16 +22,17 @@ async function startCommand(options) {
     process.exit(0);
   });
 
+  // Ensure environment variables are read.
+  const { loadEnv } = require("../../../lib/env.js");
+
+  loadEnv();
+
   const http = require("http");
   const express = require("express");
   const { config, logger } = require("@wethegit/sweet-potato-utensils");
 
-  const { loadEnv } = require("../../../lib/env.js");
   const watch = require("./watch.js");
   const requestListener = require("./request-listener.js");
-
-  // Ensure environment variables are read.
-  loadEnv();
 
   // Start express app
   const app = express();
