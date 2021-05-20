@@ -17,44 +17,50 @@ async function startCommand(options) {
   });
 
   process.on("SIGINT", function () {
-    console.log("\nGracefully shutting down from SIGINT (Ctrl-C)");
-    // some other closing procedures go here
-    process.exit(1);
+    console.log(` `);
+    console.log("Gracefully shutting down from SIGINT (Ctrl-C)");
+    process.exit(0);
   });
-
-  // Ensure environment variables are read.
-  const { loadEnv } = require("../../../lib/env.js");
-
-  loadEnv();
 
   const http = require("http");
   const express = require("express");
+  const { config, logger } = require("@wethegit/sweet-potato-utensils");
 
-  const CONSTS = require("../../../utils/consts.js");
+  const { loadEnv } = require("../../../lib/env.js");
   const watch = require("./watch.js");
   const requestListener = require("./request-listener.js");
 
+  // Ensure environment variables are read.
+  loadEnv();
+
+  // Start express app
   const app = express();
 
-  app.use(express.static(CONSTS.PUBLIC_DIRECTORY));
+  app.use(express.static(config.PUBLIC_DIRECTORY));
   app.get("*", requestListener);
 
+  // Create our server and socket instance
   const server = http.createServer(app);
   const io = require("socket.io")(server);
 
   const host = options.host || "localhost";
   const port = options.port || 8080;
 
+  // watch for changes
   let debouncer;
   watch(() => {
     clearTimeout(debouncer);
+
     debouncer = setTimeout(() => {
       io.sockets.emit("browserReload");
+      logger.announce("Browser reloaded");
     }, 300);
   });
 
+  // listen to hits on the host
   server.listen(port, host, () => {
-    console.log(`Server is running on http://${host}:${port}`);
+    logger.start(`Server is running on http://${host}:${port}`);
+    logger.announce("Watching for changes...");
   });
 }
 

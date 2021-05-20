@@ -8,10 +8,9 @@ The goal is to be simple and allow the composing and styling of pages without ge
 🍦 Vanilla Javascript  
 📚 [YAML](https://learnxinyminutes.com/docs/yaml/) for data
 
-
 ## Requirements
 
-- [Node](https://nodejs.org/en/) v14+ 
+- [Node](https://nodejs.org/en/) v14+
 
 ## Quick start
 
@@ -244,24 +243,24 @@ In addition to values from `.env` files Pug templates and Javascript files will 
 
 #### Pug
 
-- **NODE_ENV =** current environment mode
-- **RELATIVE_ROOT =** relative path from file to `build/`
-- **RELATIVE_LOCALE_ROOT =** relative path to locale root
-- **LOCALE_KEY =** locale key name
-- **BREAKPOINTS =** breakpoints object set inside the config
-- **PAGE_SLUG =** current page's slug
+- **globals.NODE_ENV =** current environment mode
+- **globals.RELATIVE_ROOT =** relative path from file to `build/`
+- **globals.RELATIVE_LOCALE_ROOT =** relative path to locale root
+- **globals.LOCALE_KEY =** locale key name
+- **globals.BREAKPOINTS =** breakpoints object set inside the config
+- **globals.PAGE_SLUG =** current page's slug
 
 #### Javascript
 
-- **NODE_ENV =** current environment mode
-- **RELATIVE_ROOT =** relative path from file to `build/`
-- **BREAKPOINTS =** breakpoints object set inside the config
+- **process.env.NODE_ENV =** current environment mode
+- **process.env.RELATIVE_ROOT =** relative path from file to `build/`
+- **process.env.BREAKPOINTS =** breakpoints object set inside the config
 
 #### Styles
 
 The only available global variable for styles is the **breakpoints** one, set inside the config. It needs to be imported first before you can use, see **Usage** below.
 
-- **breakpoints =** breakpoints object set inside the config
+- **sweet-potato:breakpoints =** breakpoints object set inside the config
 
 ### Usage
 
@@ -275,8 +274,8 @@ PUBLIC_URL=http://my-website.com
 
 ```js
 // index.js
-if (NODE_ENV === "development") console.log("In dev");
-console.log(PUBLIC_URL); // from .env
+if (process.env.NODE_ENV === "development") console.log("In dev");
+console.log(process.env.PUBLIC_URL); // from .env
 ```
 
 `.pug` files:

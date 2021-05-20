@@ -1,11 +1,15 @@
 const path = require("path");
 const fse = require("fs-extra");
 const mime = require("mime-types");
+const { config, logger } = require("@wethegit/sweet-potato-utensils");
 
+const errorTemplate = fse.readFileSync(path.join(__dirname, "error.html"), {
+  encoding: "utf-8",
+});
 const pages = require("../../../lib/pages.js");
 const styles = require("../../../lib/styles.js");
 const javascripts = require("../../../lib/javascripts.js");
-const CONSTS = require("../../../utils/consts.js");
+
 const extMap = {
   ".html": ".pug",
   ".css": ".scss",
@@ -17,6 +21,7 @@ const extMap = {
  where only the updated files are recompiled
  *
  *
+ * this was an atempt at a simple cache
 const cacheFile = path.join(CONSTS.CACHE_DIRECTORY, "server.json");
 let cache = {};
 if (fse.pathExistsSync(cacheFile)) cache = fse.readJsonSync(cacheFile);
@@ -69,12 +74,18 @@ async function _html(file, locale, name = "index.html") {
     if (page.length > 1)
       page = page.find(
         ({ destination }) =>
-          destination.replace(CONSTS.BUILD_DIRECTORY, "") === ""
+          destination.replace(config.BUILD_DIRECTORY, "") === ""
       );
     else page = page[0];
   } else page = page[0];
 
   return plugSocketIO(page.html);
+}
+
+async function _static(file) {
+  let contents = await fse.readFile(file);
+
+  return contents;
 }
 
 function _respond(
@@ -88,13 +99,49 @@ function _respond(
 }
 
 function _doesntExist(res, file) {
-  _respond(res, { responseCode: 404, contents: `Couldn't find file ${file}` });
+  const contents = plugSocketIO(
+    errorTemplate.replace(
+      "<!-- error -->",
+      `
+      <h1>404</h1>
+      <p>Couldn't find source template <strong>${file.replace(
+        config.PAGES_DIRECTORY,
+        ""
+      )}</strong></p>
+    `
+    )
+  );
+
+  _respond(res, {
+    contentType: "text/html",
+    responseCode: 404,
+    contents,
+  });
 }
 
 function _error(res, file, err) {
+  const prettyPath = path.relative(config.CWD, file);
+  const contents = plugSocketIO(
+    errorTemplate.replace(
+      "<!-- error -->",
+      `
+      <h1>Error</h1>
+      <p>Couldn't process file <strong>${prettyPath}</strong></p>
+      <code>
+        <pre>
+          ${err.stack}
+        </pre>
+      </code>
+    `
+    )
+  );
+
+  logger.error(["Couldn't process file", prettyPath], err);
+
   _respond(res, {
+    contentType: "text/html",
     responseCode: 500,
-    contents: `Couldn't process file ${file}\nError:\n ${err.toString()}`,
+    contents,
   });
 }
 
@@ -103,6 +150,8 @@ async function requestListener(req, res) {
   const { ext, base } = path.parse(pathname);
   const isStatic = ext && !Object.keys(extMap).includes(ext);
   let file;
+
+  if (config.OPTIONS.verbose) logger.announce(["Resolving", pathname]);
 
   // const inCache = await _cache(file);
   const contentType = mime.lookup(pathname);
@@ -114,7 +163,7 @@ async function requestListener(req, res) {
   // NOTE: this should very rarely happen as express takes care
   // of static files
   if (isStatic) {
-    let file = path.join(CONSTS.PUBLIC_DIRECTORY, pathname);
+    let file = path.join(config.PUBLIC_DIRECTORY, pathname);
 
     if (!fse.pathExistsSync(file)) {
       _doesntExist(res, file);
@@ -122,7 +171,7 @@ async function requestListener(req, res) {
     }
 
     try {
-      let contents = await fse.readFile(file);
+      let contents = await _static(file);
 
       _respond(res, { ...result, contents });
       return;
@@ -133,101 +182,95 @@ async function requestListener(req, res) {
   }
 
   let contents;
-  try {
-    switch (ext) {
-      case ".css":
+  switch (ext) {
+    case ".css":
+      file = path.join(
+        config.PAGES_DIRECTORY,
+        pathname.replace(ext, extMap[ext])
+      );
+
+      if (!fse.pathExistsSync(file)) {
+        _doesntExist(res, file);
+        return;
+      }
+
+      try {
+        contents = await _css(file);
+      } catch (err) {
+        _error(res, file, err);
+        return;
+      }
+      break;
+
+    case ".js":
+      file = path.join(
+        config.PAGES_DIRECTORY,
+        pathname.replace(ext, extMap[ext])
+      );
+
+      if (!fse.pathExistsSync(file)) {
+        _doesntExist(res, file);
+        return;
+      }
+
+      try {
+        contents = await _js(file);
+      } catch (err) {
+        _error(res, file, err);
+        return;
+      }
+      break;
+
+    default:
+      // html is more complicated then css and js
+      // we could be dealing with a locale
+      // which we have to find the path to
+
+      const { dir } = path.parse(ext ? pathname : `${pathname}index.html`);
+      const [r, potentialLocale, ...pagePath] = dir.split("/");
+      const pageLocalePath = path.join(
+        config.PAGES_DIRECTORY,
+        pagePath.join("/"),
+        "locales"
+      );
+
+      let pageName = ext ? base : "index.html";
+
+      // we first try the page locale
+      let locale = path.join(pageLocalePath, `${potentialLocale}.yaml`);
+
+      if (!fse.pathExistsSync(locale)) {
+        // we are probably dealig with
+        // a regular page
         file = path.join(
-          CONSTS.PAGES_DIRECTORY,
-          pathname.replace(ext, extMap[ext])
+          config.PAGES_DIRECTORY,
+          ext ? pathname.replace(ext, extMap[ext]) : `${pathname}index.pug`
         );
 
-        if (!fse.pathExistsSync(file)) {
-          _doesntExist(res, file);
-          return;
-        }
-
-        try {
-          contents = await _css(file);
-        } catch (er) {
-          console.log(er);
-        }
-        break;
-
-      case ".js":
-        file = path.join(
-          CONSTS.PAGES_DIRECTORY,
-          pathname.replace(ext, extMap[ext])
-        );
-
-        if (!fse.pathExistsSync(file)) {
-          _doesntExist(res, file);
-          return;
-        }
-
-        try {
-          contents = await _js(file);
-        } catch (er) {
-          console.log(er);
-        }
-        break;
-
-      default:
-        // html is more complicated then css and js
-        // we could be dealing with a locale
-        // which we have to find the path to
-
-        const { dir } = path.parse(ext ? pathname : `${pathname}index.html`);
-        const [r, potentialLocale, ...pagePath] = dir.split("/");
-        const pageLocalePath = path.join(
-          CONSTS.PAGES_DIRECTORY,
+        locale = path.resolve(
+          config.PAGES_DIRECTORY,
+          potentialLocale,
           pagePath.join("/"),
-          "locales"
+          "locales",
+          "default.yaml"
         );
 
-        let pageName = ext ? base : "index.html";
+        if (!fse.pathExistsSync(locale)) locale = null;
+      } else
+        file = path.join(pageLocalePath, "..", pageName.replace("html", "pug"));
 
-        // we first try the page locale
-        let locale = path.join(pageLocalePath, `${potentialLocale}.yaml`);
-
-        if (!fse.pathExistsSync(locale)) {
-          // we are probably dealig with
-          // a regular page
-          file = path.join(
-            CONSTS.PAGES_DIRECTORY,
-            ext ? pathname.replace(ext, extMap[ext]) : `${pathname}index.pug`
-          );
-
-          locale = path.resolve(
-            CONSTS.PAGES_DIRECTORY,
-            potentialLocale,
-            pagePath.join("/"),
-            "locales",
-            "default.yaml"
-          );
-
-          if (!fse.pathExistsSync(locale)) locale = null;
-        } else
-          file = path.join(
-            pageLocalePath,
-            "..",
-            pageName.replace("html", "pug")
-          );
-
-        if (!fse.pathExistsSync(file)) {
-          _doesntExist(res, file);
-          break;
-        }
-
-        try {
-          contents = await _html(file, locale, pageName);
-        } catch (er) {
-          console.log(er);
-        }
+      if (!fse.pathExistsSync(file)) {
+        _doesntExist(res, file);
         break;
-    }
-  } catch (err) {
-    _error(res, file, err);
-    return;
+      }
+
+      try {
+        contents = await _html(file, locale, pageName);
+      } catch (err) {
+        _error(res, file, err);
+        return;
+      }
+      break;
   }
 
   // try {

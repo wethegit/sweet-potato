@@ -4,48 +4,42 @@
 
 const fse = require("fs-extra");
 const path = require("path");
-
-// local imports
-const CONSTS = require("../utils/consts.js");
-const spinners = require("../utils/spinners.js");
-const logger = require("../utils/logger");
-
-const ISVERBOSE = CONSTS.CONFIG.verbose;
+const { config, logger } = require("@wethegit/sweet-potato-utensils");
 
 async function assets(file) {
   if (file && !fse.pathExistsSync(file)) return; // if file for some reason got removed
 
-  let from = CONSTS.PUBLIC_DIRECTORY;
-  let to = CONSTS.BUILD_DIRECTORY;
+  let from = config.PUBLIC_DIRECTORY;
+  let to = config.BUILD_DIRECTORY;
 
   if (file) {
     const fileInfo = path.parse(file);
 
     from = file;
-    to = path.join(CONSTS.BUILD_DIRECTORY, fileInfo.base);
+    to = path.join(config.BUILD_DIRECTORY, fileInfo.base);
   }
 
   if (!fse.pathExistsSync(from)) return;
 
-  if (ISVERBOSE) logger.start("Copying assets");
-  else spinners.add("assets", { text: "Copying assets", indent: 2 });
+  logger.start("Copying assets");
+  logger.announce(
+    `Copying assets from: ${path.relative(
+      config.CWD,
+      from
+    )} -> to: ${path.relative(config.CWD, to)}`
+  );
 
   try {
-    fse.ensureDirSync(CONSTS.BUILD_DIRECTORY);
+    fse.ensureDirSync(config.BUILD_DIRECTORY);
 
     return fse
       .copy(from, to, { overwrite: true, preserveTimestamps: true })
       .then(() => {
-        if (ISVERBOSE) logger.finish("Done copying assets");
-        else spinners.succeed("assets", { text: "Done copying assets" });
+        logger.finish("Done copying assets");
         return { from, to };
       });
   } catch (error) {
-    if (ISVERBOSE) logger.error("Failed to copy assets", error);
-    else
-      spinners.fail("assets", {
-        text: `Failed to copy assets ${error.message}`,
-      });
+    logger.error("Failed to copy assets", error);
   }
 }
 

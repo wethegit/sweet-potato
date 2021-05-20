@@ -2,12 +2,22 @@
 "use strict";
 
 async function cleanCommand(options) {
+  process.on("unhandledRejection", (err) => {
+    throw err;
+  });
+
+  process.on("SIGINT", function () {
+    console.log(` `);
+    console.log("Gracefully shutting down from SIGINT (Ctrl-C)");
+    process.exit(0);
+  });
+
   const clean = require("../../../lib/clean.js");
 
   try {
     await clean(options.cache);
   } catch (error) {
-    process.exit(1);
+    process.exit(0);
   }
 }
 

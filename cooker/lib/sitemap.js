@@ -3,31 +3,30 @@
 "use strict";
 
 // imports
+const chalk = require("chalk");
 const { SitemapStream, streamToPromise } = require("sitemap");
 const path = require("path");
 const fse = require("fs-extra");
+const { config, getFiles, logger } = require("@wethegit/sweet-potato-utensils");
 
 // local imports
-const spinners = require("../utils/spinners.js");
-const helpers = require("./helpers.js");
 const { getClientEnvironment } = require("./env.js");
-const CONSTS = require("../utils/consts.js");
-const logger = require("../utils/logger");
-
-const ISVERBOSE = CONSTS.CONFIG.verbose;
 
 // consts
 const env = getClientEnvironment();
 
+/**
+ * sitemap
+ *
+ * Generates sitemap from the build/ folder index files.
+ * Note: You must generate a build first.
+ */
 async function sitemap() {
-  if (!CONSTS.CONFIG.sitemap) return;
-
-  if (ISVERBOSE) logger.start("Generating sitemap");
-  else spinners.add("sitemap", { text: "Generating sitemap", indent: 2 });
+  if (!config.OPTIONS.sitemap) return;
 
   let publicUrl;
-  if (typeof CONSTS.CONFIG.sitemap === "string")
-    publicUrl = CONSTS.CONFIG.sitemap;
+  if (typeof config.OPTIONS.sitemap === "string")
+    publicUrl = config.OPTIONS.sitemap;
   else if (env.raw.PUBLIC_URL) {
     publicUrl = env.raw.PUBLIC_URL;
 
@@ -37,24 +36,28 @@ async function sitemap() {
   }
 
   if (!publicUrl) {
-    if (ISVERBOSE)
-      logger.error(
-        "Failed to generate sitemap.xml, missing `public url`.\nhttps://github.com/wethegit/sweet-potato/tree/main/cooker#sitemap"
-      );
-    else
-      spinners.fail("sitemap", {
-        text:
-          "Failed to generate sitemap.xml, missing `public url`.\nhttps://github.com/wethegit/sweet-potato/tree/main/cooker#sitemap",
-      });
+    logger.error(
+      `Failed to generate sitemap.xml, missing ${chalk.bold(
+        "public url"
+      )}.\nhttps://github.com/wethegit/sweet-potato/tree/main/cooker#sitemap`
+    );
+
     return;
   }
 
   // Get all html files
-  const htmlFiles = await helpers.getFiles(
-    path.join(CONSTS.BUILD_DIRECTORY, "**", "*.html")
+  const htmlFiles = await getFiles(
+    path.join(config.BUILD_DIRECTORY, "**", "*.html")
   );
 
-  if (htmlFiles.length <= 0) return;
+  if (htmlFiles.length <= 0) {
+    logger.announce(
+      "No html files found to generate sitemap, maybe this command was ran too early or you forgot to generate a build.\nnpx sweet-potato-cooker build"
+    );
+    return;
+  }
+
+  logger.start("Generating sitemap");
 
   // Creates a sitemap object given the input configuration with URLs
   const sitemap = new SitemapStream({ hostname: publicUrl });
@@ -63,7 +66,7 @@ async function sitemap() {
   // go throught all of them
   for (const file of htmlFiles) {
     const fileInfo = path.parse(file);
-    let dir = fileInfo.dir.replace(CONSTS.BUILD_DIRECTORY, "");
+    let dir = fileInfo.dir.replace(config.BUILD_DIRECTORY, "");
 
     if (dir === "") dir += "/";
 
@@ -72,23 +75,31 @@ async function sitemap() {
 
   sitemap.end();
 
-  try {
-    const sitemapData = await streamToPromise(sitemap);
-    const dest = path.join(CONSTS.BUILD_DIRECTORY, "sitemap.xml");
+  let sitemapData;
+  let finalSitemap;
 
-    return fse.outputFile(dest, sitemapData.toString()).then(() => {
-      // done 🎉
-      if (ISVERBOSE) logger.finish("Done generating sitemap");
-      else spinners.succeed("sitemap", { text: `Done generating sitemap` });
-      return dest;
-    });
+  try {
+    sitemapData = await streamToPromise(sitemap);
+    finalSitemap = sitemapData.toString();
   } catch (err) {
-    if (ISVERBOSE) logger.error("Failed generating sitemap", err);
-    else
-      spinners.fail("sitemap", {
-        text: `Failed generating sitemap\n${err.message}`,
-      });
+    logger.error("Failed generating sitemap", err);
   }
+
+  const dest = path.join(config.BUILD_DIRECTORY, "sitemap.xml");
+  const prettyPath = path.relative(config.CWD, dest);
+
+  return fse
+    .outputFile(dest, finalSitemap)
+    .then(() => {
+      // done 🎉
+      logger.success(["Compiled", prettyPath]);
+      logger.finish("Generating sitemap");
+
+      return { destination: dest, sitemap: finalSitemap };
+    })
+    .catch((err) => {
+      logger.error(["Failed saving sitemap file", prettyPath], err);
+    });
 }
 
 module.exports = sitemap;

@@ -4,168 +4,81 @@
 const sass = require("node-sass");
 const path = require("path");
 const fse = require("fs-extra");
-const stylelint = require("stylelint");
-const stylelintFormatter = require("stylelint-formatter-pretty");
 const assetFunctions = require("node-sass-asset-functions");
 const packageImporter = require("node-sass-package-importer");
-
-// local imports
-const spinners = require("../utils/spinners.js");
-const logger = require("../utils/logger");
-const helpers = require("./helpers.js");
-const CONSTS = require("../utils/consts.js");
+const { logger, config, getFiles } = require("@wethegit/sweet-potato-utensils");
 
 const isProduction = process.env.NODE_ENV == "production";
-const ISVERBOSE = CONSTS.CONFIG.verbose;
 
-const customImporter = function (url) {
+/**
+ * customImporter
+ * Custom resolver that enables reading data from the config inside sass files
+ *
+ * How it works:
+ * Inside a scss file import with a prefix:
+ * @import sweet-potato:breakpoints
+ * This will load all the breakpoints from the config
+ *
+ * @param {string} url
+ */
+function customImporter(url) {
   // This generates a stylesheet from scratch for `@use "big-headers"`.
-  if (!url.includes("sweet-potato:") || !CONSTS.CONFIG.breakpoints) return null;
+  if (!url.includes("sweet-potato:") || !config.OPTIONS.breakpoints)
+    return null;
 
   let contents = "";
 
-  for (let [key, value] of Object.entries(CONSTS.CONFIG.breakpoints)) {
+  for (let [key, value] of Object.entries(config.OPTIONS.breakpoints)) {
     contents += `$${key}: "screen and ${value}";`;
   }
 
   return {
     contents,
   };
-};
-
-async function lint(file) {
-  let result;
-
-  try {
-    result = await stylelint.lint({
-      fix: true,
-      files: file,
-      syntax: "scss",
-      formatter: stylelintFormatter,
-      configFile: path.join(CONSTS.ROOT_DIRECTORY, ".stylelintrc.yaml"),
-    });
-
-    if (result.errored || result.maxWarningsExceeded) {
-      if (ISVERBOSE) logger.error(["Failed linting", file], result.output);
-      else
-        spinners.add(`${file}-e`, {
-          text: `Failed linting\n${file}\n${result.output}`,
-          status: "non-spinnable",
-        });
-      return false;
-    }
-
-    if (result.results[0].warnings > 0) {
-      if (ISVERBOSE) logger.warning(["Linting warnings", file], result.output);
-      else
-        spinners.add(`${file}-w`, {
-          text: `Linting warnings\n${result.output}`,
-          status: "non-spinnable",
-        });
-    }
-  } catch (error) {
-    if (ISVERBOSE) logger.error(["Failed to lint", file], error);
-    else
-      spinners.add(`${file}-f`, {
-        text: `Failed to lint\n${file}\n${error.message}`,
-        status: "non-spinnable",
-      });
-
-    return false;
-  }
-
-  return result;
 }
 
-async function standardize(file) {
-  // If we pass a file and it's outside website, we still need to lint and prettyfy
-  const prettified = await helpers.prettify(file, { parser: "scss" });
-
-  // we prettified the file and wrote it on disk again,
-  // that will trigger another update for this file, not with proper coding style
-  // so we skip it here at this moment, and compile it on the second trigger
-  if (prettified === true) return false;
-
-  const lintResult = await lint(file);
-  if (lintResult === false) return false;
-
-  return true;
-}
-
+/**
+ * styles
+ *
+ * @param {string} file - Path to a scss file
+ *
+ * @returns {promise} - Resolves to array of objects with the file information
+ */
 async function styles(file) {
-  if (file && !fse.pathExistsSync(file)) return; // if file for some reason got removed
-
-  const mainSpinnerName = file ? file : "styles";
-
-  if (ISVERBOSE) {
-    if (!file) logger.start("Started styles compilation");
-  } else if (!spinners.pick(mainSpinnerName))
-    spinners.add(mainSpinnerName, { text: "Compiling styles", indent: 2 });
-
-  // if it's a file com a component or someplace else we
-  // need to compiled all dependencies
-  if (file && !file.includes(CONSTS.PAGES_DIRECTORY)) {
-    try {
-      if (ISVERBOSE) logger.announce(["Checking linting and prettier", file]);
-
-      const inStandards = await standardize(file);
-      // if it had linting issues we don't continue and let the
-      // updates to the file trigger a new event
-      if (!inStandards) {
-        if (ISVERBOSE) logger.error(["Didn't pass check", file]);
-        return;
-      }
-
-      // if it's all good, because we are outside the pages
-      // directory, we want to compile everything again
-      file = null;
-    } catch (error) {
-      if (ISVERBOSE) logger.error(["Failed to standardize", file], error);
-      else
-        spinners.fail(mainSpinnerName, {
-          text: `Failed to standardize\n${file}\n${error.message}`,
-        });
-      return;
-    }
-  }
+  if (
+    file &&
+    (!fse.pathExistsSync(file) || !file.includes(config.PAGES_DIRECTORY))
+  )
+    return; // if file for some reason got removed
 
   let sassFiles = file
     ? [file]
-    : await helpers.getFiles(path.join(CONSTS.PAGES_DIRECTORY, "**", "*.scss"));
+    : await getFiles(path.join(config.PAGES_DIRECTORY, "**", "*.scss"));
+
+  if (sassFiles.length <= 0) return;
+
+  logger.start("Generating styles");
 
   // gonna save all promises here to callback completion
   let promises = [];
 
   // go through files
-
   for (const file of sassFiles) {
-    if (ISVERBOSE) {
-      logger.start(["Compiling", file]);
-      logger.announce(["Checking linting and prettier", file]);
-    }
-
-    const inStandards = await standardize(file);
-
-    if (!inStandards) {
-      if (ISVERBOSE) logger.error(["Didn't pass check, skipping", file]);
-
-      continue;
-    }
-
     const fileInfo = path.parse(file);
 
     // if file starts with underscore, we ignore it, expected as standard 👍
     if (fileInfo.name.charAt(0) == "_") continue;
 
     // build the destination file
-    let outFile = helpers.buildDest({
-      ...fileInfo,
-      ext: ".css",
-    });
+    const outFile = path.join(
+      config.BUILD_DIRECTORY,
+      fileInfo.dir.replace(config.PAGES_DIRECTORY, ""),
+      fileInfo.base.replace("scss", "css")
+    );
 
     let relativeOutput = path.relative(
       path.parse(outFile).dir,
-      CONSTS.BUILD_DIRECTORY
+      config.BUILD_DIRECTORY
     );
 
     if (!relativeOutput) relativeOutput = ".";
@@ -183,22 +96,19 @@ async function styles(file) {
           outputStyle: "compressed",
           importer: [packageImporter(), customImporter],
           functions: assetFunctions({
-            images_path: CONSTS.PUBLIC_DIRECTORY,
+            images_path: config.PUBLIC_DIRECTORY,
             http_images_path: relativeOutput,
           }),
-          ...CONSTS.CONFIG.sassOptions(!isProduction, file),
+          ...config.OPTIONS.sassOptions(!isProduction, file),
         },
         async function (error, result) {
+          const prettyPathOut = path.relative(config.CWD, outFile);
+          const prettyPathSource = path.relative(config.CWD, file);
+
           if (error) {
-            if (ISVERBOSE) logger.error(["Failed to compile", file], error);
-            else
-              spinners.add(file, {
-                text: `Failed to compile\n${outFile}\nLine ${error.line}:${error.column} ${error.message}`,
-                status: "non-spinnable",
-              });
+            logger.error(["Failed to compile", prettyPathSource], error);
 
             reject(error);
-            return;
           }
 
           const finalCSS = result.css;
@@ -206,20 +116,19 @@ async function styles(file) {
           try {
             // output the file
             await fse.outputFile(outFile, finalCSS);
+
             const data = await fse.readFile(outFile, "utf8");
+
+            logger.success(["Compiled", prettyPathSource, prettyPathOut]);
+
             resolve({ destination: outFile, css: data });
-            if (ISVERBOSE) logger.success(["Compiled", file, outFile]);
           } catch (error) {
-            if (ISVERBOSE)
-              logger.error(["Failed saving", file, outFile], error);
-            else
-              spinners.add(file, {
-                text: `Failed saving file${outFile}${error.message}`,
-                status: "non-spinnable",
-              });
+            logger.error(
+              ["Failed saving", prettyPathSource, prettyPathOut],
+              error
+            );
 
             reject(error);
-            return;
           }
         }
       );
@@ -231,9 +140,7 @@ async function styles(file) {
   // done 🎉
   return Promise.all(promises).then((res) => {
     // go through files
-    if (ISVERBOSE) {
-      if (res.length > 1) logger.finish("Finished compiling styles");
-    } else spinners.succeed(mainSpinnerName, { text: "Done compiling styles" });
+    logger.finish("Generating styles");
 
     return res;
   });

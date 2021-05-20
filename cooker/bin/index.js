@@ -18,24 +18,10 @@ prog
 
 prog
   .command("start")
-  .describe("Build a local version and start a development server")
-  .option(
-    "--asset-logger",
-    "Store and logs a list of potential extraneous assets on the project",
-    false
-  )
+  .describe("Start a development server and watches for changes")
   .option("--port", "Port to bind", 8080)
   .option("--host", "Hostname to bind", "localhost")
-  .option("--open", "Automatic web browser launching", false)
   .action(commands.start);
-
-prog
-  .command("compress")
-  .describe(
-    "Overwrites all images in a directory with their compressed and optimized versions"
-  )
-  .option("--directory", "Directory to look for images", "/public")
-  .action(commands.compress);
 
 prog
   .command("clean")

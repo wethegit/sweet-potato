@@ -1,19 +1,14 @@
 {
   "name": "@wethegit/sweet-potato-cooker",
-  "version": "0.9.9",
+  "version": "1.0.0",
   "description": "Opinionated and minimal static website generator",
   "main": "bin/index.js",
   "bin": {
     "sweet-potato-cooker": "bin/index.js"
   },
   "engines": {
-    "node": ">= 12.0.0"
+    "node": ">= 14.0.0 < 16"
   },
-  "browserslist": [
-    "> 1%",
-    "last 2 versions",
-    "not ie"
-  ],
   "publishConfig": {
     "access": "public"
   },
@@ -23,42 +18,24 @@
     "directory": "cooker"
   },
   "dependencies": {
-    "@prettier/plugin-pug": "^1.13.3",
-    "chalk": "^4.1.0",
+    "@wethegit/sweet-potato-utensils": "^1.0.0",
+    "chalk": "^4.1.1",
     "chokidar": "^3.5.1",
     "del": "^6.0.0",
     "dotenv": "^8.2.0",
     "dotenv-expand": "^5.1.0",
     "esbuild": "^0.8.36",
-    "eslint": "^7.19.0",
-    "eslint-config-prettier": "^7.2.0",
-    "eslint-plugin-prettier": "^3.3.1",
     "express": "^4.17.1",
     "fs-extra": "^9.1.0",
-    "glob": "^7.1.6",
-    "imagemin": "^7.0.1",
-    "imagemin-gifsicle": "^7.0.0",
-    "imagemin-mozjpeg": "^9.0.0",
-    "imagemin-pngquant": "^9.0.1",
-    "imagemin-svgo": "^8.0.0",
     "js-yaml": "^4.0.0",
-    "md5-file": "^5.0.0",
     "mime-types": "^2.1.29",
     "node-sass": "^5.0.0",
     "node-sass-asset-functions": "^0.1.0",
     "node-sass-package-importer": "^5.3.2",
-    "prettier": "^2.2.1",
     "pug": "^3.0.0",
     "resolve": "^1.19.0",
     "sade": "^1.7.4",
     "sitemap": "^6.3.5",
-    "socket.io": "^2.4.0",
-    "spinnies": "^0.5.1",
-    "stylelint": "^13.9.0",
-    "stylelint-config-prettier": "^8.0.2",
-    "stylelint-formatter-pretty": "^2.1.1",
-    "stylelint-order": "^4.1.0",
-    "stylelint-prettier": "^1.1.2",
-    "stylelint-scss": "^3.18.0"
+    "socket.io": "^2.4.0"
   }
 }

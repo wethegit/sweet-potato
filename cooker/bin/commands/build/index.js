@@ -14,14 +14,15 @@ async function buildCommand(options) {
   });
 
   process.on("SIGINT", function () {
-    console.log("\nGracefully shutting down from SIGINT (Ctrl-C)");
-    // some other closing procedures go here
-    process.exit(1);
+    console.log(` `);
+    console.log("Gracefully shutting down from SIGINT (Ctrl-C)");
+    process.exit(0);
   });
 
-  // Ensure environment variables are read.
+  const { logger } = require("@wethegit/sweet-potato-utensils");
   const { loadEnv } = require("../../../lib/env.js");
 
+  // Ensure environment variables are read.
   loadEnv(options.env);
 
   // local imports
@@ -32,7 +33,10 @@ async function buildCommand(options) {
     await clean(true);
     await buildAll();
   } catch (error) {
-    console.log(error);
+    logger.error(
+      "Error ocurred while trying to generate a production build",
+      error
+    );
     process.exit(1);
   }
 }

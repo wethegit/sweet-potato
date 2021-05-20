@@ -1,4 +1,6 @@
 #!/usr/bin/env node
+// The purpose os this command is to bootstrap a project from a template that will be
+// developed using the sweet-potato suite of tools
 "use strict";
 
 const fs = require("fs");
@@ -41,9 +43,8 @@ const isBaseTemplate = listOfBaseTemplates.find((file) => {
 (async () => {
   logger.announce(`sweet-potato-peeler v${pkg.version}`);
   logger.start("Peeling new project");
-  logger.announce(`Using template ${chalk.cyan(template)}`);
   logger.announce(`Creating a new project in ${chalk.cyan(targetDirectory)}`);
-
+  logger.announce(`Using template ${chalk.cyan(template)}`);
   // fetch from npm or GitHub if not local (which will be most of the time)
   if (!isBaseTemplate) {
     const templateInfo = await getRepoInfo(template);
@@ -93,8 +94,6 @@ const isBaseTemplate = listOfBaseTemplates.find((file) => {
     await cleanProject(targetDirectory);
   }
 
-  logger.success("Template cloned");
-
   if (toInstall) {
     logger.announce(
       `Installing package dependencies. This might take a couple of minutes.\n`
@@ -122,7 +121,6 @@ const isBaseTemplate = listOfBaseTemplates.find((file) => {
     return "  " + command.padEnd(17) + chalk.dim(description);
   };
 
-  console.log(``);
   logger.finish("Project peeled 🍠");
   console.log(``);
 

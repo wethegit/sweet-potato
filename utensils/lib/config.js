@@ -9,6 +9,10 @@ let CONFIG = {
   verbose: true,
   buildDirectory: "build",
   sourceDirectory: ".",
+  locales: {
+    directoryName: "locales",
+    defaultName: "default",
+  },
   sassOptions: () => {
     return {};
   },
@@ -41,6 +45,10 @@ const CACHE_DIRECTORY = path.join(CWD, ".cache", "sweet-potato");
 const SOURCE_DIRECTORY = path.join(CWD, CONFIG.sourceDirectory);
 const PAGES_DIRECTORY = path.join(SOURCE_DIRECTORY, "pages");
 const PUBLIC_DIRECTORY = path.join(SOURCE_DIRECTORY, "public");
+const GLOBAL_LOCALES_DIRECTORY = path.join(
+  SOURCE_DIRECTORY,
+  CONFIG.locales.directoryName
+);
 
 module.exports = {
   CWD,
@@ -50,4 +58,5 @@ module.exports = {
   SOURCE_DIRECTORY,
   PAGES_DIRECTORY,
   PUBLIC_DIRECTORY,
+  GLOBAL_LOCALES_DIRECTORY,
 };

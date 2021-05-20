@@ -1,6 +1,6 @@
 # sweet-potato-cooker 👩‍🍳
 
-An opinionated static site generator that uses [Pug](https://pugjs.org/api/getting-started.html) as a template engine with `yaml` files for localization and [Sass](https://sass-lang.com/) for styles.  
+An opinionated static site generator that uses [Pug](https://pugjs.org/api/getting-started.html) as a template engine with `yaml` files for localization and [Sass](https://sass-lang.com/) for styles.
 
 > `sweet-potato-cooker` is part of the `sweet-potato` suite of tools. For information on how to structure the project check the [sweet-potato docs](https://github.com/wethegit/sweet-potato).
 
@@ -75,6 +75,22 @@ Specify the directory to which build the files to.
 **Type:** `string`  
 **Default:** `.`  
 Specify the source directory.
+
+### locales
+
+**Type:** `object`  
+Localization configuration.
+
+#### locales.directoryName
+
+**Default:** `locales`  
+Name of the directory where the localization `.yaml` files live.
+
+#### locales.defaultName
+
+**Default:** `default`  
+Name of the default locale and locale file.  
+🚨 Important to note that the default locale **won't** be placed inside a sub directory. For example, a `fr.yaml` locale output will be `/fr/index.html` whereas a `default.yaml` output will be `/index.html`.
 
 ### sassOptions
 

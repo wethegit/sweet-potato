@@ -29,7 +29,7 @@ const logger = {
     log(chalk.cyan(buildMessage("INITIATED::", message)));
   },
   finish: function (message) {
-    log(chalk.cyan(buildMessage("COMPLETED::", message)));
+    log(chalk.magentaBright(buildMessage("COMPLETED::", message)));
   },
 };
 
