@@ -1,13 +1,21 @@
 // The purpose of this function is to copy files
-// Compression should be done separately by running npm run compress
+// Compression should be done separately
 "use strict";
 
 const fse = require("fs-extra");
 const path = require("path");
 const { config, logger } = require("@wethegit/sweet-potato-utensils");
 
+/**
+ * assets
+ *
+ * Copy on or many files to the build directory
+ *
+ * @param {string} file
+ * @returns {Promise} Resolves to object with to,from information
+ */
 async function assets(file) {
-  if (file && !fse.pathExistsSync(file)) return; // if file for some reason got removed
+  if (file && !fse.pathExistsSync(file)) return;
 
   let from = config.PUBLIC_DIRECTORY;
   let to = config.BUILD_DIRECTORY;
