@@ -15,7 +15,6 @@ const { getClientEnvironment } = require("./env.js");
 // local consts
 const env = getClientEnvironment();
 const isProduction = process.env.NODE_ENV == "production";
-let breakpointsInjectFile;
 
 /**
  * javascripts
@@ -31,15 +30,6 @@ async function javascripts(file) {
   )
     return; // if file for some reason got removed
 
-  // create breakpoint file if one wasn't already created
-  if (config.OPTIONS.breakpoints && !breakpointsInjectFile) {
-    breakpointsInjectFile = path.join(config.CACHE_DIRECTORY, "breakpoints.js");
-
-    fse.outputFileSync(
-      breakpointsInjectFile,
-      `export let BREAKPOINTS = ${JSON.stringify(config.OPTIONS.breakpoints)};`
-    );
-  }
 
   let jsFiles = file
     ? [file]
@@ -64,6 +54,7 @@ async function javascripts(file) {
 
     // get relative paths so we can pass as env
     let DEFINE_VALUES = {
+      "process.env.BREAKPOINTS": JSON.stringify(config.OPTIONS.breakpoints || {}),
       "process.env.RELATIVE_ROOT": `"${path.relative(
         DEST,
         config.BUILD_DIRECTORY
@@ -87,7 +78,6 @@ async function javascripts(file) {
           target: ["es2020"],
           format: "esm",
           define: DEFINE_VALUES,
-          inject: breakpointsInjectFile ? [breakpointsInjectFile] : [],
         })
         .then(() => {
           logger.success([
