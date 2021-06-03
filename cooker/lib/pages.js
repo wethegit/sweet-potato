@@ -159,13 +159,13 @@ async function getDataFromYaml(file) {
   return result;
 }
 
-async function getDataFromDataInclude(file) {
+async function getDataFromDataInclude(file, path) {
   let result = {};
 
   if (!fse.pathExistsSync(file)) return result;
 
   try {
-    const content = await (require(file))();
+    const content = await (require(file))(path);
     result = content;
   } catch (error) {
     logger.error(
@@ -310,7 +310,7 @@ async function pages(file, localeFile) {
 
         const globals = await getDataFromYaml(mainYamlFile);
         const page = await getDataFromYaml(locale);
-        const model = await getDataFromDataInclude(path.join(templateInfo.dir, "data", 'index.js'));
+        const model = await getDataFromDataInclude(path.join(templateInfo.dir, "data", 'index.js'), path.join(templateInfo.dir, "data"));
 
         // render the html with the data and save it
         const options = {
@@ -327,7 +327,6 @@ async function pages(file, localeFile) {
             model
           },
         };
-        console.log(options)
 
         promises.push(
           saveHtml(options, {
