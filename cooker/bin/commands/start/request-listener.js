@@ -144,7 +144,7 @@ function _respond(
  * @param {string} file
  */
 function _doesntExist(res, file) {
-  const prettyPath = path.relative('/', file);
+  const prettyPath = path.relative(config.CWD, file);
   const contents = plugSocketIO(
     errorTemplate.replace(
       "<!-- error -->",
