@@ -159,6 +159,15 @@ async function getDataFromYaml(file) {
   return result;
 }
 
+/**
+ * getDataFromDataInclude
+ * Executes a promise in a javascript file which is intended to return model data.
+ * 
+ * @param {string} file - Path to a index javasceript file
+ * @param {string} path - The fully justified path to the folder. This allows the javascript file to run code against the folder, loading additional files, for example
+ *
+ * @returns {object} - Resolves to an object. This is provided by the repo, so implementation is up to the associated developer
+ */
 async function getDataFromDataInclude(file, path) {
   let result = {};
 
