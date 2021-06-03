@@ -91,7 +91,7 @@ async function saveHtml(outputOptions, { source }) {
     RELATIVE_ROOT: relroot ? relroot : ".",
     BREAKPOINTS: config.OPTIONS.breakpoints || {},
     PAGE_SLUG: slug,
-    ...data.globals,
+    ...data.globals
   };
 
   if (locale) {
@@ -112,6 +112,7 @@ async function saveHtml(outputOptions, { source }) {
     htmlString = pugFunction({
       globals,
       page: data.page,
+      model: data.model
     });
   } catch (error) {
     logger.error([`Failed to render template`, prettyPathSource], error);
@@ -149,6 +150,26 @@ async function getDataFromYaml(file) {
   } catch (error) {
     logger.error(
       [`Can't compile global yaml`, path.relative(config.CWD, file)],
+      error
+    );
+
+    throw error;
+  }
+
+  return result;
+}
+
+async function getDataFromDataInclude(file) {
+  let result = {};
+
+  if (!fse.pathExistsSync(file)) return result;
+
+  try {
+    const content = await (require(file))();
+    result = content;
+  } catch (error) {
+    logger.error(
+      [`Can't compile data file`, path.relative(config.CWD, file)],
       error
     );
 
@@ -246,6 +267,7 @@ async function pages(file, localeFile) {
       data: {
         globals: {},
         page: {},
+        model: {}
       },
     };
 
@@ -288,6 +310,7 @@ async function pages(file, localeFile) {
 
         const globals = await getDataFromYaml(mainYamlFile);
         const page = await getDataFromYaml(locale);
+        const model = await getDataFromDataInclude(path.join(templateInfo.dir, "data", 'index.js'));
 
         // render the html with the data and save it
         const options = {
@@ -301,8 +324,10 @@ async function pages(file, localeFile) {
           data: {
             globals,
             page,
+            model
           },
         };
+        console.log(options)
 
         promises.push(
           saveHtml(options, {
