@@ -11,7 +11,6 @@ const compressFile = async function (file, outPath, options) {
   const FILE_INFO = path.parse(file);
   const STATS = fse.statSync(file);
   const FILE_SIZE_BYTES = STATS.size;
-  const FILE_SIZE_KB = Math.floor(FILE_SIZE_BYTES / 1000);
 
   await imagemin([file], {
     destination: outPath,
@@ -26,7 +25,6 @@ const compressFile = async function (file, outPath, options) {
   const OUT_FILE = path.join(outPath, FILE_INFO.base);
   const OUT_STATS = fse.statSync(OUT_FILE);
   const OUT_FILE_SIZE_BYTES = OUT_STATS.size;
-  const OUT_FILE_SIZE_KB = Math.floor(OUT_FILE_SIZE_BYTES / 1000);
   const SAVINGS =
     ((FILE_SIZE_BYTES - OUT_FILE_SIZE_BYTES) / FILE_SIZE_BYTES) * 100;
 
@@ -35,8 +33,8 @@ const compressFile = async function (file, outPath, options) {
   return {
     file,
     percentage: SAVINGS,
-    before: FILE_SIZE_KB,
-    after: OUT_FILE_SIZE_KB,
+    before: FILE_SIZE_BYTES,
+    after: OUT_FILE_SIZE_BYTES,
     hash: HASH,
   };
 };
