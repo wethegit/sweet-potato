@@ -1,6 +1,6 @@
 {
   "name": "@wethegit/sweet-potato-masher",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Compresses all image assets inside a directory",
   "main": "bin/index.js",
   "bin": {

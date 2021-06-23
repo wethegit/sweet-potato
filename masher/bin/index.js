@@ -35,7 +35,7 @@ if (ISVERBOSE) {
 }
 
 // consts
-const ALLOWED_EXTENSIONS = ".jpg, .jpeg, .png, .svg, .gif";
+const ALLOWED_EXTENSIONS = "jpg,jpeg,png,svg,gif";
 
 // set the directory to traverse
 let { directory } = yargs(process.argv);
@@ -46,7 +46,7 @@ else directory = config.PUBLIC_DIRECTORY;
 (async () => {
   // get all files from the directory
   const FILES = await getFiles(
-    path.join(directory, "**", `*{${ALLOWED_EXTENSIONS}}`)
+    path.join(directory, "**", `*.{${ALLOWED_EXTENSIONS}}`)
   );
 
   // no files, end process
@@ -116,9 +116,7 @@ else directory = config.PUBLIC_DIRECTORY;
     if (ISVERBOSE) {
       const { file, before, after } = compression;
 
-      const FILE_INFO = path.parse(file);
-      const PRETTY_PATH =
-        FILE_INFO.dir.replace(config.CWD, "") + FILE_INFO.base;
+      const PRETTY_PATH = path.relative(config.CWD, file);
 
       logger.success([
         PRETTY_PATH,
