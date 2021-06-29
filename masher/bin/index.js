@@ -24,6 +24,7 @@ const { getFiles, config, logger } = require("@wethegit/sweet-potato-utensils");
 
 const deepObjectKeysCheck = require("../lib/deepObjectKeysCheck");
 const compressFile = require("../lib/compressFile");
+const formatBytes = require("../lib/formatBytes");
 
 const ISVERBOSE = config.OPTIONS.verbose;
 const COMPRESSION_OPTIONS = config.OPTIONS.compress;
@@ -35,7 +36,7 @@ if (ISVERBOSE) {
 }
 
 // consts
-const ALLOWED_EXTENSIONS = ".jpg, .jpeg, .png, .svg, .gif";
+const ALLOWED_EXTENSIONS = "jpg,jpeg,png,svg,gif";
 
 // set the directory to traverse
 let { directory } = yargs(process.argv);
@@ -46,7 +47,7 @@ else directory = config.PUBLIC_DIRECTORY;
 (async () => {
   // get all files from the directory
   const FILES = await getFiles(
-    path.join(directory, "**", `*{${ALLOWED_EXTENSIONS}}`)
+    path.join(directory, "**", `*.{${ALLOWED_EXTENSIONS}}`)
   );
 
   // no files, end process
@@ -105,24 +106,26 @@ else directory = config.PUBLIC_DIRECTORY;
     })
   );
 
-  let totalSavings = 0;
+  let totalBytesBefore = 0;
+  let totalBytesAfter = 0;
   let hashes = [];
   for (let compression of COMPRESSED_FILES) {
-    const { percentage, hash } = compression;
+    const { percentage, hash, before, after } = compression;
 
-    totalSavings += percentage;
+    totalBytesBefore += before;
+    totalBytesAfter += after;
+
     hashes.push(hash);
 
     if (ISVERBOSE) {
-      const { file, before, after } = compression;
-
-      const FILE_INFO = path.parse(file);
-      const PRETTY_PATH =
-        FILE_INFO.dir.replace(config.CWD, "") + FILE_INFO.base;
+      const { file } = compression;
+      const PRETTY_PATH = path.relative(config.CWD, file);
 
       logger.success([
         PRETTY_PATH,
-        `${Math.floor(percentage)}% - ${before}kb | ${after}kb`,
+        `${Math.floor(percentage)}% - ${formatBytes(before)} | ${formatBytes(
+          after
+        )}`,
       ]);
     }
   }
@@ -134,8 +137,8 @@ else directory = config.PUBLIC_DIRECTORY;
 
   // done 🎉
   logger.finish(
-    `\nFiles compressed: ${toCompress.length}\nTotal savings: ${Math.floor(
-      totalSavings
-    )}%`
+    `\nFiles compressed: ${toCompress.length}\nBefore: ${formatBytes(
+      totalBytesBefore
+    )}\nAfter: ${formatBytes(totalBytesAfter)}`
   );
 })();
