@@ -22,7 +22,7 @@ The same file used by the [`sweet-potato-cooker`](https://github.com/wethegit/sw
 
 ```js
 // sweet-potato.config.js
-modules.exports = {
+module.exports = {
   compress: {
     imageminMozjpeg: {
       quality: 70,
