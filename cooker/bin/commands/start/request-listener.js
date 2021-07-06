@@ -308,7 +308,15 @@ async function requestListener(req, res) {
           config.PAGES_DIRECTORY,
           ext ? pathname.replace(ext, extMap[ext]) : `${pathname}index.pug`
         );
-
+        const mdFile = path.join(
+          config.PAGES_DIRECTORY,
+          ext ? pathname.replace(ext, ".md") : `${pathname}index.md`
+        );
+        console.log(mdFile);
+        // If this page has an md file associated with it instead of a pug file, use that.
+        if (fse.pathExistsSync(mdFile)) {
+          file = mdFile;
+        }
         // try the global locale for the page
         locale = path.resolve(
           config.PAGES_DIRECTORY,
@@ -319,8 +327,18 @@ async function requestListener(req, res) {
         );
 
         if (!fse.pathExistsSync(locale)) locale = null;
-      } else
+      } else {
         file = path.join(pageLocalePath, "..", pageName.replace("html", "pug"));
+        const mdFile = path.join(
+          pageLocalePath,
+          "..",
+          pageName.replace("html", "md")
+        );
+        // If this page has an md file associated with it instead of a pug file, use that.
+        if (fse.pathExistsSync(mdfile)) {
+          file = mdFile;
+        }
+      }
 
       if (!fse.pathExistsSync(file)) {
         _doesntExist(res, file);

@@ -6,6 +6,8 @@ const yaml = require("js-yaml");
 const fse = require("fs-extra");
 const path = require("path");
 const resolve = require("resolve");
+const matter = require("gray-matter");
+const markdown = require("markdown").markdown;
 const { config, logger, getFiles } = require("@wethegit/sweet-potato-utensils");
 
 // local imports
@@ -91,7 +93,7 @@ async function saveHtml(outputOptions, { source }) {
     RELATIVE_ROOT: relroot ? relroot : ".",
     BREAKPOINTS: config.OPTIONS.breakpoints || {},
     PAGE_SLUG: slug,
-    ...data.globals
+    ...data.globals,
   };
 
   if (locale) {
@@ -112,7 +114,7 @@ async function saveHtml(outputOptions, { source }) {
     htmlString = pugFunction({
       globals,
       page: data.page,
-      model: data.model
+      model: data.model,
     });
   } catch (error) {
     logger.error([`Failed to render template`, prettyPathSource], error);
@@ -162,7 +164,7 @@ async function getDataFromYaml(file) {
 /**
  * getDataFromDataInclude
  * Executes a promise in a javascript file which is intended to return model data.
- * 
+ *
  * @param {string} file - Path to a index javasceript file
  * @param {string} path - The fully justified path to the folder. This allows the javascript file to run code against the folder, loading additional files, for example
  *
@@ -174,7 +176,7 @@ async function getDataFromDataInclude(file, path) {
   if (!fse.pathExistsSync(file)) return result;
 
   try {
-    const content = await (require(file))(path);
+    const content = await require(file)(path);
     result = content;
   } catch (error) {
     logger.error(
@@ -224,7 +226,9 @@ async function pages(file, localeFile) {
   // this means that we are either dealing with a master pug file
   // or a master locale file
   if (!pugFiles)
-    pugFiles = await getFiles(path.join(config.PAGES_DIRECTORY, "**", "*.pug"));
+    pugFiles = await getFiles(
+      path.join(config.PAGES_DIRECTORY, "**", "?(*.pug|*.md)")
+    );
 
   if (pugFiles.length <= 0) return;
 
@@ -233,10 +237,53 @@ async function pages(file, localeFile) {
   // go throught all of them
   let promises = [];
 
-  for (const file of pugFiles) {
+  for (let file of pugFiles) {
     // get the file information and locale files
-    const templateInfo = path.parse(file);
+    let templateInfo = path.parse(file);
+    console.log(templateInfo);
 
+    // The data file for MD. This just includes any object data within an MD file, if that's what we're compiling
+    const mdData = {};
+
+    // If we're a markdown file, compile with grey-matter
+    if (templateInfo.ext.toLowerCase() === ".md") {
+      const mdfile = matter.read(file);
+      const name = templateInfo.name;
+      const templateFile = path.join(templateInfo.dir, mdfile.data.template);
+
+      // If we have a template file defined in the grey-matter file
+      if (mdfile.data.template) {
+        // If the template doesn't exist, warn and continuer
+        if (!fse.pathExistsSync(templateFile)) {
+          logger.warning([
+            `Error compiling ${path.relative(
+              config.CWD,
+              file
+            )}. The markdown file calls for the template ${path.relative(
+              config.CWD,
+              templateFile
+            )} which does not exist`,
+          ]);
+          continue;
+        } else {
+          // Fill out the markdown data content
+          // Convert the content using markdown.
+          mdData.content = markdown.toHTML(mdfile.content);
+          // Transcribe the returned data components to the markdown data object
+          for (let t in mdfile.data) {
+            mdData[t] = mdfile.data[t];
+          }
+          // Parse the template file
+          templateInfo = path.parse(templateFile);
+          // ... But set the name of the output to the name of the md file
+          templateInfo.name = name;
+          // Finally update the file to parse to the provided template file.
+          file = templateFile;
+        }
+      }
+    }
+
+    // Otherwise compile as a pug file
     // if file starts with underscore, we ignore it, expected as standard 👍
     if (templateInfo.name.charAt(0) == "_") continue;
 
@@ -275,8 +322,8 @@ async function pages(file, localeFile) {
       pugFunction: compiledFunction,
       data: {
         globals: {},
-        page: {},
-        model: {}
+        page: mdData,
+        model: {},
       },
     };
 
@@ -318,8 +365,12 @@ async function pages(file, localeFile) {
           );
 
         const globals = await getDataFromYaml(mainYamlFile);
-        const page = await getDataFromYaml(locale);
-        const model = await getDataFromDataInclude(path.join(templateInfo.dir, "data", 'index.js'), path.join(templateInfo.dir, "data"));
+        const pageYaml = await getDataFromYaml(locale);
+        const page = Object.assign({}, mdData, pageYaml);
+        const model = await getDataFromDataInclude(
+          path.join(templateInfo.dir, "data", "index.js"),
+          path.join(templateInfo.dir, "data")
+        );
 
         // render the html with the data and save it
         const options = {
@@ -333,7 +384,7 @@ async function pages(file, localeFile) {
           data: {
             globals,
             page,
-            model
+            model,
           },
         };
 
