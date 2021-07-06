@@ -312,7 +312,6 @@ async function requestListener(req, res) {
           config.PAGES_DIRECTORY,
           ext ? pathname.replace(ext, ".md") : `${pathname}index.md`
         );
-        console.log(mdFile);
         // If this page has an md file associated with it instead of a pug file, use that.
         if (fse.pathExistsSync(mdFile)) {
           file = mdFile;

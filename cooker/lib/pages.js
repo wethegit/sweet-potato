@@ -240,7 +240,6 @@ async function pages(file, localeFile) {
   for (let file of pugFiles) {
     // get the file information and locale files
     let templateInfo = path.parse(file);
-    console.log(templateInfo);
 
     // The data file for MD. This just includes any object data within an MD file, if that's what we're compiling
     const mdData = {};
