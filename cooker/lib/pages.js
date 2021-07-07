@@ -7,7 +7,7 @@ const fse = require("fs-extra");
 const path = require("path");
 const resolve = require("resolve");
 const matter = require("gray-matter");
-const markdown = require("markdown").markdown;
+const Markdown = require("markdown-it")({ html: true });
 const { config, logger, getFiles } = require("@wethegit/sweet-potato-utensils");
 
 // local imports
@@ -267,7 +267,7 @@ async function pages(file, localeFile) {
         } else {
           // Fill out the markdown data content
           // Convert the content using markdown.
-          mdData.content = markdown.toHTML(mdfile.content);
+          mdData.content = Markdown.render(mdfile.content);
           // Transcribe the returned data components to the markdown data object
           for (let t in mdfile.data) {
             mdData[t] = mdfile.data[t];
