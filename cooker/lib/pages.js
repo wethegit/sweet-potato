@@ -170,13 +170,13 @@ async function getDataFromYaml(file) {
  *
  * @returns {object} - Resolves to an object. This is provided by the repo, so implementation is up to the associated developer
  */
-async function getDataFromDataInclude(file, path) {
+async function getDataFromDataInclude(file, filepath) {
   let result = {};
 
   if (!fse.pathExistsSync(file)) return result;
 
   try {
-    const content = await require(file)(path);
+    const content = await require(file)(filepath);
     result = content;
   } catch (error) {
     logger.error(
