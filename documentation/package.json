@@ -1,0 +1,13 @@
+{
+  "scripts": {
+    "start": "sweet-potato-cooker start",
+    "build": "sweet-potato-cooker build",
+    "clean": "sweet-potato-cooker clean",
+    "compress": "sweet-potato-cooker compress"
+  },
+  "dependencies": {},
+  "devDependencies": {
+    "@wethegit/sweet-potato-cooker": "^1.1.11",
+    "fs-extra": "^10.0.0"
+  }
+}

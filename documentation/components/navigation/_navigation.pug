@@ -1,0 +1,14 @@
+mixin makeNavUL(items)
+  ul.nav
+    each val, index in items 
+      li
+        - if (typeof(val) === 'array') {
+          makeNavUL(val)
+        -} else {
+          a(href=`/${val.dir}/${val.name}.html`)!=val.title
+        -}
+
+
+mixin navigation(items)
+  nav&attributes(attributes)
+    +makeNavUL(items)
