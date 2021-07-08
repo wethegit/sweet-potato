@@ -1,0 +1,13 @@
+mixin makeNavUL(items)
+  ul.nav&attributes(attributes)
+    each val, index in items 
+      li
+        if (val instanceof Array)
+          makeNavUL(val)
+        else
+          a(href=`https://wethegit.github.io/sweet-potato/${val.dir}${val.dir? '/' : ''}${val.name}.html`)!=val.title
+
+
+mixin navigation(items)
+  nav.main-navigation&attributes(attributes)
+    +makeNavUL(items).main-navigation__nav
