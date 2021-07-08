@@ -170,13 +170,13 @@ async function getDataFromYaml(file) {
  *
  * @returns {object} - Resolves to an object. This is provided by the repo, so implementation is up to the associated developer
  */
-async function getDataFromDataInclude(file, path) {
+async function getDataFromDataInclude(file, filepath) {
   let result = {};
 
   if (!fse.pathExistsSync(file)) return result;
 
   try {
-    const content = await require(file)(path);
+    const content = await require(file)(filepath);
     result = content;
   } catch (error) {
     logger.error(
@@ -314,6 +314,12 @@ async function pages(file, localeFile) {
         path.join(templateInfo.dir, "locales", "*.yaml")
       );
 
+    // Get data from a model, if available
+    const model = await getDataFromDataInclude(
+      path.join(templateInfo.dir, "data", "index.js"),
+      path.join(templateInfo.dir, "data")
+    );
+
     const outputOptions = {
       destination: config.BUILD_DIRECTORY,
       filepath: pagePath,
@@ -322,7 +328,7 @@ async function pages(file, localeFile) {
       data: {
         globals: {},
         page: mdData,
-        model: {},
+        model,
       },
     };
 
@@ -366,10 +372,6 @@ async function pages(file, localeFile) {
         const globals = await getDataFromYaml(mainYamlFile);
         const pageYaml = await getDataFromYaml(locale);
         const page = Object.assign({}, mdData, pageYaml);
-        const model = await getDataFromDataInclude(
-          path.join(templateInfo.dir, "data", "index.js"),
-          path.join(templateInfo.dir, "data")
-        );
 
         // render the html with the data and save it
         const options = {
