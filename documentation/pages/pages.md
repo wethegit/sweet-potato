@@ -6,7 +6,7 @@ order: 2
 name: Pages
 ---
 
-# Pages
+## Pages
 
 Adding pages to your site is as easy as creating folders for each of them within the pages/ directory, and placing an index.pug file in each.
 
@@ -25,9 +25,9 @@ pages/
 
 For detail on how pug works, check out the [pug website](https://pugjs.org/api/getting-started.html)
 
-## TODO: Markdown explanation
+### TODO: Markdown explanation
 
-## Language and the page object
+### Language and the page object
 
 Language information is included in the `page` object and reflects the structure included in your localisation yaml files.
 
@@ -47,7 +47,7 @@ h1!= page.header.h1
 
 For more information on language files and localization, please see [3. Language and Localisation](https://github.com/wethegit/sweet-potato/wiki/3.-Language-and-Localisation).
 
-## Globals
+### Globals
 
 During development you will sometimes want to use global and environment variable supplied at compile time. For example, you might want to refer to the root of the website without making assumptions as to where the current document exists in the tree, like so:
 
@@ -57,7 +57,7 @@ During development you will sometimes want to use global and environment variabl
 
 All compile-time variables live in the `globals` object and include true globals, relative (to document) variables, environment variables, the contents of `/locales/default.yml`, and runtime globals.
 
-### True globals
+#### True globals
 
 **BREAKPOINTS**  
 _globals.BREAKPOINTS_
@@ -71,7 +71,7 @@ An object containing all of the breakpoints provided by the configuration. To ou
       dd!= val
 ```
 
-### Relative variables
+#### Relative variables
 
 Relative variables relate to the page or the locale being compiled.
 
@@ -95,7 +95,7 @@ _globals.LOCALE_KEY_
 
 The key for the locale the page belongs to. If the page exists on the root locale, this value will be `default`.
 
-### Environment variables
+#### Environment variables
 
 Any variables present in the project .env file being used will also be present on the global option. By default this includes `PUBLIC_URL`, however anything you want to change from environment to environment can be included here.
 
@@ -104,7 +104,7 @@ _globals.PUBLIC_URL_
 
 The full public URL of the website. this is useful when you want to include a fully canonical link to something on the website and its inclusion in the env files allows this to change from environment to environment. For more information on environments and environment variables, please see [Environment](https://github.com/wethegit/sweet-potato/wiki/Environments)
 
-## Model
+### Model
 
 The model - or runtime globals - allow you to populate an object with variables statically, dynamically or drawn from an API at compile time. To compile data for this object you would create a data folder relative to the page you wanted to apply it to. For example if you wanted to compile some news data, your folder structure might look like this:
 
@@ -121,7 +121,7 @@ pages/
 
 The compiler will then consume that index.js file and append the result of its promise to the `model` object.
 
-### Example
+#### Example
 
 ```
 pages/

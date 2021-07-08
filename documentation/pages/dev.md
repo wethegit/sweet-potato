@@ -6,7 +6,7 @@ order: 9
 name: Sweet Potato development
 ---
 
-# Sweet potato development
+## Sweet potato development
 
 To get started developing on Sweet potato you need to pull down this repo, peel a new website (for the purposes testing your development code) and set it up to use your local version instead of the published version.
 

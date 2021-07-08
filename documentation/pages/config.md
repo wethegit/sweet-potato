@@ -6,7 +6,7 @@ order: 1
 name: Configuration
 ---
 
-# Configuration
+## Configuration
 
 Create a `sweet-potato.config.js` in the root of the project same level as `package.json` and export a config object.
 

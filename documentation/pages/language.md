@@ -6,9 +6,9 @@ order: 3
 name: Language and localisation
 ---
 
-# Language and localisation
+## Language and localisation
 
-## Language
+### Language
 
 Language is provided to a document via yaml files in the locales folder of each specific page. If you had a website with a homepage and about page in English and French, its structure might look something like this:
 
@@ -30,13 +30,13 @@ pages/
 
 One important note here is that localised language files _extend_ the default. So if you were to provide a language asset in default and not in en, then the default will be present in en pages.
 
-## Localisation
+### Localisation
 
 If you're creating localized versions of your pages (different languages), you can have all your data live in YAML files, which are accessible via the Pug templates.
 
 This will allow you, for example, to have an English page and a French page; while still only using a single page template.
 
-### Page-specific language data
+#### Page-specific language data
 
 To create language-specific data files, you must include a locales/ folder for each page at the same level as the page's Pug template (index.pug).
 
@@ -68,7 +68,7 @@ pages/
           |-- es.yaml
 ```
 
-#### Example
+##### Example
 
 Let's say your pages/locales/default.yaml looked like this…
 

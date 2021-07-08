@@ -6,13 +6,13 @@ order: 5
 name: Styles
 ---
 
-# Styles
+## Styles
 
 All styles are compiled from scss files and use standard sass syntax.
 
 Files outside the `pages/` folder won't generate an output. If using regular `.css` instead of `.scss`, place your files inside `public/` in the root of the project.
 
-## Usage
+### Usage
 
 ```
 components/

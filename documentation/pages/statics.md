@@ -6,7 +6,7 @@ order: 7
 name: Static assets
 ---
 
-# Static assets
+## Static assets
 
 All files inside a `public/` directory in the root of the project are considered static and will be copied over to the `build/` directory.  
 It's the perfect place to add fonts, images, videos and any other file that should be public.  

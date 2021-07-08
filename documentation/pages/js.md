@@ -6,14 +6,14 @@ order: 4
 name: Javascript
 ---
 
-# Javascript
+## Javascript
 
 All .js files will be transpiled and bundled with esbuild with the assumption that you are supporting modern browsers that have support for ESM.
 
 Files outside the pages/ folder won't generate an output.
 Vendor and any other scripts that don't require bundling should be placed inside public/ in the root of the project.
 
-## Usage
+### Usage
 
 Always append your scripts to the javascript block, like so:
 
@@ -45,7 +45,7 @@ build/
   |-- index.js
 ```
 
-## Environment variables
+### Environment variables
 
 When writing javascript, you'll sometimes want access to environment variables. There are two environment variables that are supplied by the build process and the others come from the .env files. You can access environment variables from any javascript file.
 
@@ -65,7 +65,7 @@ The default env variables supplied are:
 
 In addition to the above, it's also possible to provide additional environment variables to javascript via the various .env files.
 
-### Note
+#### Note
 
 Even though the syntax of the variables look like an object within javascript, these variables are being generated using a simple regex syntax at compile time. As such, trying to access the object structure itself will yield an error. For example:
 

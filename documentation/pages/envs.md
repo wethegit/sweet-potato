@@ -6,17 +6,17 @@ order: 6
 name: Environments and environment variables
 ---
 
-# Environments and environment variables
+## Environments and environment variables
 
 This project uses [dotenv](https://github.com/motdotla/dotenv) and accepts standard `.env` files.  
 Only values that start with `PUBLIC_` will be accepted, this is because these values will be part of the final compiled files and available for the public.  
 In addition to passing these values to javascript files they will also be passed to Pug template files as part of the `globals` variables.
 
-## Globals
+### Globals
 
 In addition to values from `.env` files Pug templates and Javascript files will also receive default global variables.
 
-### Pug
+#### Pug
 
 - **globals.NODE_ENV =** current environment mode
 - **globals.RELATIVE_ROOT =** relative path from file to `build/`
@@ -25,19 +25,19 @@ In addition to values from `.env` files Pug templates and Javascript files will 
 - **globals.BREAKPOINTS =** breakpoints object set inside the config
 - **globals.PAGE_SLUG =** current page's slug
 
-### Javascript
+#### Javascript
 
 - **process.env.NODE_ENV =** current environment mode
 - **process.env.RELATIVE_ROOT =** relative path from file to `build/`
 - **process.env.BREAKPOINTS =** breakpoints object set inside the config
 
-### Styles
+#### Styles
 
 The only available global variable for styles is the **breakpoints** one, set inside the config. It needs to be imported first before you can use, see **Usage** below.
 
 - **sweet-potato:breakpoints =** breakpoints object set inside the config
 
-## Usage
+### Usage
 
 `.env`:
 
@@ -71,7 +71,7 @@ p=globals.PUBLIC_URL //- from .env
 }
 ```
 
-## Specifying other environments
+### Specifying other environments
 
 Other environments can be used in different situations. For example to pass a different environment file to the build you would simply run:
 

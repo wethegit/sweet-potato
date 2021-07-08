@@ -9,7 +9,7 @@ body {
   color: var(--color-body);
 }
 
-main {
+.grid {
   display: grid;
   grid-template-columns: 1.9fr 0.5fr;
   grid-template-rows: 1fr;

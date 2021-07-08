@@ -6,7 +6,7 @@ order: 0
 name: Introduction
 ---
 
-# Sweet Potato 🍠
+## Introduction
 
 Sweet Potato is an opinionated and minimal static website generator.
 
@@ -17,13 +17,13 @@ The goal is to be simple and allow the composing and styling of pages without ge
 - 🍦 Vanilla Javascript
 - 📚 YAML for data.
 
-## Requirements
+### Requirements
 
 Node >= v14, < v16
 
-# Quick Start
+## Quick Start
 
-## Set up
+### Set up
 
 Use the sweet potato peeler to create a new project. In it's most basic form, you can set up and start working on a new project like so:
 
@@ -35,7 +35,7 @@ $> npm run start
 
 This will give you all of the elements that you might need out of the box.
 
-## Template flag
+### Template flag
 
 ```
 --template
