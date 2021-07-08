@@ -32,6 +32,7 @@ function watch(cb) {
 
   // watch for pages
   chokidar.watch(path.join(config.CWD, "**", "*.pug"), options).on("all", cb);
+  chokidar.watch(path.join(config.CWD, "**", "*.md"), options).on("all", cb);
 
   // watch for data
   chokidar.watch(path.join(config.CWD, "**", "*.yaml"), options).on("all", cb);
