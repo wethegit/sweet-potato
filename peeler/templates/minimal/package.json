@@ -2,8 +2,7 @@
   "scripts": {
     "start": "sweet-potato-cooker start",
     "build": "sweet-potato-cooker build",
-    "clean": "sweet-potato-cooker clean",
-    "compress": "sweet-potato-cooker compress"
+    "clean": "sweet-potato-cooker clean"
   },
   "dependencies": {},
   "devDependencies": {
