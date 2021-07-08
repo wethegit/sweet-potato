@@ -1,0 +1,49 @@
+<!DOCTYPE html><html lang="en-US"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=1, minimum-scale=1"><meta http-equiv="X-UA-Compatible" content="ie=edge"><meta name="description" content="Sweet Potato is an opinionated and minimal static website generator, by We The Collective."><title>Sweet Potato: Javascript</title><link rel="stylesheet" href="./index.css"></head><body><main><div class="main-content"><h1>Javascript</h1>
+<p>All .js files will be transpiled and bundled with esbuild with the assumption that you are supporting modern browsers that have support for ESM.</p>
+<p>Files outside the pages/ folder won't generate an output.
+Vendor and any other scripts that don't require bundling should be placed inside public/ in the root of the project.</p>
+<h2>Usage</h2>
+<p>Always append your scripts to the javascript block, like so:</p>
+<pre><code class="language-pug">block append scripts
+  +script({ src: `${globals.RELATIVE_ROOT}/home.js` })
+</code></pre>
+<pre><code>components/
+  |-- navigation/
+    |-- _navigation.pug
+    |-- navigation.js
+pages/
+  |-- index.js
+  |-- index.pug
+</code></pre>
+<pre><code class="language-js">// index.js
+import Navigation from &quot;../components/navigation/navigation.js&quot;;
+</code></pre>
+<p>This will be the output:</p>
+<pre><code>build/
+  |-- index.html
+  |-- index.js
+</code></pre>
+<h2>Environment variables</h2>
+<p>When writing javascript, you'll sometimes want access to environment variables. There are two environment variables that are supplied by the build process and the others come from the .env files. You can access environment variables from any javascript file.</p>
+<p>The default env variables supplied are:</p>
+<ul>
+<li>
+<p>process.env.RELATIVE_ROOT</p>
+<p>The root of the website relative to the compiled javascript file.</p>
+</li>
+<li>
+<p>process.env.PUBLIC_URL</p>
+<p>The public full URL of the website.</p>
+</li>
+<li>
+<p>process.env.BREAKPOINTS[&quot;&quot;]</p>
+<p>A series of brackpoints as defined by the sweet potato config.</p>
+</li>
+</ul>
+<p>In addition to the above, it's also possible to provide additional environment variables to javascript via the various .env files.</p>
+<h3>Note</h3>
+<p>Even though the syntax of the variables look like an object within javascript, these variables are being generated using a simple regex syntax at compile time. As such, trying to access the object structure itself will yield an error. For example:</p>
+<pre><code class="language-js">console.log(process.env.RELATIVE_ROOT); // '..'
+console.log(process.env); // Uncaught ReferenceError: process is not defined
+</code></pre>
+</div><div class="main-navigation"><nav><ul class="nav"><li><a href="https://wethegit.github.io/sweet-potato/index.html">Introduction</a></li><li><a href="https://wethegit.github.io/sweet-potato/config.html">Configuration</a></li><li><a href="https://wethegit.github.io/sweet-potato/language.html">Language and localisation</a></li><li><a href="https://wethegit.github.io/sweet-potato/pages.html">Pages</a></li><li><a href="https://wethegit.github.io/sweet-potato/js.html">Javascript</a></li><li><a href="https://wethegit.github.io/sweet-potato/styles.html">Styles</a></li><li><a href="https://wethegit.github.io/sweet-potato/envs.html">Environments and environment variables</a></li><li><a href="https://wethegit.github.io/sweet-potato/statics.html">Static assets</a></li><li><a href="https://wethegit.github.io/sweet-potato/model.html">TODO Model</a></li><li><a href="https://wethegit.github.io/sweet-potato/dev.html">Sweet Potato development</a></li></ul></nav></div></main><script type="module" src="./index.js"></script></body></html>

@@ -1,0 +1,39 @@
+<!DOCTYPE html><html lang="en-US"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=1, minimum-scale=1"><meta http-equiv="X-UA-Compatible" content="ie=edge"><meta name="description" content="Sweet Potato is an opinionated and minimal static website generator, by We The Collective."><title>Sweet Potato: Development</title><link rel="stylesheet" href="./index.css"></head><body><main><div class="main-content"><h1>Sweet potato development</h1>
+<p>To get started developing on Sweet potato you need to pull down this repo, peel a new website (for the purposes testing your development code) and set it up to use your local version instead of the published version.</p>
+<p>This is a relatively simple proposition. Here are the basic steps to getting set up for sweet potato development:</p>
+<ol>
+<li>
+<p>Clone Sweet Potato (this repo);</p>
+</li>
+<li>
+<p>cd into <code>sweet-potato/cooker</code></p>
+</li>
+<li>
+<p>Install deps</p>
+<p><code>$&gt; npm install</code></p>
+</li>
+<li>
+<p>Link the package</p>
+<p><code>$&gt; npm link</code></p>
+</li>
+<li>
+<p>Peel a new project somewhere</p>
+<p><code>$&gt; npx @wethegit/sweet-potato-peeler dev-site --template https://github.com/wethegit/bootstrap/tree/main</code></p>
+</li>
+<li>
+<p>cd into project and install depts</p>
+<pre><code>$&gt; cd dev-site
+$&gt; npm install
+</code></pre>
+</li>
+<li>
+<p>Remove the cooker module files from the dev-site project</p>
+<p><code>rm -rf node_modules/@wethegit/sweet-potato-cooker</code></p>
+</li>
+<li>
+<p>link sweet-potato to this project</p>
+<p><code>npm link @wethegit/sweet-potato-cooker</code></p>
+</li>
+</ol>
+<p>Now, any changes that you make to the cooker will be reflected when you run the dev-site project.</p>
+</div><div class="main-navigation"><nav><ul class="nav"><li><a href="https://wethegit.github.io/sweet-potato/index.html">Introduction</a></li><li><a href="https://wethegit.github.io/sweet-potato/config.html">Configuration</a></li><li><a href="https://wethegit.github.io/sweet-potato/language.html">Language and localisation</a></li><li><a href="https://wethegit.github.io/sweet-potato/pages.html">Pages</a></li><li><a href="https://wethegit.github.io/sweet-potato/js.html">Javascript</a></li><li><a href="https://wethegit.github.io/sweet-potato/styles.html">Styles</a></li><li><a href="https://wethegit.github.io/sweet-potato/envs.html">Environments and environment variables</a></li><li><a href="https://wethegit.github.io/sweet-potato/statics.html">Static assets</a></li><li><a href="https://wethegit.github.io/sweet-potato/model.html">TODO Model</a></li><li><a href="https://wethegit.github.io/sweet-potato/dev.html">Sweet Potato development</a></li></ul></nav></div></main><script type="module" src="./index.js"></script></body></html>

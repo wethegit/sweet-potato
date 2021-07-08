@@ -1,0 +1,90 @@
+<!DOCTYPE html><html lang="en-US"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=1, minimum-scale=1"><meta http-equiv="X-UA-Compatible" content="ie=edge"><meta name="description" content="Sweet Potato is an opinionated and minimal static website generator, by We The Collective."><title>Sweet Potato: Pages</title><link rel="stylesheet" href="./index.css"></head><body><main><div class="main-content"><h1>Pages</h1>
+<p>Adding pages to your site is as easy as creating folders for each of them within the pages/ directory, and placing an index.pug file in each.</p>
+<p>The &quot;root&quot; or &quot;home&quot; page of your site does not need to live in its own folder—it will just need an index.pug file at the root of pages/.</p>
+<p>A site with a homepage, about page, and contact page might have a pages/ structure like this:</p>
+<pre><code>pages/
+  |-- index.pug
+  |-- about/
+      |-- index.pug
+  |-- contact/
+      |-- index.pug
+</code></pre>
+<p>For detail on how pug works, check out the <a href="https://pugjs.org/api/getting-started.html">pug website</a></p>
+<h2>TODO: Markdown explanation</h2>
+<h2>Language and the page object</h2>
+<p>Language information is included in the <code>page</code> object and reflects the structure included in your localisation yaml files.</p>
+<p>If you have the following yaml file:</p>
+<pre><code class="language-yaml">header:
+  h1: Lorem ipsum
+  h3: Exercitation aliquip ipsum commodo pariatur sint ea nulla tempor.
+</code></pre>
+<p>You can address the h1 as:</p>
+<pre><code class="language-pug">h1!= page.header.h1
+</code></pre>
+<p>For more information on language files and localization, please see <a href="https://github.com/wethegit/sweet-potato/wiki/3.-Language-and-Localisation">3. Language and Localisation</a>.</p>
+<h2>Globals</h2>
+<p>During development you will sometimes want to use global and environment variable supplied at compile time. For example, you might want to refer to the root of the website without making assumptions as to where the current document exists in the tree, like so:</p>
+<pre><code class="language-pug">+script({ src: `${globals.RELATIVE_ROOT}/home.js` })
+</code></pre>
+<p>All compile-time variables live in the <code>globals</code> object and include true globals, relative (to document) variables, environment variables, the contents of <code>/locales/default.yml</code>, and runtime globals.</p>
+<h3>True globals</h3>
+<p><strong>BREAKPOINTS</strong><br>
+<em>globals.BREAKPOINTS</em></p>
+<p>An object containing all of the breakpoints provided by the configuration. To output what these values are for review and debugging, add the following to your pug template:</p>
+<pre><code class="language-pug">  dl
+    each val, i in globals.BREAKPOINTS
+      dt!= i
+      dd!= val
+</code></pre>
+<h3>Relative variables</h3>
+<p>Relative variables relate to the page or the locale being compiled.</p>
+<p><strong>RELATIVE_ROOT</strong><br>
+<em>globals.RELATIVE_ROOT</em></p>
+<p>The relative location of the website root. Most often this is used to refer to assets like images, CSS or JS file etc.</p>
+<p><strong>PAGE_SLUG</strong><br>
+<em>globals.PAGE_SLUG</em></p>
+<p>The slug of the page being compiled.</p>
+<p><strong>RELATIVE_LOCALE_ROOT</strong><br>
+<em>globals.RELATIVE_LOCALE_ROOT</em></p>
+<p>The relative location of the locale root.</p>
+<p><strong>LOCALE_KEY</strong><br>
+<em>globals.LOCALE_KEY</em></p>
+<p>The key for the locale the page belongs to. If the page exists on the root locale, this value will be <code>default</code>.</p>
+<h3>Environment variables</h3>
+<p>Any variables present in the project .env file being used will also be present on the global option. By default this includes <code>PUBLIC_URL</code>, however anything you want to change from environment to environment can be included here.</p>
+<p><strong>PUBLIC_URL</strong><br>
+<em>globals.PUBLIC_URL</em></p>
+<p>The full public URL of the website. this is useful when you want to include a fully canonical link to something on the website and its inclusion in the env files allows this to change from environment to environment. For more information on environments and environment variables, please see <a href="https://github.com/wethegit/sweet-potato/wiki/Environments">Environment</a></p>
+<h2>Model</h2>
+<p>The model - or runtime globals - allow you to populate an object with variables statically, dynamically or drawn from an API at compile time. To compile data for this object you would create a data folder relative to the page you wanted to apply it to. For example if you wanted to compile some news data, your folder structure might look like this:</p>
+<pre><code>pages/
+  |-- index.pug
+  |-- about/
+      |-- index.pug
+  |-- news/
+      |-- data/
+          |-- index.js
+      |-- index.pug
+</code></pre>
+<p>The compiler will then consume that index.js file and append the result of its promise to the <code>model</code> object.</p>
+<h3>Example</h3>
+<pre><code>pages/
+  |-- index.pug
+  |-- data/
+      |-- index.js
+</code></pre>
+<p>The contents of <code>data/index.js</code>:</p>
+<pre><code class="language-js">module.exports = async function () {
+  const data = {
+    testing: &quot;Hello World&quot;,
+  };
+  return new Promise((resolve, reject) =&gt; {
+    resolve(data);
+  });
+};
+</code></pre>
+<p>In index.pug:</p>
+<pre><code class="language-pug">p!= model.testing
+</code></pre>
+<p>Will output &quot;Hello World&quot;.</p>
+</div><div class="main-navigation"><nav><ul class="nav"><li><a href="https://wethegit.github.io/sweet-potato/index.html">Introduction</a></li><li><a href="https://wethegit.github.io/sweet-potato/config.html">Configuration</a></li><li><a href="https://wethegit.github.io/sweet-potato/language.html">Language and localisation</a></li><li><a href="https://wethegit.github.io/sweet-potato/pages.html">Pages</a></li><li><a href="https://wethegit.github.io/sweet-potato/js.html">Javascript</a></li><li><a href="https://wethegit.github.io/sweet-potato/styles.html">Styles</a></li><li><a href="https://wethegit.github.io/sweet-potato/envs.html">Environments and environment variables</a></li><li><a href="https://wethegit.github.io/sweet-potato/statics.html">Static assets</a></li><li><a href="https://wethegit.github.io/sweet-potato/model.html">TODO Model</a></li><li><a href="https://wethegit.github.io/sweet-potato/dev.html">Sweet Potato development</a></li></ul></nav></div></main><script type="module" src="./index.js"></script></body></html>
