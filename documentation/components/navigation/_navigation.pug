@@ -1,5 +1,5 @@
 mixin makeNavUL(items)
-  ul.nav
+  ul.nav&attributes(attributes)
     each val, index in items 
       li
         if (typeof(val) === 'array')
@@ -10,4 +10,4 @@ mixin makeNavUL(items)
 
 mixin navigation(items)
   nav.main-navigation&attributes(attributes)
-    +makeNavUL(items)
+    +makeNavUL(items).main-navigation__nav
