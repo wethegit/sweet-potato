@@ -91,7 +91,7 @@ async function saveHtml(outputOptions, { source }) {
     RELATIVE_ROOT: relroot ? relroot : ".",
     BREAKPOINTS: config.OPTIONS.breakpoints || {},
     PAGE_SLUG: slug,
-    ...data.globals
+    ...data.globals,
   };
 
   if (locale) {
@@ -112,7 +112,7 @@ async function saveHtml(outputOptions, { source }) {
     htmlString = pugFunction({
       globals,
       page: data.page,
-      model: data.model
+      model: data.model,
     });
   } catch (error) {
     logger.error([`Failed to render template`, prettyPathSource], error);
@@ -162,7 +162,7 @@ async function getDataFromYaml(file) {
 /**
  * getDataFromDataInclude
  * Executes a promise in a javascript file which is intended to return model data.
- * 
+ *
  * @param {string} file - Path to a index javasceript file
  * @param {string} path - The fully justified path to the folder. This allows the javascript file to run code against the folder, loading additional files, for example
  *
@@ -174,7 +174,7 @@ async function getDataFromDataInclude(file, path) {
   if (!fse.pathExistsSync(file)) return result;
 
   try {
-    const content = await (require(file))(path);
+    const content = await require(file)(path);
     result = content;
   } catch (error) {
     logger.error(
@@ -268,6 +268,12 @@ async function pages(file, localeFile) {
         path.join(templateInfo.dir, "locales", "*.yaml")
       );
 
+    // Get data from a model, if available
+    const model = await getDataFromDataInclude(
+      path.join(templateInfo.dir, "data", "index.js"),
+      path.join(templateInfo.dir, "data")
+    );
+
     const outputOptions = {
       destination: config.BUILD_DIRECTORY,
       filepath: pagePath,
@@ -276,7 +282,7 @@ async function pages(file, localeFile) {
       data: {
         globals: {},
         page: {},
-        model: {}
+        model,
       },
     };
 
@@ -319,7 +325,6 @@ async function pages(file, localeFile) {
 
         const globals = await getDataFromYaml(mainYamlFile);
         const page = await getDataFromYaml(locale);
-        const model = await getDataFromDataInclude(path.join(templateInfo.dir, "data", 'index.js'), path.join(templateInfo.dir, "data"));
 
         // render the html with the data and save it
         const options = {
@@ -333,7 +338,7 @@ async function pages(file, localeFile) {
           data: {
             globals,
             page,
-            model
+            model,
           },
         };
 
