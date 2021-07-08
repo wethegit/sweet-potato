@@ -26,3 +26,9 @@ body {
 .main-navigation {
   grid-area: main-navigation;
 }
+
+header {
+  background: #fff;
+  position: sticky;
+  top: 0;
+}
