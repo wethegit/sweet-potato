@@ -2,7 +2,7 @@ mixin makeNavUL(items)
   ul.nav
     each val, index in items 
       li
-        if (typeof(val) === 'array')
+        if (val instanceof Array)
           makeNavUL(val)
         else
           a(href=`https://wethegit.github.io/sweet-potato/${val.dir}${val.dir? '/' : ''}${val.name}.html`)!=val.title
