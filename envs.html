@@ -1,10 +1,10 @@
-<!DOCTYPE html><html lang="en-US"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=1, minimum-scale=1"><meta http-equiv="X-UA-Compatible" content="ie=edge"><meta name="description" content="Sweet Potato is an opinionated and minimal static website generator, by We The Collective."><title>Sweet Potato: Environments and environment variables</title><link rel="stylesheet" href="./index.css"></head><body><main><div class="main-content"><h1>Environments and environment variables</h1>
+<!DOCTYPE html><html lang="en-US"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=1, minimum-scale=1"><meta http-equiv="X-UA-Compatible" content="ie=edge"><meta name="description" content="Sweet Potato is an opinionated and minimal static website generator, by We The Collective."><title>Sweet Potato: Environments and environment variables</title><link rel="stylesheet" href="./index.css"></head><body><header class="grid"><div class="main-content"><h1>Sweet Potato 🍠</h1></div></header><main class="grid"><div class="main-content"><h2>Environments and environment variables</h2>
 <p>This project uses <a href="https://github.com/motdotla/dotenv">dotenv</a> and accepts standard <code>.env</code> files.<br>
 Only values that start with <code>PUBLIC_</code> will be accepted, this is because these values will be part of the final compiled files and available for the public.<br>
 In addition to passing these values to javascript files they will also be passed to Pug template files as part of the <code>globals</code> variables.</p>
-<h2>Globals</h2>
+<h3>Globals</h3>
 <p>In addition to values from <code>.env</code> files Pug templates and Javascript files will also receive default global variables.</p>
-<h3>Pug</h3>
+<h4>Pug</h4>
 <ul>
 <li><strong>globals.NODE_ENV =</strong> current environment mode</li>
 <li><strong>globals.RELATIVE_ROOT =</strong> relative path from file to <code>build/</code></li>
@@ -13,18 +13,18 @@ In addition to passing these values to javascript files they will also be passed
 <li><strong>globals.BREAKPOINTS =</strong> breakpoints object set inside the config</li>
 <li><strong>globals.PAGE_SLUG =</strong> current page's slug</li>
 </ul>
-<h3>Javascript</h3>
+<h4>Javascript</h4>
 <ul>
 <li><strong>process.env.NODE_ENV =</strong> current environment mode</li>
 <li><strong>process.env.RELATIVE_ROOT =</strong> relative path from file to <code>build/</code></li>
 <li><strong>process.env.BREAKPOINTS =</strong> breakpoints object set inside the config</li>
 </ul>
-<h3>Styles</h3>
+<h4>Styles</h4>
 <p>The only available global variable for styles is the <strong>breakpoints</strong> one, set inside the config. It needs to be imported first before you can use, see <strong>Usage</strong> below.</p>
 <ul>
 <li><strong>sweet-potato:breakpoints =</strong> breakpoints object set inside the config</li>
 </ul>
-<h2>Usage</h2>
+<h3>Usage</h3>
 <p><code>.env</code>:</p>
 <pre><code>PUBLIC_URL=http://my-website.com
 </code></pre>
@@ -45,9 +45,9 @@ p=globals.PUBLIC_URL //- from .env
   // ...
 }
 </code></pre>
-<h2>Specifying other environments</h2>
+<h3>Specifying other environments</h3>
 <p>Other environments can be used in different situations. For example to pass a different environment file to the build you would simply run:</p>
 <pre><code class="language-bash">$&gt; sweet-potato-cooker build --env buildkind
 </code></pre>
 <p>Which would make the build use the file <code>.env.buildkind</code></p>
-</div><div class="main-navigation"><nav><ul class="nav"><li><a href="https://wethegit.github.io/sweet-potato/index.html">Introduction</a></li><li><a href="https://wethegit.github.io/sweet-potato/config.html">Configuration</a></li><li><a href="https://wethegit.github.io/sweet-potato/pages.html">Pages</a></li><li><a href="https://wethegit.github.io/sweet-potato/language.html">Language and localisation</a></li><li><a href="https://wethegit.github.io/sweet-potato/js.html">Javascript</a></li><li><a href="https://wethegit.github.io/sweet-potato/styles.html">Styles</a></li><li><a href="https://wethegit.github.io/sweet-potato/envs.html">Environments and environment variables</a></li><li><a href="https://wethegit.github.io/sweet-potato/statics.html">Static assets</a></li><li><a href="https://wethegit.github.io/sweet-potato/model.html">TODO Model</a></li><li><a href="https://wethegit.github.io/sweet-potato/dev.html">Sweet Potato development</a></li></ul></nav></div></main><script type="module" src="./index.js"></script></body></html>
+</div><div class="main-navigation"><nav class="main-navigation"><ul class="nav main-navigation__nav"><li><a href="https://wethegit.github.io/sweet-potato/index.html">Introduction</a></li><li><a href="https://wethegit.github.io/sweet-potato/config.html">Configuration</a></li><li><a href="https://wethegit.github.io/sweet-potato/pages.html">Pages</a></li><li><a href="https://wethegit.github.io/sweet-potato/language.html">Language and localisation</a></li><li><a href="https://wethegit.github.io/sweet-potato/js.html">Javascript</a></li><li><a href="https://wethegit.github.io/sweet-potato/styles.html">Styles</a></li><li><a href="https://wethegit.github.io/sweet-potato/envs.html">Environments and environment variables</a></li><li><a href="https://wethegit.github.io/sweet-potato/statics.html">Static assets</a></li><li><a href="https://wethegit.github.io/sweet-potato/model.html">TODO Model</a></li><li><a href="https://wethegit.github.io/sweet-potato/dev.html">Sweet Potato development</a></li></ul></nav></div></main><script type="module" src="./index.js"></script></body></html>
