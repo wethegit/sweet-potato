@@ -1,3 +1,4 @@
+const { extendDefaultPlugins } = require("svgo");
 const path = require("path");
 const fse = require("fs-extra");
 
@@ -27,8 +28,7 @@ let CONFIG = {
     },
     imageminGifsicle: {},
     imageminSvgo: {
-      plugins: [{ removeViewBox: false }],
-      multipass: true,
+      plugins: extendDefaultPlugins([{ name: "removeViewBox", active: false }]),
     },
   },
   breakpoints: false,
