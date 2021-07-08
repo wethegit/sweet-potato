@@ -5,7 +5,7 @@ mixin makeNavUL(items)
         - if (typeof(val) === 'array') {
           makeNavUL(val)
         -} else {
-          a(href=`/${val.dir}/${val.name}.html`)!=val.title
+          a(href=`https://wethegit.github.io/sweet-potato/${val.dir}${val.dir? '/' : ''}${val.name}.html`)!=val.title
         -}
 
 
