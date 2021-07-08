@@ -2,7 +2,7 @@
 template: _page.pug
 title: "Sweet Potato: Language and localisation"
 description: Sweet Potato is an opinionated and minimal static website generator, by We The Collective.
-order: 2
+order: 3
 name: Language and localisation
 ---
 
