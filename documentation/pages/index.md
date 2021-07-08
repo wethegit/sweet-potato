@@ -56,3 +56,7 @@ Current publicly available templates are:
 ```
 $> npx @wethegit/sweet-potato-peeler my-website --template default
 ```
+
+## Finally
+
+This documentation is written and compiled using sweet potato! So if you want a living, breathing example, clone the repo and look through this implementation.
