@@ -27,7 +27,12 @@ let CONFIG = {
     },
     imageminGifsicle: {},
     imageminSvgo: {
-      plugins: [{ removeViewBox: false }],
+      plugins: [
+        {
+          name: "removeViewBox",
+          removeViewBox: false,
+        },
+      ],
       multipass: true,
     },
   },
