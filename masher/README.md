@@ -33,9 +33,8 @@ module.exports = {
     },
     imageminGifsicle: {},
     imageminSvgo: {
-      plugins: [{ removeViewBox: false }],
-      multipass: true,
-    }
+      plugins: extendDefaultPlugins([{ name: "removeViewBox", active: false }]),
+    },
   }
 }
 ```
