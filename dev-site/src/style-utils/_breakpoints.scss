@@ -1,9 +1,0 @@
-// To learn more about globally imported variables
-// https://github.com/wethegit/sweet-potato#environment-and-global-variables
-@import "sweet-potato:breakpoints";
-
-$screen: "screen";
-
-$bp-landscape: "#{$screen} and (orientation: landscape)";
-$bp-portrait: "#{$screen} and (orientation: portrait)";
-$bp-retina: "(-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi)";

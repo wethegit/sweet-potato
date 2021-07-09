@@ -1,8 +1,0 @@
-@import "../style-utils/colors";
-
-// generate custom properties:
-:root {
-  @each $label, $hex in $colors {
-    --color-#{$label}: #{$hex};
-  }
-}
