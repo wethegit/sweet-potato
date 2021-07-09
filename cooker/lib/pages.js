@@ -245,7 +245,10 @@ async function pages(file, localeFile) {
     const mdData = {};
 
     // getting the pathname for globals
-    let pathname = `/${path.relative(`${config.CWD}/pages`, templateInfo.dir)}`;
+    let pathname = `/${path.relative(
+      `${config.PAGES_DIRECTORY}`,
+      templateInfo.dir
+    )}`;
 
     // If we're a markdown file, compile with grey-matter
     if (templateInfo.ext.toLowerCase() === ".md") {
