@@ -244,6 +244,9 @@ async function pages(file, localeFile) {
     // The data file for MD. This just includes any object data within an MD file, if that's what we're compiling
     const mdData = {};
 
+    // getting the pathname for globals
+    let pathname = `/${path.relative(`${config.CWD}/pages`, templateInfo.dir)}`;
+
     // If we're a markdown file, compile with grey-matter
     if (templateInfo.ext.toLowerCase() === ".md") {
       const mdfile = matter.read(file);
@@ -320,13 +323,19 @@ async function pages(file, localeFile) {
       path.join(templateInfo.dir, "data")
     );
 
+    // Update our pathname to reflect the output file.
+    if (templateInfo.name === "index") pathname += "/";
+    else pathname += `/${templateInfo.name}.html`;
+
     const outputOptions = {
       destination: config.BUILD_DIRECTORY,
       filepath: pagePath,
       filename: `${templateInfo.name}.html`,
       pugFunction: compiledFunction,
       data: {
-        globals: {},
+        globals: {
+          PATH_NAME: pathname,
+        },
         page: mdData,
         model,
       },
@@ -342,7 +351,11 @@ async function pages(file, localeFile) {
         )
       );
 
-      outputOptions.data.globals = mainYaml;
+      outputOptions.data.globals = Object.assign(
+        {},
+        outputOptions.data.globals,
+        mainYaml
+      );
 
       // render the html with the data and save it
       promises.push(
@@ -369,7 +382,9 @@ async function pages(file, localeFile) {
             `${config.OPTIONS.locales.defaultName}.yaml`
           );
 
-        const globals = await getDataFromYaml(mainYamlFile);
+        let mainYaml = await getDataFromYaml(mainYamlFile);
+
+        const globals = Object.assign({}, outputOptions.data.globals, mainYaml);
         const pageYaml = await getDataFromYaml(locale);
         const page = Object.assign({}, mdData, pageYaml);
 
