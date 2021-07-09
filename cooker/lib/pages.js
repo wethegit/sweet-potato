@@ -88,6 +88,7 @@ async function saveHtml(outputOptions, { source }) {
 
   // globals
   const relroot = path.relative(dest, config.BUILD_DIRECTORY);
+
   let globals = {
     ...env.raw,
     RELATIVE_ROOT: relroot ? relroot : ".",
@@ -107,6 +108,12 @@ async function saveHtml(outputOptions, { source }) {
   const outFile = path.join(dest, filename);
   const prettyPathSource = path.relative(config.CWD, source);
   const prettyPathOut = path.relative(config.CWD, outFile);
+
+  // getting the pathname for globals
+  globals.PATH_NAME = `/${path.relative(
+    `${config.BUILD_DIRECTORY}`,
+    path.join(dest, filename)
+  )}`;
 
   // render the html with the data
   let htmlString;
@@ -244,16 +251,15 @@ async function pages(file, localeFile) {
     // The data file for MD. This just includes any object data within an MD file, if that's what we're compiling
     const mdData = {};
 
-    // getting the pathname for globals
-    let pathname = `/${path.relative(
-      `${config.PAGES_DIRECTORY}`,
-      templateInfo.dir
-    )}`;
+    // Otherwise compile as a pug file
+    // if file starts with underscore, we ignore it, expected as standard 👍
+    if (templateInfo.name.charAt(0) == "_") continue;
 
     // If we're a markdown file, compile with grey-matter
     if (templateInfo.ext.toLowerCase() === ".md") {
       const mdfile = matter.read(file);
       const name = templateInfo.name;
+      const dir = templateInfo.dir;
       const templateFile = path.join(templateInfo.dir, mdfile.data.template);
 
       // If we have a template file defined in the grey-matter file
@@ -282,15 +288,13 @@ async function pages(file, localeFile) {
           templateInfo = path.parse(templateFile);
           // ... But set the name of the output to the name of the md file
           templateInfo.name = name;
+          // ... and set the dir to the md file dir
+          templateInfo.dir = dir;
           // Finally update the file to parse to the provided template file.
           file = templateFile;
         }
       }
     }
-
-    // Otherwise compile as a pug file
-    // if file starts with underscore, we ignore it, expected as standard 👍
-    if (templateInfo.name.charAt(0) == "_") continue;
 
     // render the pug file to a function so we can just reuse
     // that with the different locale. SUPA FAST ⚡️
@@ -326,19 +330,13 @@ async function pages(file, localeFile) {
       path.join(templateInfo.dir, "data")
     );
 
-    // Update our pathname to reflect the output file.
-    if (templateInfo.name === "index") pathname += "/";
-    else pathname += `/${templateInfo.name}.html`;
-
     const outputOptions = {
       destination: config.BUILD_DIRECTORY,
       filepath: pagePath,
       filename: `${templateInfo.name}.html`,
       pugFunction: compiledFunction,
       data: {
-        globals: {
-          PATH_NAME: pathname,
-        },
+        globals: {},
         page: mdData,
         model,
       },
