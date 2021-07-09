@@ -88,6 +88,7 @@ async function saveHtml(outputOptions, { source }) {
 
   // globals
   const relroot = path.relative(dest, config.BUILD_DIRECTORY);
+
   let globals = {
     ...env.raw,
     RELATIVE_ROOT: relroot ? relroot : ".",
@@ -107,6 +108,12 @@ async function saveHtml(outputOptions, { source }) {
   const outFile = path.join(dest, filename);
   const prettyPathSource = path.relative(config.CWD, source);
   const prettyPathOut = path.relative(config.CWD, outFile);
+
+  // getting the pathname for globals
+  globals.PATH_NAME = `/${path.relative(
+    `${config.BUILD_DIRECTORY}`,
+    path.join(dest, filename)
+  )}`;
 
   // render the html with the data
   let htmlString;
@@ -244,10 +251,15 @@ async function pages(file, localeFile) {
     // The data file for MD. This just includes any object data within an MD file, if that's what we're compiling
     const mdData = {};
 
+    // Otherwise compile as a pug file
+    // if file starts with underscore, we ignore it, expected as standard 👍
+    if (templateInfo.name.charAt(0) == "_") continue;
+
     // If we're a markdown file, compile with grey-matter
     if (templateInfo.ext.toLowerCase() === ".md") {
       const mdfile = matter.read(file);
       const name = templateInfo.name;
+      const dir = templateInfo.dir;
       const templateFile = path.join(templateInfo.dir, mdfile.data.template);
 
       // If we have a template file defined in the grey-matter file
@@ -276,15 +288,13 @@ async function pages(file, localeFile) {
           templateInfo = path.parse(templateFile);
           // ... But set the name of the output to the name of the md file
           templateInfo.name = name;
+          // ... and set the dir to the md file dir
+          templateInfo.dir = dir;
           // Finally update the file to parse to the provided template file.
           file = templateFile;
         }
       }
     }
-
-    // Otherwise compile as a pug file
-    // if file starts with underscore, we ignore it, expected as standard 👍
-    if (templateInfo.name.charAt(0) == "_") continue;
 
     // render the pug file to a function so we can just reuse
     // that with the different locale. SUPA FAST ⚡️
@@ -342,7 +352,11 @@ async function pages(file, localeFile) {
         )
       );
 
-      outputOptions.data.globals = mainYaml;
+      outputOptions.data.globals = Object.assign(
+        {},
+        outputOptions.data.globals,
+        mainYaml
+      );
 
       // render the html with the data and save it
       promises.push(
@@ -369,7 +383,9 @@ async function pages(file, localeFile) {
             `${config.OPTIONS.locales.defaultName}.yaml`
           );
 
-        const globals = await getDataFromYaml(mainYamlFile);
+        let mainYaml = await getDataFromYaml(mainYamlFile);
+
+        const globals = Object.assign({}, outputOptions.data.globals, mainYaml);
         const pageYaml = await getDataFromYaml(locale);
         const page = Object.assign({}, mdData, pageYaml);
 

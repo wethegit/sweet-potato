@@ -328,20 +328,19 @@ async function requestListener(req, res) {
         if (!fse.pathExistsSync(locale)) locale = null;
       } else {
         file = path.join(pageLocalePath, "..", pageName.replace("html", "pug"));
-        const mdFile = path.join(
-          pageLocalePath,
-          "..",
-          pageName.replace("html", "md")
-        );
-        // If this page has an md file associated with it instead of a pug file, use that.
-        if (fse.pathExistsSync(mdfile)) {
-          file = mdFile;
-        }
       }
 
+      /// If this doesn't exist...
       if (!fse.pathExistsSync(file)) {
-        _doesntExist(res, file);
-        break;
+        // Try with an MD file
+        // If this page has an md file associated with it instead of a pug file, use that.
+        file = path.join(pageLocalePath, "..", pageName.replace("html", "md"));
+
+        // Finally, if this doesn't exist, throw an error
+        if (!fse.pathExistsSync(file)) {
+          _doesntExist(res, file);
+          break;
+        }
       }
 
       try {
