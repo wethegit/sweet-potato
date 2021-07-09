@@ -1,0 +1,27 @@
+{
+  "name": "bootstrap",
+  "version": "0.1.0",
+  "repository": "https://github.com/wethegit/bootstrap",
+  "author": "Marlon Marcello <marlon.marcello@gmail.com>",
+  "private": true,
+  "engines": {
+    "node": ">= 12.0.0"
+  },
+  "keywords": [
+    "sweet-potato-template"
+  ],
+  "scripts": {
+    "compress": "sweet-potato-cooker compress",
+    "build": "sweet-potato-cooker build",
+    "start": "sweet-potato-cooker start"
+  },
+  "dependencies": {
+    "wtc-autoplay-video": "~2.0.4",
+    "wtc-controller-viewports": "~2.0.4",
+    "wtc-gallery-component": "~1.4.2",
+    "wtc-modal-view": "~3.0.0"
+  },
+  "devDependencies": {
+    "@wethegit/sweet-potato-cooker": "~1.0.9"
+  }
+}

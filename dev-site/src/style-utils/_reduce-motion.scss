@@ -1,0 +1,23 @@
+$reduce-motion-query: '(prefers-reduced-motion: reduce)';
+
+@mixin reduce-motion() {
+  @include reduce-motion-query {
+    @content;
+  }
+
+  @include reduce-motion-class {
+    @content;
+  }
+}
+
+@mixin reduce-motion-query {
+  @media #{$reduce-motion-query} {
+    @content;
+  }
+}
+
+@mixin reduce-motion-class {
+  .is-reduced-motion {
+    @content;
+  }
+}

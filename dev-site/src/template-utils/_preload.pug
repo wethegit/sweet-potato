@@ -1,0 +1,86 @@
+//- PRELOAD
+  ---------
+
+  Generates a preload tag, allowing you to preload assets earlier in the page lifecycle.
+  `as` MUST be added as an attrbute to declare if your are passing an image or video.
+
+  Parameters:
+  href {string} filename/path of the asset you are loading. File is relative to `/assets/`
+
+  Usage:
+    preload({ href: "assets/images/image-name.jpg" })(as="image")
+    preload({ href: "assets/videos/video-name.mp4" })(as="video")
+
+mixin preload({ href })
+  link(href=href, rel="preload")&attributes(attributes)
+
+//- PRELOAD IMAGE
+  ---------------
+
+  This outputs: <preload> tags for images with retina and breakpoint variations.
+
+  Parameters:
+  src {string}          Filename of the image. This is relative to '/assets/images/'
+  breakpoints {Array}   An array of the breakpoints you want include within the element.
+                        By default this will be "medium-up" and "large-up".
+                        Options include: medium-up (640px +), large-up (1024px +), xlarge-up (1144px +), and xxlarge-up (1440px +).
+
+  Usage:
+  +preload-image({
+    src: "image.png",
+    breakpoints: ["medium-up", "large-up", "xlarge-up"]
+  })
+
+mixin preload-image(options)
+  - let { src = '', breakpoints = null } = options || {};
+  - const imgPath = `${globals.RELATIVE_ROOT}/assets/images/`;
+
+  if src
+    - let [filename, extension] = src.split('.');
+    - let srcset, media;
+    - let suffix = '';
+    -
+      const smallSrcset = [
+        `${imgPath}${filename}.${extension}`,
+        `${imgPath}${filename}-2x.${extension}`
+      ];
+
+    if breakpoints && breakpoints.length
+      - breakpoints = breakpoints.reverse();
+
+      each breakpoint in breakpoints
+        if globals.BREAKPOINTS[breakpoint]
+          -
+            media = globals.BREAKPOINTS[breakpoint]
+            suffix = `-${breakpoint.toLowerCase()}`
+            srcset = [
+              `${imgPath}${filename}${suffix}.${extension}`,
+              `${imgPath}${filename}${suffix}-2x.${extension}`
+            ];
+
+          +preload({ href: srcset[0] })(
+            as="image",
+            media=`only screen and ${media}`
+          )
+
+          +preload({ href: srcset[1] })(
+            as="image",
+            media=`
+              only screen and (-webkit-min-device-pixel-ratio: 2) and ${media},
+              only screen and (min-device-pixel-ratio: 2) and ${media}
+            `
+          )
+
+      //- in case we have breakpoints we wanna make sure that we preload the small version only on small
+      - media = `only screen and ${globals.BREAKPOINTS['small-only']}`;
+
+    //- regardless if breakpoints are passed, we need to generate the default image
+    +preload({ href: smallSrcset[0] })(as="image", media=media)
+
+    +preload({ href: smallSrcset[1] })(
+      as="image",
+      media=`
+        only screen and (-webkit-min-device-pixel-ratio: 2)${media || ''},
+        only screen and (min-device-pixel-ratio: 2)${media || ''}
+      `
+    )

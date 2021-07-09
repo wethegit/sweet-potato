@@ -1,0 +1,24 @@
+@import "../style-utils/reduce-motion";
+
+:root {
+  --cubic-bezier-in: cubic-bezier(0.68, -0.55, 0.265, 1.55);
+  --cubic-bezier-out: cubic-bezier(0.6, -0.28, 0.735, 0.045);
+  --easeInOutQuart: cubic-bezier(0.77, 0, 0.175, 1);
+}
+
+/// Applies a simple floating animation
+@keyframes anim-float-up-down {
+  100% {
+    transform: translateY(-2em);
+  }
+}
+
+.anim--float-up-down {
+  animation: anim-float-up-down 2s ease-in-out infinite alternate;
+}
+
+@include reduce-motion {
+  .anim {
+    animation-play-state: paused;
+  }
+}

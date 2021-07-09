@@ -1,0 +1,29 @@
+@import "~wtc-autoplay-video";
+
+@import "../../style-utils/reduce-motion";
+
+.autoplay-video__fallback {
+  height: 100%;
+  object-fit: cover;
+  width: 100%;
+}
+
+.autoplay-video--fullscreen {
+  .autoplay-video__video {
+    height: 100%;
+    object-fit: cover;
+    width: 100%;
+  }
+}
+
+@include reduce-motion {
+  .autoplay-video {
+    .autoplay-video__video {
+      display: none;
+    }
+
+    .autoplay-video__fallback {
+      display: block;
+    }
+  }
+}

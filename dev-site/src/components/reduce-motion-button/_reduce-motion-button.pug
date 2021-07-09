@@ -1,0 +1,10 @@
+mixin reduce-motion-button(options)
+  - const { label } = options || {};
+
+  button.reduce-motion-button(
+    aria-pressed="false",
+    data-controller="ReduceMotion"
+  )&attributes(attributes)
+    if label
+      span.reduce-motion-button__label= label
+    span.reduce-motion-button__icon

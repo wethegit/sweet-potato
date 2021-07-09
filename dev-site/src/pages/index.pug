@@ -1,0 +1,14 @@
+//- Main template
+extends ../templates/main.pug
+
+//- Styles
+block append styles
+  +stylesheet({ filename: 'home' })
+
+block header
+  hgroup.wrapper.txt-center
+    h2.main-header__title!= page.header.h1
+    h3.main-header__subtitle= page.header.h3
+
+//- Content
+block main

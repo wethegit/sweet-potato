@@ -1,0 +1,56 @@
+//- set the doctype first, pug can accept different doctypes
+doctype html
+
+//- Helpers
+include ../template-utils/_img
+include ../template-utils/_metas
+include ../template-utils/_picture
+include ../template-utils/_preload
+include ../template-utils/_script
+include ../template-utils/_stylesheet
+
+//- Components
+//- Include anything that will be global
+include ../components/button/_button
+include ../components/reduce-motion-button/_reduce-motion-button
+include ../components/icon/_icon
+
+html(lang=page.htmlLang || globals.htmlLang)
+  head
+    +metas({
+      title: `${page.meta && page.meta.title ? page.meta.title + " | " + globals.meta.title : globals.meta.title}`,
+      description: (page.meta && page.meta.description) || globals.meta.description,
+      ogImageAlt: globals.meta.og_image_alt || null,
+    })
+
+    include ../template-utils/_favicons
+
+    //- Fonts
+    link(crossorigin, href="https://fonts.gstatic.com/", rel="preconnect")
+    +stylesheet({ filename: 'https://fonts.googleapis.com/css?family=Raleway:900|Roboto:400,700&display=swap', isExternal: true })
+
+    //- Extra head tags
+    block head
+
+    //- Stylesheet
+    +stylesheet({ filename: "global" })
+
+    block styles
+
+  body(data-env=globals.NODE_ENV)
+    include ../components/main-nav/main-nav
+
+    #skippers-main
+
+    header.main-header(data-controller="Viewport")
+      block header
+
+    main.main
+      block main
+
+    include ../components/main-footer/main-footer
+
+    //- Javascript
+    +localScript({ filename: "global" })
+
+    block javascripts

@@ -1,0 +1,7 @@
+@import "../style-utils/colors";
+
+@each $color, $hex in $colors {
+  .background-color-#{$color} {
+    background-color: var(--color-#{$color});
+  }
+}

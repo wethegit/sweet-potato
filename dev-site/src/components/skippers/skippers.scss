@@ -1,0 +1,25 @@
+@import "../../style-utils/helpers";
+
+.skippers {
+  @include vertical-center();
+
+  height: 0;
+  overflow: hidden;
+
+  &:focus-within {
+    height: auto;
+  }
+}
+
+.skippers__item {
+  &:hover,
+  &:focus {
+    opacity: 1;
+  }
+
+  .icon {
+    height: 12px;
+    margin-left: 10px;
+    width: 12px;
+  }
+}

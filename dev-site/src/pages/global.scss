@@ -1,0 +1,52 @@
+// global styles
+@import "../style-globals/animations.scss", "../style-globals/backgrounds.scss",
+  "../style-utils/breakpoints.scss", "../style-globals/colors.scss",
+  "../style-globals/grid.scss", "../style-globals/images.scss",
+  "../style-globals/modal.scss", "../style-globals/typography.scss",
+  "../style-globals/visibility.scss", "../style-globals/vp.scss";
+
+// global components
+@import "../components/button/button.scss",
+  "../components/skippers/skippers.scss", "../components/main-nav/main-nav.scss",
+  "../components/main-footer/main-footer.scss",
+  "../components/reduce-motion-button/reduce-motion-button.scss";
+
+// Global styles here ONLY
+*,
+*::after,
+*::before {
+  box-sizing: border-box;
+}
+
+// Custom properties
+:root {
+  --base-radius: 10px;
+  --base-space: 8px;
+}
+
+body {
+  margin: 0;
+  overflow-x: hidden;
+}
+
+button {
+  appearance: none;
+  background: none;
+  border: none;
+  border-radius: 0;
+  color: inherit;
+  cursor: pointer;
+  display: inline-block;
+  font: inherit;
+  padding: 0;
+}
+
+*:focus {
+  @include focus-style;
+
+  outline: none;
+
+  &:not(:focus-visible) {
+    box-shadow: none;
+  }
+}

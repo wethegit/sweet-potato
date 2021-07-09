@@ -1,0 +1,51 @@
+//-
+  GALLERY
+  -------
+  Creates a gallery component, using WTC Gallery library
+  (https://github.com/wethegit/wtc-gallery-component).
+
+  Usage
+  +gallery({ navigationText: globals.gallery })
+    for item in [1, 2, 3, 4, 5]
+      +gallery-item
+        p Gallery item #{item}
+
+  Options:
+    `navigationText`
+      - Allows for custom next/prev button navigation text,
+        very useful for localization. This expects an object
+        with two properties: "next" and "prev", each containing
+        two more properties: "label" and "sr_label".
+
+mixin gallery(options = {})
+  - const { navigationText } = options;
+
+  .gallery(data-controller="Gallery")&attributes(attributes)
+    ul
+      if block
+        block
+
+    if navigationText
+      -
+        const defaultLabels = {
+          "next": "&lt;",
+          "prev": "&gt;"
+        }
+
+      each button of ["next", "prev"]
+        - const { label, sr_label } = navigationText[button]
+        
+        .gallery__nav-markup(class=`gallery__nav-markup--${button}`)
+          if sr_label
+            span.visually-hidden!= sr_label
+
+            if label
+              span(aria-hidden="true")!= label || defaultLabels[button]
+          
+          else
+            span!= label || defaultLabels[button]
+
+mixin gallery-item
+  li&attributes(attributes)
+    if block
+      block

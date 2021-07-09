@@ -1,0 +1,29 @@
+.main-nav(
+  aria-label=globals.main_nav.label,
+  data-controller="MainNav",
+  role="region"
+)
+  .main-nav__bar
+    .main-nav__controls
+      +reduce-motion-button({ label: globals.reduced_motion })
+      include ../skippers/skippers.pug
+
+    button.main-nav__toggler(
+      aria-controls="main-nav__nav",
+      aria-expanded="false",
+      aria-live="polite"
+    )
+      span.main-nav__toggler__sr-open.visually-hidden= globals.main_nav.menu.open
+      span.main-nav__toggler__sr-close.visually-hidden= globals.main_nav.menu.close
+      .toggler__icon: span
+
+  nav#main-nav__nav.main-nav__nav(aria-label=globals.main_nav.title)
+    ul.main-nav__list
+      each item in globals.main_nav.items
+        li.main-nav__item
+          +button({ tag: 'a', text: item.label }).main-nav__anchor(
+            class=item.id == globals.selected_nav ? 'is-active' : '',
+            href=`${globals.RELATIVE_LOCALE_ROOT}/${item.href}`
+          )
+
+    span.main-nav__focus-end(tabindex=0)

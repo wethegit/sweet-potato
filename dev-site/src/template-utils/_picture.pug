@@ -1,0 +1,59 @@
+//- PICTURE
+  ---------
+  Creates a picture element. This outputs: <source> tags for M and L breakpoints,
+  as well as the standard <img> tag which gets used for S.
+  `srcset` is assumed.
+
+  Parameters:
+  src {string}          Filename of the image. This is relative to '/assets/images/'
+  alt {string}          Alternative text for the image. If nothing is passed this will render an empry alt attribute.
+  breakpoints {Array}   An array of the breakpoints you want include within the element.
+                        By default this will be "medium-up" and "large-up".
+                        Options include: medium-up (640px +), large-up (1024px +), xlarge-up (1144px +), and xxlarge-up (1440px +).
+
+  Usage:
+  +picture({
+    src: "image.png",
+    alt: "Alternative text for image",
+    breakpoints: ["medium-up", "large-up", "xlarge-up"]
+  })
+
+mixin picture(options)
+  - let { src, alt = '', breakpoints = ['medium-up', 'large-up'] } = options || {};
+  - const imgPath = `${globals.RELATIVE_ROOT}/assets/images/`;
+
+  if src
+    picture
+      - let [filename, extension] = src.split('.');
+      - let srcset;
+      - let suffix = '';
+
+      //- generate a <source>  with a 1x and 2x srcset, for each breakpoint passed in:
+      if breakpoints && breakpoints.length
+        - breakpoints = breakpoints.reverse();
+
+        each breakpoint in breakpoints
+          if globals.BREAKPOINTS[breakpoint]
+            -
+              suffix = `-${breakpoint.toLowerCase()}`
+              srcset = [
+                `${imgPath}${filename}${suffix}.${extension}`,
+                `${imgPath}${filename}${suffix}-2x.${extension}`
+              ];
+
+            source(
+              media=globals.BREAKPOINTS[breakpoint],
+              srcset=`${srcset[0]} 1x, ${srcset[1]} 2x`
+            )
+
+      //- use our default src (and srcset) for the S breakpoint:
+      -
+        srcset = [
+          `${imgPath}${filename}.${extension}`,
+          `${imgPath}${filename}-2x.${extension}`
+        ];
+      img(
+        alt=alt,
+        src=`${imgPath}${src}`,
+        srcset=`${srcset[0]} 1x, ${srcset[1]} 2x`
+      )&attributes(attributes)

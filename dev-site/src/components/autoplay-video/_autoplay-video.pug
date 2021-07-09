@@ -1,0 +1,34 @@
+
+//- Adds all the necessary elements for the AutoplayVideo class
+  Fallback must be inside public/assets/images/
+  Image must be inside public/assets/videos/
+  
+  Usage:
+    +autoplay-video({
+      src: 'home/header.mp4',
+      fallback: {
+        src: "home/header.jpg"
+      }
+    })
+mixin autoplay-video(options)
+  - const { src, fallback } = options  
+  
+  if src
+    - const videoPath = `${globals.RELATIVE_ROOT}/assets/videos/`;
+    
+    .autoplay-video(data-controller="AutoplayVideo")&attributes(attributes)
+      video.autoplay-video__video(
+        autoplay
+        playsinline
+        muted
+        loop
+      )
+        - const extension = src.split('.')[1];
+
+        source(
+          src=`${videoPath}${src}`
+          type=`video/${extension}`
+        )
+        
+      if fallback        
+        +img({ ...fallback }).autoplay-video__fallback

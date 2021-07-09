@@ -1,0 +1,27 @@
+//- IMG
+  -----
+  Used to display images. Image files exist in `assets/images/*`.
+
+  Parameters
+  src {string}      Name of the image. Prepended with the directory it belongs in, and apended with the file exstension.
+  srcset {string}   Name of the images. Srcset will not work unless a -2x (retina) image exists in the same directory. The naming convention should follow `image.jpg` `image-2x.jpg`.
+  alt {string}      A string to describe the image. If no `alt` is provided, defaults to an empt `alt` tag.
+
+  Usage:
+
+  +img({ src: 'global/main.png', alt: 'descriptive alt' })
+  +img({ srcset: 'global/main.png', alt: 'descriptive alt' })
+
+//- NOTE: This relies on JavaScript to populate img src when "lazy" is true.
+mixin img({ src, alt = "", srcset = false, width, height })
+  if srcset
+    - const [path, extension] = srcset.split('.');
+
+    - src = srcset;
+    - srcset = `${globals.RELATIVE_ROOT}/assets/images/${srcset} 1x, ${globals.RELATIVE_ROOT}/assets/images/${path}-2x.${extension} 2x`;
+
+  img(
+    src=`${globals.RELATIVE_ROOT}/assets/images/${src}`
+    srcset=srcset
+    alt=alt
+  )&attributes(attributes)

@@ -1,0 +1,37 @@
+htmlLang: en
+meta:
+  title: &meta_title Lorem ipsum
+  description: &meta_description Exercitation aliquip ipsum commodo pariatur sint ea nulla tempor.
+  og_image_alt: "Description of og:image (not a caption)."
+
+learn_more: Learn more
+
+reduced_motion: Reduced motion
+
+gallery:
+  next:
+    label: Next
+    sr_label: Next gallery image
+  prev:
+    label: Previous
+    sr_label: Previous gallery image
+
+main_skip_button: Skip to main content
+
+play_video: Play video
+
+main_nav:
+  label: Navigation
+  title: Main site navigation
+  menu:
+    label: Menu
+    open: Open navigation
+    close: Close navigation
+  items:
+    - id: home
+      href: ""
+      label: Home
+
+main_footer: &main_footer
+  legal: &main_footer-legal
+    - © 2019 We The Collective
