@@ -2,7 +2,7 @@
 template: _page.pug
 title: "Sweet Potato: Styles"
 description: Sweet Potato is an opinionated and minimal static website generator, by We The Collective.
-order: 5
+order: 6
 name: Styles
 ---
 

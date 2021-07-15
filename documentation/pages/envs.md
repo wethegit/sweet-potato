@@ -2,7 +2,7 @@
 template: _page.pug
 title: "Sweet Potato: Environments and environment variables"
 description: Sweet Potato is an opinionated and minimal static website generator, by We The Collective.
-order: 6
+order: 7
 name: Environments and environment variables
 ---
 

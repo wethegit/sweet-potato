@@ -2,7 +2,7 @@
 template: _page.pug
 title: "Sweet Potato: Javascript"
 description: Sweet Potato is an opinionated and minimal static website generator, by We The Collective.
-order: 4
+order: 5
 name: Javascript
 ---
 
