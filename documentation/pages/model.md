@@ -10,6 +10,10 @@ name: Model
 
 The model - or runtime globals - system allows you to populate an object with variables statically, dynamically or drawn from an API at compile time and provide them to pug for use in template rendering.
 
+## Functionality
+
+The model itself is just a node js file that's consumed at compile time. This file could contain anything you want as long as it returns a promise. As such you can use this file to consume other files, to determine the status of various OS properties, or to query APIs.
+
 ## Usage
 
 To compile data for this object you would create a data folder relative to the page you wanted to apply it to. For example if you wanted to compile some news data, your folder structure might look like this:
