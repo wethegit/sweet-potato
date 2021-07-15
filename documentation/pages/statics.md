@@ -2,7 +2,7 @@
 template: _page.pug
 title: "Sweet Potato: Static assets"
 description: Sweet Potato is an opinionated and minimal static website generator, by We The Collective.
-order: 7
+order: 8
 name: Static assets
 ---
 
