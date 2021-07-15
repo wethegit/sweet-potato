@@ -56,35 +56,6 @@
 <em>globals.PUBLIC_URL</em></p>
 <p>The full public URL of the website. this is useful when you want to include a fully canonical link to something on the website and its inclusion in the env files allows this to change from environment to environment. For more information on environments and environment variables, please see <a href="https://github.com/wethegit/sweet-potato/wiki/Environments">Environment</a></p>
 <h3>Model</h3>
-<p>The model - or runtime globals - allow you to populate an object with variables statically, dynamically or drawn from an API at compile time. To compile data for this object you would create a data folder relative to the page you wanted to apply it to. For example if you wanted to compile some news data, your folder structure might look like this:</p>
-<pre><code>pages/
-  |-- index.pug
-  |-- about/
-      |-- index.pug
-  |-- news/
-      |-- data/
-          |-- index.js
-      |-- index.pug
-</code></pre>
-<p>The compiler will then consume that index.js file and append the result of its promise to the <code>model</code> object.</p>
-<h4>Example</h4>
-<pre><code>pages/
-  |-- index.pug
-  |-- data/
-      |-- index.js
-</code></pre>
-<p>The contents of <code>data/index.js</code>:</p>
-<pre><code class="language-js">module.exports = async function () {
-  const data = {
-    testing: &quot;Hello World&quot;,
-  };
-  return new Promise((resolve, reject) =&gt; {
-    resolve(data);
-  });
-};
-</code></pre>
-<p>In index.pug:</p>
-<pre><code class="language-pug">p!= model.testing
-</code></pre>
-<p>Will output &quot;Hello World&quot;.</p>
-</div><div class="main-navigation"><nav class="main-navigation"><ul class="nav main-navigation__nav"><li><a href="https://wethegit.github.io/sweet-potato/index.html">Introduction</a></li><li><a href="https://wethegit.github.io/sweet-potato/config.html">Configuration</a></li><li><a href="https://wethegit.github.io/sweet-potato/pages.html">Pages</a></li><li><a href="https://wethegit.github.io/sweet-potato/language.html">Language and localisation</a></li><li><a href="https://wethegit.github.io/sweet-potato/js.html">Javascript</a></li><li><a href="https://wethegit.github.io/sweet-potato/styles.html">Styles</a></li><li><a href="https://wethegit.github.io/sweet-potato/envs.html">Environments and environment variables</a></li><li><a href="https://wethegit.github.io/sweet-potato/statics.html">Static assets</a></li><li><a href="https://wethegit.github.io/sweet-potato/model.html">TODO Model</a></li><li><a href="https://wethegit.github.io/sweet-potato/dev.html">Sweet Potato development</a></li></ul></nav></div></main><script type="module" src="./index.js"></script></body></html>
+<p>The model - or runtime globals - allow you to populate an object with variables statically, dynamically or drawn from an API at compile time.</p>
+<p>For more information on model use, see <a href="'./model.html'">Models</a></p>
+</div><div class="main-navigation"><nav class="main-navigation"><ul class="nav main-navigation__nav"><li><a href="https://wethegit.github.io/sweet-potato/index.html">Introduction</a></li><li><a href="https://wethegit.github.io/sweet-potato/config.html">Configuration</a></li><li><a href="https://wethegit.github.io/sweet-potato/pages.html">Pages</a></li><li><a href="https://wethegit.github.io/sweet-potato/language.html">Language and localisation</a></li><li><a href="https://wethegit.github.io/sweet-potato/model.html">Model</a></li><li><a href="https://wethegit.github.io/sweet-potato/js.html">Javascript</a></li><li><a href="https://wethegit.github.io/sweet-potato/styles.html">Styles</a></li><li><a href="https://wethegit.github.io/sweet-potato/envs.html">Environments and environment variables</a></li><li><a href="https://wethegit.github.io/sweet-potato/statics.html">Static assets</a></li><li><a href="https://wethegit.github.io/sweet-potato/dev.html">Sweet Potato development</a></li></ul></nav></div></main><script type="module" src="./index.js"></script></body></html>
