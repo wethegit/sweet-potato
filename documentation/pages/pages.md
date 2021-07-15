@@ -106,47 +106,6 @@ The full public URL of the website. this is useful when you want to include a fu
 
 ### Model
 
-The model - or runtime globals - allow you to populate an object with variables statically, dynamically or drawn from an API at compile time. To compile data for this object you would create a data folder relative to the page you wanted to apply it to. For example if you wanted to compile some news data, your folder structure might look like this:
+The model - or runtime globals - allow you to populate an object with variables statically, dynamically or drawn from an API at compile time.
 
-```
-pages/
-  |-- index.pug
-  |-- about/
-      |-- index.pug
-  |-- news/
-      |-- data/
-          |-- index.js
-      |-- index.pug
-```
-
-The compiler will then consume that index.js file and append the result of its promise to the `model` object.
-
-#### Example
-
-```
-pages/
-  |-- index.pug
-  |-- data/
-      |-- index.js
-```
-
-The contents of `data/index.js`:
-
-```js
-module.exports = async function () {
-  const data = {
-    testing: "Hello World",
-  };
-  return new Promise((resolve, reject) => {
-    resolve(data);
-  });
-};
-```
-
-In index.pug:
-
-```pug
-p!= model.testing
-```
-
-Will output "Hello World".
+For more information on model use, see [Models]('./model.html')
