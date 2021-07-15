@@ -1,5 +1,7 @@
 <!DOCTYPE html><html lang="en-US"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=1, minimum-scale=1"><meta http-equiv="X-UA-Compatible" content="ie=edge"><meta name="description" content="Sweet Potato is an opinionated and minimal static website generator, by We The Collective."><title>Sweet Potato: Model</title><link rel="stylesheet" href="./index.css"></head><body><header class="grid"><div class="main-content"><h1>Sweet Potato 🍠</h1></div></header><main class="grid"><div class="main-content"><h1>Model</h1>
 <p>The model - or runtime globals - system allows you to populate an object with variables statically, dynamically or drawn from an API at compile time and provide them to pug for use in template rendering.</p>
+<h2>Functionality</h2>
+<p>The model itself is just a node js file that's consumed at compile time. This file could contain anything you want as long as it returns a promise. As such you can use this file to consume other files, to determine the status of various OS properties, or to query APIs.</p>
 <h2>Usage</h2>
 <p>To compile data for this object you would create a data folder relative to the page you wanted to apply it to. For example if you wanted to compile some news data, your folder structure might look like this:</p>
 <pre><code>pages/
