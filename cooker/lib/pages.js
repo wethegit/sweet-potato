@@ -12,6 +12,7 @@ const { config, logger, getFiles } = require("@wethegit/sweet-potato-utensils");
 
 // local imports
 const { getClientEnvironment } = require("./env.js");
+const { exists } = require("fs");
 
 // consts
 const env = getClientEnvironment();
@@ -198,6 +199,62 @@ async function getDataFromDataInclude(file, filepath) {
 }
 
 /**
+ * @typedef {Object} ParsedMarkdown
+ * @property {Object} templateInfo - An object containing the combined data for the markdown's rendering template. Result of path.parse(template) with the name and dir modified to variables supplied by the matter file.
+ * @property {string} file - The full path to the template pug file. This will replace the parsed file for rendering
+ * @property {Object} mdData - The markdown data for rendition.
+ */
+
+/**
+ * Parses a markdown file from a path, file, and templateInfo supplied by the pages function.
+ *
+ * @param {string} file - The string path to the markdown file. Used to parse the file in matter.
+ * @param {Object} fileInfo - An object detailing specific properties of the md file. Result of path.parse(file);
+ * @returns {ParsedMarkdown} - The parsed markdown content for rendering.
+ */
+function parseMarkdown(file, fileInfo) {
+  const mdfile = matter.read(file);
+  const name = fileInfo.name;
+  const dir = fileInfo.dir;
+  const templateFile = path.join(fileInfo.dir, mdfile.data.template);
+  const mdData = {};
+  let templateInfo = {};
+
+  // If we have a template file defined in the grey-matter file
+  if (mdfile.data.template) {
+    // If the template doesn't exist, warn and continuer
+    if (!fse.pathExistsSync(templateFile)) {
+      logger.warning([
+        `Error compiling ${path.relative(
+          config.CWD,
+          file
+        )}. The markdown file calls for the template ${path.relative(
+          config.CWD,
+          templateFile
+        )} which does not exist`,
+      ]);
+      throw new Error("MD template doesn't exists, skipping.");
+    } else {
+      // Fill out the markdown data content
+      // Convert the content using markdown.
+      mdData.content = Markdown.render(mdfile.content);
+      // Transcribe the returned data components to the markdown data object
+      for (let t in mdfile.data) {
+        mdData[t] = mdfile.data[t];
+      }
+      // Parse the template file
+      templateInfo = path.parse(templateFile);
+      // ... But set the name of the output to the name of the md file
+      templateInfo.name = name;
+      // ... and set the dir to the md file
+      templateInfo.dir = dir;
+    }
+  }
+
+  return { templateInfo, file: templateFile, mdData };
+}
+
+/**
  * pages
  *
  * @param {string} file - Path to a pug file
@@ -218,6 +275,7 @@ async function pages(file, localeFile) {
 
   if (file) pugFiles = [file];
 
+  // Assemble the locale file information
   if (localeFile) {
     let fileInfo = path.parse(localeFile);
     // if we have a locale file then we save that specific language
@@ -241,58 +299,27 @@ async function pages(file, localeFile) {
 
   logger.start("Generating pages");
 
-  // go throught all of them
+  // go through all of them
   let promises = [];
 
   for (let file of pugFiles) {
     // get the file information and locale files
     let templateInfo = path.parse(file);
 
-    // The data file for MD. This just includes any object data within an MD file, if that's what we're compiling
-    const mdData = {};
+    // Container variable for markdown data
+    let mdData;
 
-    // Otherwise compile as a pug file
     // if file starts with underscore, we ignore it, expected as standard 👍
     if (templateInfo.name.charAt(0) == "_") continue;
 
     // If we're a markdown file, compile with grey-matter
+    // This is a great pattern that we can just extend as we need to to render different kinds of files.
     if (templateInfo.ext.toLowerCase() === ".md") {
-      const mdfile = matter.read(file);
-      const name = templateInfo.name;
-      const dir = templateInfo.dir;
-      const templateFile = path.join(templateInfo.dir, mdfile.data.template);
-
-      // If we have a template file defined in the grey-matter file
-      if (mdfile.data.template) {
-        // If the template doesn't exist, warn and continuer
-        if (!fse.pathExistsSync(templateFile)) {
-          logger.warning([
-            `Error compiling ${path.relative(
-              config.CWD,
-              file
-            )}. The markdown file calls for the template ${path.relative(
-              config.CWD,
-              templateFile
-            )} which does not exist`,
-          ]);
-          continue;
-        } else {
-          // Fill out the markdown data content
-          // Convert the content using markdown.
-          mdData.content = Markdown.render(mdfile.content);
-          // Transcribe the returned data components to the markdown data object
-          for (let t in mdfile.data) {
-            mdData[t] = mdfile.data[t];
-          }
-          // Parse the template file
-          templateInfo = path.parse(templateFile);
-          // ... But set the name of the output to the name of the md file
-          templateInfo.name = name;
-          // ... and set the dir to the md file dir
-          templateInfo.dir = dir;
-          // Finally update the file to parse to the provided template file.
-          file = templateFile;
-        }
+      try {
+        ({ templateInfo, file, mdData } = parseMarkdown(file, templateInfo));
+      } catch (e) {
+        logger.error(e.message);
+        continue;
       }
     }
 
