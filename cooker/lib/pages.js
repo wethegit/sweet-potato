@@ -255,6 +255,98 @@ function parseMarkdown(file, fileInfo) {
 }
 
 /**
+ * Assembles all of the page options into an array for processing.
+ *
+ * @param {templateInfo} templateInfo - An object containing the combined data for the rendering template.
+ * @param {*} singleLocale - Whether we're rendering to a single locale
+ * @param {*} outputOptions - The default output options object to extend
+ * @returns
+ */
+async function assemblePageOptions(
+  templateInfo,
+  singleLocale = false,
+  outputOptions
+) {
+  // Find locale files based on main updated file, if it exists
+  let localeFiles;
+  const outputData = [];
+  if (singleLocale) {
+    const masterLocale = path.join(templateInfo.dir, "locales", singleLocale);
+
+    // something to discuss, should we skip files without master locales?
+    if (fse.pathExistsSync(masterLocale)) localeFiles = [masterLocale];
+  } else
+    localeFiles = await getFiles(
+      path.join(templateInfo.dir, "locales", "*.yaml")
+    );
+
+  if (localeFiles.length <= 0) {
+    let mainYaml = await getDataFromYaml(
+      path.join(
+        config.GLOBAL_LOCALES_DIRECTORY,
+        `${config.OPTIONS.locales.defaultName}.yaml`
+      )
+    );
+
+    // render the html with the data and save it
+    const options = {
+      ...outputOptions,
+    };
+    options.data.globals = mainYaml;
+    // options.data.page =Object.assign({}, options.data.page, mainYaml);
+
+    outputData.push(options);
+  } else {
+    // go through the locale files
+    for (const locale of localeFiles) {
+      // get the file info
+      const localeInfo = path.parse(locale);
+
+      // get the main locale
+      let mainYamlFile = path.join(
+        config.GLOBAL_LOCALES_DIRECTORY,
+        localeInfo.base
+      );
+
+      console.log(mainYamlFile);
+
+      // if doesn't exists uses default
+      if (!fse.pathExistsSync(mainYamlFile))
+        mainYamlFile = path.join(
+          config.GLOBAL_LOCALES_DIRECTORY,
+          `${config.OPTIONS.locales.defaultName}.yaml`
+        );
+
+      let mainYaml = await getDataFromYaml(mainYamlFile);
+
+      const globals = Object.assign({}, outputOptions.data.globals, mainYaml);
+      const pageYaml = await getDataFromYaml(locale);
+      const page = Object.assign({}, outputOptions.data.page, pageYaml);
+
+      // render the html with the data and save it
+      const options = {
+        ...outputOptions,
+        locale: localeInfo.name,
+        destination:
+          // default locale doesn't generate a sub directory
+          localeInfo.name !== "default"
+            ? path.join(config.BUILD_DIRECTORY, localeInfo.name)
+            : config.BUILD_DIRECTORY,
+        data: {
+          ...outputOptions.data,
+          globals,
+          page,
+        },
+      };
+
+      outputData.push(options);
+    }
+  }
+
+  return outputData;
+}
+
+/**
  * pages
  *
  * @param {string} file - Path to a pug file
@@ -339,18 +431,6 @@ async function pages(file, localeFile) {
     // removes the path to the pages folder for the final output
     const pagePath = templateInfo.dir.replace(config.PAGES_DIRECTORY, "");
 
-    // Find locale files based on main updated file, if it exists
-    let localeFiles;
-    if (singleLocale) {
-      const masterLocale = path.join(templateInfo.dir, "locales", singleLocale);
-
-      // something to discuss, should we skip files without master locales?
-      if (fse.pathExistsSync(masterLocale)) localeFiles = [masterLocale];
-    } else
-      localeFiles = await getFiles(
-        path.join(templateInfo.dir, "locales", "*.yaml")
-      );
-
     // Get data from a model, if available
     const model = await getDataFromDataInclude(
       path.join(templateInfo.dir, "data", "index.js"),
@@ -363,82 +443,26 @@ async function pages(file, localeFile) {
       filename: `${templateInfo.name}.html`,
       pugFunction: compiledFunction,
       data: {
-        globals: {},
-        page: mdData,
         model,
+        page: mdData,
       },
     };
 
-    // if no page locales were passed or found
-    // we try to get the default locale
-    if (localeFiles.length <= 0) {
-      let mainYaml = await getDataFromYaml(
-        path.join(
-          config.GLOBAL_LOCALES_DIRECTORY,
-          `${config.OPTIONS.locales.defaultName}.yaml`
-        )
-      );
+    // Assemble the page options array. This creates objects that are passed to the saveHTML function and include locale information, etc.
+    const outputData = await assemblePageOptions(
+      templateInfo,
+      singleLocale,
+      outputOptions
+    );
 
-      outputOptions.data.globals = Object.assign(
-        {},
-        outputOptions.data.globals,
-        mainYaml
-      );
-
+    outputData.forEach((options) => {
       // render the html with the data and save it
       promises.push(
-        saveHtml(outputOptions, {
+        saveHtml(options, {
           source: file,
         })
       );
-    } else {
-      // go through the locale files
-      for (const locale of localeFiles) {
-        // get the file info
-        const localeInfo = path.parse(locale);
-
-        // get the main locale
-        let mainYamlFile = path.join(
-          config.GLOBAL_LOCALES_DIRECTORY,
-          localeInfo.base
-        );
-
-        // if doesn't exists uses default
-        if (!fse.pathExistsSync(mainYamlFile))
-          mainYamlFile = path.join(
-            config.GLOBAL_LOCALES_DIRECTORY,
-            `${config.OPTIONS.locales.defaultName}.yaml`
-          );
-
-        let mainYaml = await getDataFromYaml(mainYamlFile);
-
-        const globals = Object.assign({}, outputOptions.data.globals, mainYaml);
-        const pageYaml = await getDataFromYaml(locale);
-        const page = Object.assign({}, mdData, pageYaml);
-
-        // render the html with the data and save it
-        const options = {
-          ...outputOptions,
-          locale: localeInfo.name,
-          destination:
-            // default locale doesn't generate a sub directory
-            localeInfo.name !== "default"
-              ? path.join(config.BUILD_DIRECTORY, localeInfo.name)
-              : config.BUILD_DIRECTORY,
-          data: {
-            globals,
-            page,
-            model,
-          },
-        };
-
-        promises.push(
-          saveHtml(options, {
-            source: file,
-          })
-        );
-      }
-    }
+    });
   }
 
   return Promise.all(promises).then((res) => {
