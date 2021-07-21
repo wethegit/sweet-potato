@@ -36,12 +36,16 @@ function watch(cb) {
 
   // watch for data
   chokidar.watch(path.join(config.CWD, "**", "*.yaml"), options).on("all", cb);
+  chokidar.watch(path.join(config.CWD, "**", "*.json"), options).on("all", cb);
 
   // watch for styles
   chokidar.watch(path.join(config.CWD, "**", "*.scss"), options).on("all", cb);
 
   // watch for javascripts
   chokidar.watch(path.join(config.CWD, "**", "*.js"), options).on("all", cb);
+
+  // watch for shaders
+  chokidar.watch(path.join(config.CWD, "**", "*.glsl"), options).on("all", cb);
 
   // watch for assets
   chokidar
