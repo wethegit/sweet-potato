@@ -214,6 +214,8 @@ async function requestListener(req, res) {
   const isStatic = ext && !Object.keys(extMap).includes(ext);
   let file;
 
+  
+
   logger.announce(["Resolving", pathname]);
 
   const contentType = mime.lookup(pathname);
@@ -240,6 +242,21 @@ async function requestListener(req, res) {
     } catch (err) {
       _error(res, file, err);
       return;
+    }
+  }
+
+  if(config.OPTIONS.plugins) {
+    for (let i = 0; i < config.OPTIONS.plugins.length; i++) {
+      const plugin = config.OPTIONS.plugins[i];
+      
+      if(plugin.endPoint && typeof plugin.endPoint === 'function') {
+        const pluginResult = plugin.endPoint(req.url);
+        if(pluginResult && pluginResult.body) {
+          const contents = pluginResult.type === 'html' ? plugSocketIO(pluginResult.body) : pluginResult.body
+          _respond(res, { contentType: `text/${pluginResult.type}`, contents });
+          return;
+        }
+      }
     }
   }
 
