@@ -280,6 +280,7 @@ async function assemblePageOptions(
       path.join(templateInfo.dir, "locales", "*.yaml")
     );
 
+  // If there are no locale files, we compile the file with the bare bones of information.
   if (localeFiles.length <= 0) {
     let mainYaml = await getDataFromYaml(
       path.join(
@@ -296,6 +297,8 @@ async function assemblePageOptions(
     // options.data.page =Object.assign({}, options.data.page, mainYaml);
 
     outputData.push(options);
+
+    // Otherwise we loop through and create a build for each locale
   } else {
     // go through the locale files
     for (const locale of localeFiles) {
@@ -307,8 +310,6 @@ async function assemblePageOptions(
         config.GLOBAL_LOCALES_DIRECTORY,
         localeInfo.base
       );
-
-      console.log(mainYamlFile);
 
       // if doesn't exists uses default
       if (!fse.pathExistsSync(mainYamlFile))
