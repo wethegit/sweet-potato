@@ -32,6 +32,7 @@ let CONFIG = {
     },
   },
   breakpoints: false,
+  plugins: []
 };
 
 if (fse.pathExistsSync(CONFIG_PATH)) {
