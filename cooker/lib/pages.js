@@ -217,8 +217,10 @@ function parseMarkdown(file, fileInfo) {
   const name = fileInfo.name;
   const dir = fileInfo.dir;
   const templateFile = path.join(fileInfo.dir, mdfile.data.template);
-  const mdData = {};
-  let templateInfo = {};
+  const mdData = {
+    ...mdfile,
+    templateFile,
+  };
 
   // If we have a template file defined in the grey-matter file
   if (mdfile.data.template) {
@@ -243,15 +245,15 @@ function parseMarkdown(file, fileInfo) {
         mdData[t] = mdfile.data[t];
       }
       // Parse the template file
-      templateInfo = path.parse(templateFile);
+      mdData.templateInfo = path.parse(templateFile);
       // ... But set the name of the output to the name of the md file
-      templateInfo.name = name;
+      mdData.templateInfo.name = name;
       // ... and set the dir to the md file
-      templateInfo.dir = dir;
+      mdData.templateInfo.dir = dir;
     }
   }
 
-  return { templateInfo, file: templateFile, mdData };
+  return mdData;
 }
 
 /**
@@ -409,7 +411,11 @@ async function pages(file, localeFile) {
     // This is a great pattern that we can just extend as we need to to render different kinds of files.
     if (templateInfo.ext.toLowerCase() === ".md") {
       try {
-        ({ templateInfo, file, mdData } = parseMarkdown(file, templateInfo));
+        mdData = parseMarkdown(file, templateInfo);
+
+        // Update the template info and file for rendering
+        templateInfo = mdData.templateInfo;
+        file = mdData.templateFile;
       } catch (e) {
         logger.error(e.message);
         continue;
