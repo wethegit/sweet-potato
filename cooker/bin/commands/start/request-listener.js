@@ -231,8 +231,8 @@ async function requestListener(req, res) {
       if(plugin.endPoint && typeof plugin.endPoint === 'function') {
         const pluginResult = plugin.endPoint(req.url);
         if(pluginResult && pluginResult.body) {
-          const contents = pluginResult.type === 'html' ? plugSocketIO(pluginResult.body) : pluginResult.body
-          _respond(res, { contentType: `text/${pluginResult.type}`, contents });
+          const contents = pluginResult.type === 'text/html' ? plugSocketIO(pluginResult.body) : pluginResult.body
+          _respond(res, { contentType: pluginResult.type, contents });
           return;
         }
       }
