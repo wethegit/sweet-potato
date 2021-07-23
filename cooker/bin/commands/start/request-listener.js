@@ -223,6 +223,22 @@ async function requestListener(req, res) {
     contentType,
   };
 
+
+  if(config.OPTIONS.plugins) {
+    for (let i = 0; i < config.OPTIONS.plugins.length; i++) {
+      const plugin = config.OPTIONS.plugins[i];
+      
+      if(plugin.endPoint && typeof plugin.endPoint === 'function') {
+        const pluginResult = plugin.endPoint(req.url);
+        if(pluginResult && pluginResult.body) {
+          const contents = pluginResult.type === 'html' ? plugSocketIO(pluginResult.body) : pluginResult.body
+          _respond(res, { contentType: `text/${pluginResult.type}`, contents });
+          return;
+        }
+      }
+    }
+  }
+
   // if file is static we just serve the contents
   // NOTE: this should very rarely happen as express takes care
   // of static files.
@@ -245,20 +261,6 @@ async function requestListener(req, res) {
     }
   }
 
-  if(config.OPTIONS.plugins) {
-    for (let i = 0; i < config.OPTIONS.plugins.length; i++) {
-      const plugin = config.OPTIONS.plugins[i];
-      
-      if(plugin.endPoint && typeof plugin.endPoint === 'function') {
-        const pluginResult = plugin.endPoint(req.url);
-        if(pluginResult && pluginResult.body) {
-          const contents = pluginResult.type === 'html' ? plugSocketIO(pluginResult.body) : pluginResult.body
-          _respond(res, { contentType: `text/${pluginResult.type}`, contents });
-          return;
-        }
-      }
-    }
-  }
 
   let contents;
   switch (ext) {
