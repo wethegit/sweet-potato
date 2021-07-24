@@ -414,6 +414,10 @@ async function pages(file, localeFile) {
         mdData = parseMarkdown(file, templateInfo);
 
         // Update the template info and file for rendering
+        // The idea here is that if we're rendering a markdown file to a page then the markdown file will provide information on the template it needs to render, so we're:
+        // 1. Parsing out the markdown file into appropriate properties;
+        // 2. Updating the template and page to be rendered to the template cited in the markdown file; and
+        // 3. Passing along the parameters generated from the md file to that template.
         templateInfo = mdData.templateInfo;
         file = mdData.templateFile;
       } catch (e) {
