@@ -5,7 +5,7 @@ mixin makeNavUL(items)
         if (val instanceof Array)
           makeNavUL(val)
         else
-          a(href=`https://wethegit.github.io/sweet-potato/${val.dir}${val.dir? '/' : ''}${val.name}.html`)!=val.title
+          a(href=`${globals.PUBLIC_URL}/${val.dir}${val.dir? '/' : ''}${val.name}.html`)!=val.title
 
 
 mixin navigation(items)

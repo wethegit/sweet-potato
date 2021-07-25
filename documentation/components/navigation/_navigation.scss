@@ -6,3 +6,36 @@ nav.main-navigation {
   list-style-type: none;
   padding: 0;
 }
+.main-navigation__nav li {
+  margin: 5px 0px;
+}
+.main-navigation__nav li.selected a {
+  background: #eee;
+  color: #000;
+}
+.main-navigation__nav a,
+.main-navigation__nav label {
+  color: #333;
+  cursor: pointer;
+  text-decoration: none;
+}
+.main-navigation__nav label:after {
+  content: "+";
+  margin-left: 5px;
+}
+.main-navigation__nav__checkbox {
+  display: none;
+}
+.main-navigation__nav__checkbox:checked {
+  ~ label:after {
+    content: "-";
+  }
+  ~ .main-navigation__nav__subnav {
+    display: block;
+  }
+}
+.main-navigation__nav__subnav {
+  display: none;
+  list-style-type: none;
+  padding: 10px;
+}

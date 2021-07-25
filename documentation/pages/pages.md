@@ -50,7 +50,7 @@ In addition to the above, you can pass additional variables for the rendering pu
 ---
 template: _page.pug
 title: "Sweet Potato: Pages"
-description: Sweet Potato is an opinionated and minimal static website generator, by We The Collective.
+description: Sweet Potato
 css: [page.css, types.css]
 ---
 ```
@@ -65,10 +65,6 @@ html(lang="en-US")
   head
     meta(charset="UTF-8")
     meta(name="viewport", content="width=device-width, initial-scale=1.0")
-    meta(
-      name="viewport",
-      content="width=device-width, initial-scale=1, user-scalable=1, minimum-scale=1"
-    )
     meta(http-equiv="X-UA-Compatible", content="ie=edge")
 
     meta(
@@ -98,7 +94,7 @@ If you have the following yaml file:
 ```yaml
 header:
   h1: Lorem ipsum
-  h3: Exercitation aliquip ipsum commodo pariatur sint ea nulla tempor.
+  h3: Exercitation aliquip ipsum
 ```
 
 You can address the h1 as:
@@ -147,7 +143,7 @@ _globals.PAGE_SLUG_
 
 The slug of the page being compiled.
 
-**PATH_NAME **
+**PATH_NAME**  
 _globals.PATH_NAME_
 
 PATH_NAME is a global pug variable that describes the path name component of the URL. Useful for operations like determining URL etc.

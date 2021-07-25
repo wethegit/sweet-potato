@@ -1,12 +1,12 @@
 ---
 template: _page.pug
-title: "Sweet Potato: Model"
+title: "Sweet Potato: Data model"
 description: Sweet Potato is an opinionated and minimal static website generator, by We The Collective.
 order: 4
-name: Model
+name: Data model
 ---
 
-# Model
+# Data model
 
 The model - or runtime globals - system allows you to populate an object with variables statically, dynamically or drawn from an API at compile time and provide them to pug for use in template rendering.
 
