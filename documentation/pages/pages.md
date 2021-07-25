@@ -4,6 +4,7 @@ title: "Sweet Potato: Pages"
 description: Sweet Potato is an opinionated and minimal static website generator, by We The Collective.
 order: 2
 name: Pages
+css: [page.css, types.css]
 ---
 
 ## Pages
@@ -25,7 +26,68 @@ pages/
 
 For detail on how pug works, check out the [pug website](https://pugjs.org/api/getting-started.html)
 
-### TODO: Markdown explanation
+### Markdown pages
+
+In addition to pages created with pug, it is also possible to use markdown files to generate pages. If you choose to use markdown files, they need to be formatted in a particular way.
+
+At the top of every markdown page you create, there needs to be a block of variables included inside a variable block. This looks like this:
+
+```md
+---
+template: _page.pug
+---
+
+# Markdown page content goes here.
+```
+
+The only variable that's necessary in that block is the template variable. It should point to a pug file which is used to render the page. The data from the markdown file gets passed into the `page` variable of the supplied pug template. To render the content of the above markdown file, just reference `page.content` within the pug file.
+
+#### Extra variables
+
+In addition to the above, you can pass additional variables for the rendering pug page simply by including them within the template block. Consider the following:
+
+```md
+---
+template: _page.pug
+title: "Sweet Potato: Pages"
+description: Sweet Potato is an opinionated and minimal static website generator, by We The Collective.
+css: [page.css, types.css]
+---
+```
+
+This page could then be rendered as follows in the supplied `_page.pug`.
+
+```pug
+include ../components/navigation/_navigation.pug
+
+doctype html
+html(lang="en-US")
+  head
+    meta(charset="UTF-8")
+    meta(name="viewport", content="width=device-width, initial-scale=1.0")
+    meta(
+      name="viewport",
+      content="width=device-width, initial-scale=1, user-scalable=1, minimum-scale=1"
+    )
+    meta(http-equiv="X-UA-Compatible", content="ie=edge")
+
+    meta(
+      name="description",
+      content=`${page.description}`
+    )
+    title!=page.title
+
+    link(rel="stylesheet", href="./index.css")
+
+  body
+    header.grid
+      .main-content
+        h1!=page.title
+
+    main.grid
+      .main-content
+        !=page.content
+```
 
 ### Language and the page object
 

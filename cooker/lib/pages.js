@@ -217,6 +217,7 @@ function parseMarkdown(file, fileInfo) {
   const name = fileInfo.name;
   const dir = fileInfo.dir;
   const templateFile = path.join(fileInfo.dir, mdfile.data.template);
+  console.log(mdfile);
   const mdData = {
     ...mdfile,
     templateFile,
@@ -240,10 +241,6 @@ function parseMarkdown(file, fileInfo) {
       // Fill out the markdown data content
       // Convert the content using markdown.
       mdData.content = Markdown.render(mdfile.content);
-      // Transcribe the returned data components to the markdown data object
-      for (let t in mdfile.data) {
-        mdData[t] = mdfile.data[t];
-      }
       // Parse the template file
       mdData.templateInfo = path.parse(templateFile);
       // ... But set the name of the output to the name of the md file
