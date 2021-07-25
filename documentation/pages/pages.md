@@ -50,7 +50,7 @@ In addition to the above, you can pass additional variables for the rendering pu
 ---
 template: _page.pug
 title: "Sweet Potato: Pages"
-description: Sweet Potato
+description: Sweet Potato is an opinionated and minimal static website generator, by We The Collective.
 css: [page.css, types.css]
 ---
 ```

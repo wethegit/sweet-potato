@@ -12,7 +12,8 @@ body {
 
 .grid {
   display: grid;
-  grid-template-columns: 1.9fr 0.5fr;
+  // grid-template-columns: 1.9fr 0.5fr;
+  grid-template-columns: minmax(0, 1fr) 250px;
   grid-template-rows: 1fr;
   gap: 0px 10px;
   grid-template-areas: "main-content main-navigation";
@@ -31,4 +32,10 @@ header {
   background: #fff;
   position: sticky;
   top: 0;
+}
+
+pre {
+  display: block;
+  max-width: 100%;
+  overflow: auto;
 }
