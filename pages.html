@@ -10,7 +10,56 @@
       |-- index.pug
 </code></pre>
 <p>For detail on how pug works, check out the <a href="https://pugjs.org/api/getting-started.html">pug website</a></p>
-<h3>TODO: Markdown explanation</h3>
+<h3>Markdown pages</h3>
+<p>In addition to pages created with pug, it is also possible to use markdown files to generate pages. If you choose to use markdown files, they need to be formatted in a particular way.</p>
+<p>At the top of every markdown page you create, there needs to be a block of variables included inside a variable block. This looks like this:</p>
+<pre><code class="language-md">---
+template: _page.pug
+---
+
+# Markdown page content goes here.
+</code></pre>
+<p>The only variable that's necessary in that block is the template variable. It should point to a pug file which is used to render the page. The data from the markdown file gets passed into the <code>page</code> variable of the supplied pug template. To render the content of the above markdown file, just reference <code>page.content</code> within the pug file.</p>
+<h4>Extra variables</h4>
+<p>In addition to the above, you can pass additional variables for the rendering pug page simply by including them within the template block. Consider the following:</p>
+<pre><code class="language-md">---
+template: _page.pug
+title: &quot;Sweet Potato: Pages&quot;
+description: Sweet Potato is an opinionated and minimal static website generator, by We The Collective.
+css: [page.css, types.css]
+---
+</code></pre>
+<p>This page could then be rendered as follows in the supplied <code>_page.pug</code>.</p>
+<pre><code class="language-pug">include ../components/navigation/_navigation.pug
+
+doctype html
+html(lang=&quot;en-US&quot;)
+  head
+    meta(charset=&quot;UTF-8&quot;)
+    meta(name=&quot;viewport&quot;, content=&quot;width=device-width, initial-scale=1.0&quot;)
+    meta(
+      name=&quot;viewport&quot;,
+      content=&quot;width=device-width, initial-scale=1, user-scalable=1, minimum-scale=1&quot;
+    )
+    meta(http-equiv=&quot;X-UA-Compatible&quot;, content=&quot;ie=edge&quot;)
+
+    meta(
+      name=&quot;description&quot;,
+      content=`${page.description}`
+    )
+    title!=page.title
+
+    link(rel=&quot;stylesheet&quot;, href=&quot;./index.css&quot;)
+
+  body
+    header.grid
+      .main-content
+        h1!=page.title
+
+    main.grid
+      .main-content
+        !=page.content
+</code></pre>
 <h3>Language and the page object</h3>
 <p>Language information is included in the <code>page</code> object and reflects the structure included in your localisation yaml files.</p>
 <p>If you have the following yaml file:</p>
@@ -44,6 +93,10 @@
 <p><strong>PAGE_SLUG</strong><br>
 <em>globals.PAGE_SLUG</em></p>
 <p>The slug of the page being compiled.</p>
+<p>**PATH_NAME **
+<em>globals.PATH_NAME</em></p>
+<p>PATH_NAME is a global pug variable that describes the path name component of the URL. Useful for operations like determining URL etc.</p>
+<p>For example, the path name of this page would be <code>/sweet-potato/pages.html</code></p>
 <p><strong>RELATIVE_LOCALE_ROOT</strong><br>
 <em>globals.RELATIVE_LOCALE_ROOT</em></p>
 <p>The relative location of the locale root.</p>
