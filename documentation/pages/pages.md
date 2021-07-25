@@ -147,6 +147,13 @@ _globals.PAGE_SLUG_
 
 The slug of the page being compiled.
 
+**PATH_NAME **
+_globals.PATH_NAME_
+
+PATH_NAME is a global pug variable that describes the path name component of the URL. Useful for operations like determining URL etc.
+
+For example, the path name of this page would be `/sweet-potato/pages.html`
+
 **RELATIVE_LOCALE_ROOT**  
 _globals.RELATIVE_LOCALE_ROOT_
 

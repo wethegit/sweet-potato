@@ -24,6 +24,7 @@ In addition to values from `.env` files Pug templates and Javascript files will 
 - **globals.LOCALE_KEY =** locale key name
 - **globals.BREAKPOINTS =** breakpoints object set inside the config
 - **globals.PAGE_SLUG =** current page's slug
+- **globals.PATH_NAME =** describes the path name component of the URL
 
 #### Javascript
 
