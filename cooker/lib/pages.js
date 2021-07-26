@@ -9,7 +9,7 @@ const resolve = require("resolve");
 const matter = require("gray-matter");
 const Markdown = require("markdown-it")({ html: true });
 const { config, logger, getFiles } = require("@wethegit/sweet-potato-utensils");
-const pageFunctions = require("./page-functions/index");
+const pageFunctions = require("./page-functions/");
 
 // local imports
 const { getClientEnvironment } = require("./env.js");
