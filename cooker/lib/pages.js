@@ -9,6 +9,19 @@ const resolve = require("resolve");
 const matter = require("gray-matter");
 const Markdown = require("markdown-it")({ html: true });
 const { config, logger, getFiles } = require("@wethegit/sweet-potato-utensils");
+const pageFunctions = require("./page-functions/index");
+Object.filter = function (obj, predicate) {
+  let result = {},
+    key;
+
+  for (key in obj) {
+    if (obj.hasOwnProperty(key) && !predicate(obj[key])) {
+      result[key] = obj[key];
+    }
+  }
+
+  return result;
+};
 
 // local imports
 const { getClientEnvironment } = require("./env.js");
@@ -16,6 +29,20 @@ const { exists } = require("fs");
 
 // consts
 const env = getClientEnvironment();
+
+const objectFilter = function (obj, keys) {
+  let result = {},
+    key;
+
+  for (key in obj) {
+    const reducer = (a, c) => a === true || c === key;
+    if (obj.hasOwnProperty(key) && keys.reduce(reducer, false)) {
+      result[key] = obj[key];
+    }
+  }
+
+  return result;
+};
 
 /**
  * npmResolverPlugin
@@ -123,6 +150,7 @@ async function saveHtml(outputOptions, { source }) {
       globals,
       page: data.page,
       model: data.model,
+      functions: data.functions,
     });
   } catch (error) {
     logger.error([`Failed to render template`, prettyPathSource], error);
@@ -217,7 +245,6 @@ function parseMarkdown(file, fileInfo) {
   const name = fileInfo.name;
   const dir = fileInfo.dir;
   const templateFile = path.join(fileInfo.dir, mdfile.data.template);
-  console.log(mdfile);
   const mdData = {
     ...mdfile,
     templateFile,
@@ -322,6 +349,7 @@ async function assemblePageOptions(
       const globals = Object.assign({}, outputOptions.data.globals, mainYaml);
       const pageYaml = await getDataFromYaml(locale);
       const page = Object.assign({}, outputOptions.data.page, pageYaml);
+      const functions = outputOptions.data.functions;
 
       // render the html with the data and save it
       const options = {
@@ -336,6 +364,7 @@ async function assemblePageOptions(
           ...outputOptions.data,
           globals,
           page,
+          functions,
         },
       };
 
@@ -445,6 +474,9 @@ async function pages(file, localeFile) {
       path.join(templateInfo.dir, "data")
     );
 
+    // Get any included page functions
+    const functions = objectFilter(pageFunctions, config.OPTIONS.pagePlugins);
+
     const outputOptions = {
       destination: config.BUILD_DIRECTORY,
       filepath: pagePath,
@@ -453,6 +485,7 @@ async function pages(file, localeFile) {
       data: {
         model,
         page: mdData,
+        functions: functions,
       },
     };
 
