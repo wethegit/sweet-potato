@@ -10,18 +10,6 @@ const matter = require("gray-matter");
 const Markdown = require("markdown-it")({ html: true });
 const { config, logger, getFiles } = require("@wethegit/sweet-potato-utensils");
 const pageFunctions = require("./page-functions/index");
-Object.filter = function (obj, predicate) {
-  let result = {},
-    key;
-
-  for (key in obj) {
-    if (obj.hasOwnProperty(key) && !predicate(obj[key])) {
-      result[key] = obj[key];
-    }
-  }
-
-  return result;
-};
 
 // local imports
 const { getClientEnvironment } = require("./env.js");
@@ -34,6 +22,7 @@ const objectFilter = function (obj, keys) {
   let result = {},
     key;
 
+  if (!keys || keys.length <= 0) return result;
   for (key in obj) {
     const reducer = (a, c) => a === true || c === key;
     if (obj.hasOwnProperty(key) && keys.reduce(reducer, false)) {
