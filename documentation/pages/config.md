@@ -56,7 +56,7 @@ Name of the default locale and locale file.
 **Type:** `array`  
 **Default:** void
 
-Defines a list of plugin names to load. These plugins are named as per the available [Pug plugins]('./pug-plugins.html')
+Defines a list of plugin names to load. These plugins are named as per the available [Pug plugins](./pug-plugins.html)
 
 #### Example
 
