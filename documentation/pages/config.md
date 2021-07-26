@@ -14,6 +14,10 @@ Create a `sweet-potato.config.js` in the root of the project same level as `pack
 module.exports = {
   // Options
   buildDirectory: "dist/",
+  sitemap: true,
+  sourceDirectory: "src",
+  breakpoints,
+  pagePlugins,
 };
 ```
 
@@ -44,6 +48,21 @@ Name of the directory where the localization `.yaml` files live.
 **Default:** `default`  
 Name of the default locale and locale file.  
 🚨 Important to note that the default locale **won't** be placed inside a sub directory. For example, a `fr.yaml` locale output will be `/fr/index.html` whereas a `default.yaml` output will be `/index.html`.
+
+<div id="pagePlugins"></div>
+
+### pagePlugins
+
+**Type:** `array`  
+**Default:** void
+
+Defines a list of plugin names to load. These plugins are named as per the available [Pug plugins]('./pug-plugins.html')
+
+#### Example
+
+```js
+pagePlugins = ["imageSize"];
+```
 
 ### sassOptions
 
@@ -97,16 +116,3 @@ By default the following are ignored:
 - "node_modules"
 - ".git"
 - "build"
-
-### pagePlugins
-
-**Type:** `array`  
-**Default:** void
-
-Defines a list of plugin names to load. These plugins are named as per the available [Pug plugins]('./pug-plugins.html')
-
-#### Example
-
-```js
-pagePlugins = ["imageSize"];
-```

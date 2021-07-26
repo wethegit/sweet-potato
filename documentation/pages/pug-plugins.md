@@ -9,7 +9,7 @@ css: [page.css, types.css]
 
 ## Pug plugins
 
-Following are the avaiable pug plugins.
+Following are the avaiable pug plugins. To see how to include these plugins, see [plugin configuration](./config.html#pagePlugins)
 
 ### Image size
 
