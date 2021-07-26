@@ -3,6 +3,10 @@
 <pre><code class="language-js">module.exports = {
   // Options
   buildDirectory: &quot;dist/&quot;,
+  sitemap: true,
+  sourceDirectory: &quot;src&quot;,
+  breakpoints,
+  pagePlugins,
 };
 </code></pre>
 <h3>buildDirectory</h3>
@@ -23,6 +27,14 @@ Name of the directory where the localization <code>.yaml</code> files live.</p>
 <p><strong>Default:</strong> <code>default</code><br>
 Name of the default locale and locale file.<br>
 🚨 Important to note that the default locale <strong>won't</strong> be placed inside a sub directory. For example, a <code>fr.yaml</code> locale output will be <code>/fr/index.html</code> whereas a <code>default.yaml</code> output will be <code>/index.html</code>.</p>
+<div id="pagePlugins"></div>
+<h3>pagePlugins</h3>
+<p><strong>Type:</strong> <code>array</code><br>
+<strong>Default:</strong> void</p>
+<p>Defines a list of plugin names to load. These plugins are named as per the available <a href="'./pug-plugins.html'">Pug plugins</a></p>
+<h4>Example</h4>
+<pre><code class="language-js">pagePlugins = [&quot;imageSize&quot;];
+</code></pre>
 <h3>sassOptions</h3>
 <p><strong>Type:</strong> <code>function</code><br>
 <strong>Default:</strong> <code>null</code><br>
@@ -62,11 +74,4 @@ By default the following are ignored:</p>
 <li>&quot;.git&quot;</li>
 <li>&quot;build&quot;</li>
 </ul>
-<h3>pagePlugins</h3>
-<p><strong>Type:</strong> <code>array</code><br>
-<strong>Default:</strong> void</p>
-<p>Defines a list of plugin names to load. These plugins are named as per the available <a href="'./pug-plugins.html'">Pug plugins</a></p>
-<h4>Example</h4>
-<pre><code class="language-js">pagePlugins = [&quot;imageSize&quot;];
-</code></pre>
 </div><div class="main-navigation"><nav class="main-navigation"><ul class="nav main-navigation__nav"><li><a href="https://wethegit.github.io/sweet-potato//index.html">Introduction</a></li><li><a href="https://wethegit.github.io/sweet-potato//config.html">Configuration</a></li><li><a href="https://wethegit.github.io/sweet-potato//pages.html">Pages</a></li><li><a href="https://wethegit.github.io/sweet-potato//pug-plugins.html">Pug plugins</a></li><li><a href="https://wethegit.github.io/sweet-potato//language.html">Language and localisation</a></li><li><a href="https://wethegit.github.io/sweet-potato//model.html">Data model</a></li><li><a href="https://wethegit.github.io/sweet-potato//js.html">Javascript</a></li><li><a href="https://wethegit.github.io/sweet-potato//styles.html">Styles</a></li><li><a href="https://wethegit.github.io/sweet-potato//envs.html">Environments and environment variables</a></li><li><a href="https://wethegit.github.io/sweet-potato//statics.html">Static assets</a></li><li><a href="https://wethegit.github.io/sweet-potato//dev.html">Sweet Potato development</a></li></ul></nav></div></main><script type="module" src="./index.js"></script></body></html>
