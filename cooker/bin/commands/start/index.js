@@ -40,6 +40,23 @@ async function startCommand(options) {
   app.use(express.static(config.PUBLIC_DIRECTORY));
   app.get("*", requestListener);
 
+  const { networkInterfaces } = require("os");
+
+  const nets = networkInterfaces();
+  const netresults = Object.create(null); // Or just '{}', an empty object
+
+  for (const name of Object.keys(nets)) {
+    for (const net of nets[name]) {
+      // Skip over non-IPv4 and internal (i.e. 127.0.0.1) addresses
+      if (net.family === "IPv4" && !net.internal) {
+        if (!netresults[name]) {
+          netresults[name] = [];
+        }
+        netresults[name].push(net.address);
+      }
+    }
+  }
+
   // Create our server and socket instance
   server = http.createServer(app);
 
@@ -52,6 +69,9 @@ async function startCommand(options) {
     attempts++;
     // listen to hits on the host
     server.listen(port, host);
+    for (let i in netresults) {
+      if (netresults[i].length) server.listen(port, netresults[i][0]);
+    }
   };
 
   // watch for changes
@@ -89,6 +109,10 @@ async function startCommand(options) {
 
   server.on("listening", () => {
     logger.start(`Server is running on http://${host}:${port}`);
+    for (let i in netresults) {
+      if (netresults[i].length)
+        logger.start(`Also on http://${netresults[i][0]}:${port}`);
+    }
     logger.announce("Watching for changes...");
   });
 
