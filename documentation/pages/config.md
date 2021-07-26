@@ -97,3 +97,16 @@ By default the following are ignored:
 - "node_modules"
 - ".git"
 - "build"
+
+### pagePlugins
+
+**Type:** `array`  
+**Default:** void
+
+Defines a list of plugin names to load. These plugins are named as per the available [Pug plugins]('./pug-plugins.html')
+
+#### Example
+
+```js
+pagePlugins = ["imageSize"];
+```
