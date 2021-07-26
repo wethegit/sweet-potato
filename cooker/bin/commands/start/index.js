@@ -33,6 +33,7 @@ async function startCommand(options) {
 
   let app;
   let server;
+  const servers = [];
 
   // Start express app
   app = express();
@@ -57,8 +58,15 @@ async function startCommand(options) {
     }
   }
 
-  // Create our server and socket instance
-  server = http.createServer(app);
+  // Create our servers and socket instance
+  servers.push(http.createServer(app));
+  for (let i in netresults) {
+    if (netresults[i].length) {
+      const s = http.createServer(app);
+      servers.push(s);
+    }
+  }
+  // server = http.createServer(app);
 
   const io = require("socket.io")(server);
   const host = options.host || "localhost";
@@ -68,9 +76,13 @@ async function startCommand(options) {
   const start = () => {
     attempts++;
     // listen to hits on the host
-    server.listen(port, host);
-    for (let i in netresults) {
-      if (netresults[i].length) server.listen(port, netresults[i][0]);
+    servers[0].listen(port, host);
+    let i = 1;
+    for (let name in netresults) {
+      if (netresults[name].length) {
+        const s = servers[i++];
+        s.listen(port, netresults[name][0]);
+      }
     }
   };
 
@@ -85,35 +97,37 @@ async function startCommand(options) {
     }, 300);
   });
 
-  server.on("error", (err) => {
-    server.close();
+  servers.forEach((server) => {
+    server.on("error", (err) => {
+      server.close();
 
-    // Check if port is already in use
-    if (err.code === "EADDRINUSE" && attempts <= maxAttempts) {
-      logger.announce(
-        `Port ${port} already in use, trying another (attempt ${attempts} of ${maxAttempts}) ...`
-      );
-      port++;
-      // try again on another port
-      start(port, host);
-    } else {
-      if (err.code === "EADDRINUSE")
-        logger.error(
-          `Unable to find a free port after ${maxAttempts} attempts.\nTry setting your own port using the --port flag.`
+      // Check if port is already in use
+      if (err.code === "EADDRINUSE" && attempts <= maxAttempts) {
+        logger.announce(
+          `Port ${port} already in use, trying another (attempt ${attempts} of ${maxAttempts}) ...`
         );
-      else logger.error("Server error", err);
+        port++;
+        // try again on another port
+        start(port, host);
+      } else {
+        if (err.code === "EADDRINUSE")
+          logger.error(
+            `Unable to find a free port after ${maxAttempts} attempts.\nTry setting your own port using the --port flag.`
+          );
+        else logger.error("Server error", err);
 
-      process.exit(1);
-    }
-  });
+        process.exit(1);
+      }
+    });
 
-  server.on("listening", () => {
-    logger.start(`Server is running on http://${host}:${port}`);
-    for (let i in netresults) {
-      if (netresults[i].length)
-        logger.start(`Also on http://${netresults[i][0]}:${port}`);
-    }
-    logger.announce("Watching for changes...");
+    server.on("listening", () => {
+      logger.start(`Server is running on http://${host}:${port}`);
+      for (let i in netresults) {
+        if (netresults[i].length)
+          logger.start(`Also on http://${netresults[i][0]}:${port}`);
+      }
+      logger.announce("Watching for changes...");
+    });
   });
 
   start(port, host);
