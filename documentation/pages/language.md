@@ -14,17 +14,17 @@ Language is provided to a document via yaml files in the locales folder of each 
 
 ```
 pages/
-  |-- locales/
-      |-- default.yml
-      |-- en.yml
-      |-- fr.yml
-  |-- index.pug
-  |-- about/
-      |-- index.pug
-      |-- locales/
-          |-- default.yml
-          |-- en.yml
-          |-- fr.yml
+├── locales/
+│   ├── default.yml
+│   ├── en.yml
+│   └── fr.yml
+├── index.pug
+└── about/
+    ├── index.pug
+    └── locales/
+        ├── default.yml
+        ├── en.yml
+        └── fr.yml
 
 ```
 
