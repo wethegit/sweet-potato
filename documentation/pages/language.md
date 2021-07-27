@@ -101,3 +101,20 @@ header.main-header
 ```
 
 As you can see, all of the page's YAML data is available to the Pug template via the Pug variable: page.
+
+### Language globals
+
+In addition to page specific language assets, there are also globally available language variables. These are edited in the `src/locales` folder and are availabele to pug under the `globals` object.
+
+Consider the following file structure
+
+```
+src/
+├── locales/
+│   ├── default.yaml
+│   └── fr.yaml
+└── pages/
+    └── index.pug
+```
+
+The variables defined in the the top-level locales files will be globally available to the relevant locales.
