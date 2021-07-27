@@ -49,23 +49,23 @@ Here's a full example of file structure, with French and Spanish localizations f
 
 ```
 pages/
-  |-- index.pug
-  |-- locales/
-      |-- default.yaml
-      |-- fr.yaml
-      |-- es.yaml
-  |-- about/
-      |-- index.pug
-      |-- locales/
-          |-- default.yaml
-          |-- fr.yaml
-          |-- es.yaml
-  |-- contact/
-      |-- index.pug
-      |-- locales/
-          |-- default.yaml
-          |-- fr.yaml
-          |-- es.yaml
+├── index.pug
+├── locales/
+│   ├── default.yaml
+│   ├── fr.yaml
+│   ├── es.yaml
+├── about/
+│   ├── index.pug
+│   └── locales/
+│       ├── default.yaml
+│       ├── fr.yaml
+│       ├── es.yaml
+└── contact/
+    ├── index.pug
+    └── locales/
+        ├── default.yaml
+        ├── fr.yaml
+        └── es.yaml
 ```
 
 ##### Example
