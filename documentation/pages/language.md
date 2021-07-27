@@ -118,3 +118,24 @@ src/
 ```
 
 The variables defined in the the top-level locales files will be globally available to the relevant locales.
+
+##### Example
+
+Let's say your `src/locales/default.yaml` looked like this…
+
+```yaml
+# src/locales/default.yaml
+
+main_nav:
+  title: Main site navigation
+```
+
+You could then access this data from within the `pages/index.pug` file, by doing:
+
+```pug
+//- pages/index.pug
+
+header.main-header
+  nav
+    h2= globals.main_nav.title
+```
