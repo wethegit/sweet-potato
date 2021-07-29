@@ -9,7 +9,6 @@ const resolve = require("resolve");
 const matter = require("gray-matter");
 const Markdown = require("markdown-it")({ html: true });
 const { config, logger, getFiles } = require("@wethegit/sweet-potato-utensils");
-const pageFunctions = require("./page-functions/");
 
 // local imports
 const { getClientEnvironment } = require("./env.js");
@@ -17,37 +16,6 @@ const { exists } = require("fs");
 
 // consts
 const env = getClientEnvironment();
-
-/**
- * The object filter is a general function that's used to filter an object based on a set of provided keys.
- *
- * ## Example:
- * ```
- * const myFunctions = {
- *   a: 'x',
- *   b: 'y'
- * }
- * const output = objectFilter(myFunctions, ['b', 'c']);
- * console.log(output); // {b: 'y'}
- * ```
- * @param {object} obj - The object to filter
- * @param {array} keys - The keys to filter by
- * @returns
- */
-const objectFilter = function (obj, keys) {
-  let result = {},
-    key;
-
-  if (!keys || keys.length <= 0) return result;
-  for (key in obj) {
-    const reducer = (a, c) => a === true || c === key;
-    if (obj.hasOwnProperty(key) && keys.reduce(reducer, false)) {
-      result[key] = obj[key];
-    }
-  }
-
-  return result;
-};
 
 /**
  * npmResolverPlugin
@@ -155,7 +123,7 @@ async function saveHtml(outputOptions, { source }) {
       globals,
       page: data.page,
       model: data.model,
-      functions: data.functions,
+      pagePlugins: data.pagePlugins,
     });
   } catch (error) {
     logger.error([`Failed to render template`, prettyPathSource], error);
@@ -354,7 +322,7 @@ async function assemblePageOptions(
       const globals = Object.assign({}, outputOptions.data.globals, mainYaml);
       const pageYaml = await getDataFromYaml(locale);
       const page = Object.assign({}, outputOptions.data.page, pageYaml);
-      const functions = outputOptions.data.functions;
+      const pagePlugins = outputOptions.data.pagePlugins;
 
       // render the html with the data and save it
       const options = {
@@ -369,7 +337,7 @@ async function assemblePageOptions(
           ...outputOptions.data,
           globals,
           page,
-          functions,
+          pagePlugins,
         },
       };
 
@@ -480,7 +448,8 @@ async function pages(file, localeFile) {
     );
 
     // Get any included page functions
-    const functions = objectFilter(pageFunctions, config.OPTIONS.pagePlugins);
+    const pagePlugins = config.OPTIONS.pagePlugins;
+    // TO DO We shoudl probably include a verification step here to ensure that provided plugins are legitimate and don't cause any issues
 
     const outputOptions = {
       destination: config.BUILD_DIRECTORY,
@@ -490,7 +459,7 @@ async function pages(file, localeFile) {
       data: {
         model,
         page: mdData,
-        functions: functions,
+        pagePlugins: pagePlugins,
       },
     };
 
