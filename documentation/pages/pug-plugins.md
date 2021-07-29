@@ -13,9 +13,30 @@ Following are the avaiable pug plugins. To see how to include these plugins, see
 
 ### Image size
 
+_@wethegit/sweet-potato-cooker/page-plugins_  
 The image size plugin expects a path to an image on the files system and returns an object containing its width and height in pixels.
 
+#### Options
+
+None.
+
 #### Example
+
+**Sweet potato config**
+
+```js
+const { imageSize } = require("@wethegit/sweet-potato-cooker/page-plugins");
+module.exports = {
+  sitemap: true,
+  sourceDirectory: "src",
+  breakpoints,
+  pagePlugins: {
+    imageSize: imageSize(),
+  },
+};
+```
+
+**Usage**
 
 ```pug
   - const { width, height } = functions.imageSize('./src/public/assets/img/image.png')

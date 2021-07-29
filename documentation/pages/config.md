@@ -53,15 +53,21 @@ Name of the default locale and locale file.
 
 ### pagePlugins
 
-**Type:** `array`  
+**Type:** `object`  
 **Default:** void
 
-Defines a list of plugin names to load. These plugins are named as per the available [Pug plugins](./pug-plugins.html)
+Defines a series of plugins to provide to the pug process. These functions are intended to be simple in/out methods that mutate, transform or query information based on inputs. They don't have a fixed signature, but can be provided either using the factory plugins provided by the sweet potato cooker (TO DO TBC) or your local installation.
 
 #### Example
 
 ```js
-pagePlugins = ["imageSize"];
+const { imageSize } = require("@wethegit/sweet-potato-cooker/page-plugins");
+
+...
+
+pagePlugins = {
+  imageSize: imageSize(),
+};
 ```
 
 ### sassOptions
