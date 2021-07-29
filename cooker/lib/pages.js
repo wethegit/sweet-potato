@@ -18,6 +18,22 @@ const { exists } = require("fs");
 // consts
 const env = getClientEnvironment();
 
+/**
+ * The object filter is a general function that's used to filter an object based on a set of provided keys.
+ *
+ * ## Example:
+ * ```
+ * const myFunctions = {
+ *   a: 'x',
+ *   b: 'y'
+ * }
+ * const output = objectFilter(myFunctions, ['b', 'c']);
+ * console.log(output); // {b: 'y'}
+ * ```
+ * @param {object} obj - The object to filter
+ * @param {array} keys - The keys to filter by
+ * @returns
+ */
 const objectFilter = function (obj, keys) {
   let result = {},
     key;
