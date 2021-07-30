@@ -62,7 +62,6 @@ Defines a series of plugins to provide to the pug process. These functions are i
 
 ```js
 const { imageSize } = require("@wethegit/sweet-potato-cooker/page-plugins");
-
 ...
 
 pagePlugins = {
