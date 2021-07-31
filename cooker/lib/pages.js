@@ -123,6 +123,7 @@ async function saveHtml(outputOptions, { source }) {
       globals,
       page: data.page,
       model: data.model,
+      pagePlugins: data.pagePlugins,
     });
   } catch (error) {
     logger.error([`Failed to render template`, prettyPathSource], error);
@@ -217,7 +218,6 @@ function parseMarkdown(file, fileInfo) {
   const name = fileInfo.name;
   const dir = fileInfo.dir;
   const templateFile = path.join(fileInfo.dir, mdfile.data.template);
-  console.log(mdfile);
   const mdData = {
     ...mdfile,
     templateFile,
@@ -322,6 +322,7 @@ async function assemblePageOptions(
       const globals = Object.assign({}, outputOptions.data.globals, mainYaml);
       const pageYaml = await getDataFromYaml(locale);
       const page = Object.assign({}, outputOptions.data.page, pageYaml);
+      const pagePlugins = outputOptions.data.pagePlugins;
 
       // render the html with the data and save it
       const options = {
@@ -336,6 +337,7 @@ async function assemblePageOptions(
           ...outputOptions.data,
           globals,
           page,
+          pagePlugins,
         },
       };
 
@@ -445,6 +447,10 @@ async function pages(file, localeFile) {
       path.join(templateInfo.dir, "data")
     );
 
+    // Get any included page functions
+    const pagePlugins = config.OPTIONS.pagePlugins;
+    // TO DO We shoudl probably include a verification step here to ensure that provided plugins are legitimate and don't cause any issues
+
     const outputOptions = {
       destination: config.BUILD_DIRECTORY,
       filepath: pagePath,
@@ -453,6 +459,7 @@ async function pages(file, localeFile) {
       data: {
         model,
         page: mdData,
+        pagePlugins: pagePlugins,
       },
     };
 

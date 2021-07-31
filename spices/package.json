@@ -1,0 +1,28 @@
+{
+  "name": "@wethegit/sweet-potato-spices",
+  "version": "0.0.1",
+  "description": "Spices for the cooker. Functions for use as plugins for the page process (for now).",
+  "main": "bin/index.js",
+  "bin": {
+    "sweet-potato-spices": "bin/index.js"
+  },
+  "engines": {
+    "node": ">= 14.0.0 < 16"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:wethegit/sweet-potato.git",
+    "directory": "spices"
+  },
+  "dependencies": {
+    "fs-extra": "^9.1.0",
+    "gray-matter": "^4.0.3",
+    "image-size": "^1.0.0",
+    "js-yaml": "^4.0.0",
+    "markdown-it": "^12.1.0",
+    "mime-types": "^2.1.29"
+  }
+}
