@@ -29,11 +29,16 @@ Name of the default locale and locale file.<br>
 🚨 Important to note that the default locale <strong>won't</strong> be placed inside a sub directory. For example, a <code>fr.yaml</code> locale output will be <code>/fr/index.html</code> whereas a <code>default.yaml</code> output will be <code>/index.html</code>.</p>
 <div id="pagePlugins"></div>
 <h3>pagePlugins</h3>
-<p><strong>Type:</strong> <code>array</code><br>
+<p><strong>Type:</strong> <code>object</code><br>
 <strong>Default:</strong> void</p>
-<p>Defines a list of plugin names to load. These plugins are named as per the available <a href="./pug-plugins.html">Pug plugins</a></p>
+<p>Defines a series of plugins to provide to the pug process. These functions are intended to be simple in/out methods that mutate, transform or query information based on inputs. They don't have a fixed signature, but can be provided either using the factory plugins provided by the sweet potato cooker (TO DO TBC) or your local installation.</p>
 <h4>Example</h4>
-<pre><code class="language-js">pagePlugins = [&quot;imageSize&quot;];
+<pre><code class="language-js">const { imageSize } = require(&quot;@wethegit/sweet-potato-cooker/page-plugins&quot;);
+...
+
+pagePlugins = {
+  imageSize: imageSize(),
+};
 </code></pre>
 <h3>sassOptions</h3>
 <p><strong>Type:</strong> <code>function</code><br>
