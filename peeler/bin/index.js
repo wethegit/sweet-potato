@@ -16,6 +16,8 @@ const cleanProject = require("../lib/cleanProject");
 const installProcess = require("../lib/installProcess");
 const pkg = require("../package.json");
 
+const exitWithError = require("../lib/exitWithError");
+
 const {
   template,
   useYarn,
