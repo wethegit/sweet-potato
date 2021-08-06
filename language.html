@@ -2,17 +2,17 @@
 <h3>Language</h3>
 <p>Language is provided to a document via yaml files in the locales folder of each specific page. If you had a website with a homepage and about page in English and French, its structure might look something like this:</p>
 <pre><code>pages/
-├── locales/
-│   ├── default.yml
-│   ├── en.yml
-│   └── fr.yml
-├── index.pug
-└── about/
-    ├── index.pug
-    └── locales/
-        ├── default.yml
-        ├── en.yml
-        └── fr.yml
+  |-- locales/
+      |-- default.yml
+      |-- en.yml
+      |-- fr.yml
+  |-- index.pug
+  |-- about/
+      |-- index.pug
+      |-- locales/
+          |-- default.yml
+          |-- en.yml
+          |-- fr.yml
 
 </code></pre>
 <p>One important note here is that localised language files <em>extend</em> the default. So if you were to provide a language asset in default and not in en, then the default will be present in en pages.</p>
@@ -26,23 +26,23 @@
 For example, the file that lives at pages/about/locales/fr.yaml would have a final URL path of fr/about/.</p>
 <p>Here's a full example of file structure, with French and Spanish localizations for each page:</p>
 <pre><code>pages/
-├── index.pug
-├── locales/
-│   ├── default.yaml
-│   ├── fr.yaml
-│   ├── es.yaml
-├── about/
-│   ├── index.pug
-│   └── locales/
-│       ├── default.yaml
-│       ├── fr.yaml
-│       ├── es.yaml
-└── contact/
-    ├── index.pug
-    └── locales/
-        ├── default.yaml
-        ├── fr.yaml
-        └── es.yaml
+  |-- index.pug
+  |-- locales/
+      |-- default.yaml
+      |-- fr.yaml
+      |-- es.yaml
+  |-- about/
+      |-- index.pug
+      |-- locales/
+          |-- default.yaml
+          |-- fr.yaml
+          |-- es.yaml
+  |-- contact/
+      |-- index.pug
+      |-- locales/
+          |-- default.yaml
+          |-- fr.yaml
+          |-- es.yaml
 </code></pre>
 <h5>Example</h5>
 <p>Let's say your pages/locales/default.yaml looked like this…</p>
@@ -67,29 +67,4 @@ header.main-header
   p= page.banner.body
 </code></pre>
 <p>As you can see, all of the page's YAML data is available to the Pug template via the Pug variable: page.</p>
-<h3>Language globals</h3>
-<p>In addition to page specific language assets, there are also globally available language variables. These are edited in the <code>src/locales</code> folder and are availabele to pug under the <code>globals</code> object.</p>
-<p>Consider the following file structure</p>
-<pre><code>src/
-├── locales/
-│   ├── default.yaml
-│   └── fr.yaml
-└── pages/
-    └── index.pug
-</code></pre>
-<p>The variables defined in the the top-level locales files will be globally available to the relevant locales.</p>
-<h5>Example</h5>
-<p>Let's say your <code>src/locales/default.yaml</code> looked like this…</p>
-<pre><code class="language-yaml"># src/locales/default.yaml
-
-main_nav:
-  title: Main site navigation
-</code></pre>
-<p>You could then access this data from within the <code>pages/index.pug</code> file, by doing:</p>
-<pre><code class="language-pug">//- pages/index.pug
-
-header.main-header
-  nav
-    h2= globals.main_nav.title
-</code></pre>
-</div><div class="main-navigation"><nav class="main-navigation"><ul class="nav main-navigation__nav"><li><a href="https://wethegit.github.io/sweet-potato//index.html">Introduction</a></li><li><a href="https://wethegit.github.io/sweet-potato//config.html">Configuration</a></li><li><a href="https://wethegit.github.io/sweet-potato//pages.html">Pages</a></li><li><a href="https://wethegit.github.io/sweet-potato//pug-plugins.html">Pug plugins</a></li><li><a href="https://wethegit.github.io/sweet-potato//language.html">Language and localisation</a></li><li><a href="https://wethegit.github.io/sweet-potato//model.html">Data model</a></li><li><a href="https://wethegit.github.io/sweet-potato//js.html">Javascript</a></li><li><a href="https://wethegit.github.io/sweet-potato//styles.html">Styles</a></li><li><a href="https://wethegit.github.io/sweet-potato//envs.html">Environments and environment variables</a></li><li><a href="https://wethegit.github.io/sweet-potato//statics.html">Static assets</a></li><li><a href="https://wethegit.github.io/sweet-potato//dev.html">Sweet Potato development</a></li></ul></nav></div></main><script type="module" src="./index.js"></script></body></html>
+</div><div class="main-navigation"><nav class="main-navigation"><ul class="nav main-navigation__nav"><li><a href="https://wethegit.github.io/sweet-potato//index.html">Introduction</a></li><li><a href="https://wethegit.github.io/sweet-potato//config.html">Configuration</a></li><li><a href="https://wethegit.github.io/sweet-potato//pages.html">Pages</a></li><li><a href="https://wethegit.github.io/sweet-potato//language.html">Language and localisation</a></li><li><a href="https://wethegit.github.io/sweet-potato//model.html">Data model</a></li><li><a href="https://wethegit.github.io/sweet-potato//js.html">Javascript</a></li><li><a href="https://wethegit.github.io/sweet-potato//styles.html">Styles</a></li><li><a href="https://wethegit.github.io/sweet-potato//envs.html">Environments and environment variables</a></li><li><a href="https://wethegit.github.io/sweet-potato//statics.html">Static assets</a></li><li><a href="https://wethegit.github.io/sweet-potato//dev.html">Sweet Potato development</a></li></ul></nav></div></main><script type="module" src="./index.js"></script></body></html>
