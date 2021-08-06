@@ -81,6 +81,7 @@ function npmResolverPlugin() {
 async function saveHtml(outputOptions, { source }) {
   const { destination, filepath, filename, pugFunction, data, locale } =
     outputOptions;
+
   // page dest
   const dest = path.join(destination, filepath);
 
@@ -95,6 +96,7 @@ async function saveHtml(outputOptions, { source }) {
     RELATIVE_ROOT: relroot ? relroot : ".",
     BREAKPOINTS: config.OPTIONS.breakpoints || {},
     PAGE_SLUG: slug,
+    LOCALE_SLUG: locale,
     ...data.globals,
   };
 
