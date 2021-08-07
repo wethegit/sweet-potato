@@ -14,6 +14,10 @@ Create a `sweet-potato.config.js` in the root of the project same level as `pack
 module.exports = {
   // Options
   buildDirectory: "dist/",
+  sitemap: true,
+  sourceDirectory: "src",
+  breakpoints,
+  pagePlugins,
 };
 ```
 
@@ -44,6 +48,26 @@ Name of the directory where the localization `.yaml` files live.
 **Default:** `default`  
 Name of the default locale and locale file.  
 🚨 Important to note that the default locale **won't** be placed inside a sub directory. For example, a `fr.yaml` locale output will be `/fr/index.html` whereas a `default.yaml` output will be `/index.html`.
+
+<div id="pagePlugins"></div>
+
+### pagePlugins
+
+**Type:** `object`  
+**Default:** void
+
+Defines a series of plugins to provide to the pug process. These functions are intended to be simple in/out methods that mutate, transform or query information based on inputs. They don't have a fixed signature, but can be provided either using the factory plugins provided by the sweet potato cooker (TO DO TBC) or your local installation.
+
+#### Example
+
+```js
+const { imageSize } = require("@wethegit/sweet-potato-cooker/page-plugins");
+...
+
+pagePlugins = {
+  imageSize: imageSize(),
+};
+```
 
 ### sassOptions
 

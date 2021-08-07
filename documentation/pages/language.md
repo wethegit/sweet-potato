@@ -14,17 +14,17 @@ Language is provided to a document via yaml files in the locales folder of each 
 
 ```
 pages/
-  |-- locales/
-      |-- default.yml
-      |-- en.yml
-      |-- fr.yml
-  |-- index.pug
-  |-- about/
-      |-- index.pug
-      |-- locales/
-          |-- default.yml
-          |-- en.yml
-          |-- fr.yml
+├── locales/
+│   ├── default.yml
+│   ├── en.yml
+│   └── fr.yml
+├── index.pug
+└── about/
+    ├── index.pug
+    └── locales/
+        ├── default.yml
+        ├── en.yml
+        └── fr.yml
 
 ```
 
@@ -49,23 +49,23 @@ Here's a full example of file structure, with French and Spanish localizations f
 
 ```
 pages/
-  |-- index.pug
-  |-- locales/
-      |-- default.yaml
-      |-- fr.yaml
-      |-- es.yaml
-  |-- about/
-      |-- index.pug
-      |-- locales/
-          |-- default.yaml
-          |-- fr.yaml
-          |-- es.yaml
-  |-- contact/
-      |-- index.pug
-      |-- locales/
-          |-- default.yaml
-          |-- fr.yaml
-          |-- es.yaml
+├── index.pug
+├── locales/
+│   ├── default.yaml
+│   ├── fr.yaml
+│   ├── es.yaml
+├── about/
+│   ├── index.pug
+│   └── locales/
+│       ├── default.yaml
+│       ├── fr.yaml
+│       ├── es.yaml
+└── contact/
+    ├── index.pug
+    └── locales/
+        ├── default.yaml
+        ├── fr.yaml
+        └── es.yaml
 ```
 
 ##### Example
@@ -101,3 +101,41 @@ header.main-header
 ```
 
 As you can see, all of the page's YAML data is available to the Pug template via the Pug variable: page.
+
+### Language globals
+
+In addition to page specific language assets, there are also globally available language variables. These are edited in the `src/locales` folder and are availabele to pug under the `globals` object.
+
+Consider the following file structure
+
+```
+src/
+├── locales/
+│   ├── default.yaml
+│   └── fr.yaml
+└── pages/
+    └── index.pug
+```
+
+The variables defined in the the top-level locales files will be globally available to the relevant locales.
+
+##### Example
+
+Let's say your `src/locales/default.yaml` looked like this…
+
+```yaml
+# src/locales/default.yaml
+
+main_nav:
+  title: Main site navigation
+```
+
+You could then access this data from within the `pages/index.pug` file, by doing:
+
+```pug
+//- pages/index.pug
+
+header.main-header
+  nav
+    h2= globals.main_nav.title
+```

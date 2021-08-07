@@ -17,7 +17,9 @@ module.exports = async function getRepoInfo(url) {
     );
   }
 
-  const [, username, name, t, _branch] = repoUrl.pathname.split("/");
+  const [, username, name, t, _branch] = repoUrl.pathname.match(
+    /^\/(\w+)\/(\w+)\/(\w+)\/(.+)/
+  );
 
   return {
     username,
