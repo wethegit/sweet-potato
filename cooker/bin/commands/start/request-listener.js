@@ -1,7 +1,8 @@
 const path = require("path");
 const fse = require("fs-extra");
 const mime = require("mime-types");
-const { config, logger } = require("@wethegit/sweet-potato-utensils");
+const matter = require("gray-matter");
+const { config, logger, getFiles } = require("@wethegit/sweet-potato-utensils");
 
 const errorTemplate = fse.readFileSync(path.join(__dirname, "error.html"), {
   encoding: "utf-8",
@@ -307,7 +308,8 @@ async function requestListener(req, res) {
       // we could be dealing with a locale
       // which we have to find the path to
 
-      const { dir } = path.parse(ext ? pathname : `${pathname}index.html`);
+      const fullPath = ext ? pathname : `${pathname}index.html`;
+      const { dir } = path.parse(fullPath);
       const [r, potentialLocale, ...pagePath] = dir.split("/");
       const pageLocalePath = path.join(
         config.PAGES_DIRECTORY,
@@ -354,12 +356,32 @@ async function requestListener(req, res) {
         // Try with an MD file
         // If this page has an md file associated with it instead of a pug file, use that.
         file = path.join(pageLocalePath, "..", pageName.replace("html", "md"));
+      }
 
-        // Finally, if this doesn't exist, throw an error
-        if (!fse.pathExistsSync(file)) {
-          _doesntExist(res, file);
-          break;
+      // If it still doesn't exist, this might be a md file with a path pointing from elsewhere
+      if (!fse.pathExistsSync(file)) {
+        const mdFiles = await getFiles(
+          path.join(config.PAGES_DIRECTORY, "**", "?(*.md)")
+        );
+
+        // Loop through the discovererd files, parse them using matter and return a file
+        // If its path variable equals this path
+        for(i in mdFiles) {
+          const mdfile = matter.read(mdFiles[i]);
+          
+          // Because this process has the potential to become expensive, we escape for the first found file.
+          // TODO: find a quicker way to do this.
+          if (mdfile.data.path === fullPath) {
+            file = mdFiles[i];
+            break;
+          }
         }
+      }
+
+      // Finally, if this doesn't exist, throw an error
+      if (!fse.pathExistsSync(file)) {
+        _doesntExist(res, file);
+        break;
       }
 
       try {

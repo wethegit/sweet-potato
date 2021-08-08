@@ -369,6 +369,8 @@ async function pages(file, localeFile) {
   let pugFiles;
   let singleLocale;
 
+  console.log(file, localeFile)
+
   if (file) pugFiles = [file];
 
   // Assemble the locale file information
