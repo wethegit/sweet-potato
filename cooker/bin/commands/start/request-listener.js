@@ -371,7 +371,7 @@ async function requestListener(req, res) {
           
           // Because this process has the potential to become expensive, we escape for the first found file.
           // TODO: find a quicker way to do this.
-          if (mdfile.data.path === fullPath) {
+          if (mdfile.data.savePath === fullPath) {
             file = mdFiles[i];
             break;
           }

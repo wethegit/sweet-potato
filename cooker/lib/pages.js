@@ -79,8 +79,15 @@ function npmResolverPlugin() {
  * @returns {object} File data
  */
 async function saveHtml(outputOptions, { source }) {
-  const { destination, filepath, filename, pugFunction, data, locale } =
-    outputOptions;
+  const {
+    destination,
+    filepath,
+    filename,
+    pugFunction,
+    data,
+    locale,
+    explicitOut
+  } = outputOptions;
 
   // page dest
   const dest = path.join(destination, filepath);
@@ -108,7 +115,7 @@ async function saveHtml(outputOptions, { source }) {
   }
 
   // final destination
-  const outFile = path.join(dest, filename);
+  const outFile = explicitOut ? path.join(destination, explicitOut) : path.join(dest, filename); // If we have an explicit out file, save there. Otherwise construct it from the destination
   const prettyPathSource = path.relative(config.CWD, source);
   const prettyPathOut = path.relative(config.CWD, outFile);
 
@@ -369,8 +376,6 @@ async function pages(file, localeFile) {
   let pugFiles;
   let singleLocale;
 
-  console.log(file, localeFile)
-
   if (file) pugFiles = [file];
 
   // Assemble the locale file information
@@ -407,6 +412,10 @@ async function pages(file, localeFile) {
     // Container variable for markdown data
     let mdData;
 
+    // Explicit save path
+    // Currently only used for md files, but could be extended in future for other use cases
+    let explicitOut = null;
+
     // if file starts with underscore, we ignore it, expected as standard 👍
     if (templateInfo.name.charAt(0) == "_") continue;
 
@@ -415,6 +424,8 @@ async function pages(file, localeFile) {
     if (templateInfo.ext.toLowerCase() === ".md") {
       try {
         mdData = parseMarkdown(file, templateInfo);
+
+        if (mdData.data.savePath) explicitOut = mdData.data.savePath;
 
         // Update the template info and file for rendering
         // The idea here is that if we're rendering a markdown file to a page then the markdown file will provide information on the template it needs to render, so we're:
@@ -456,6 +467,7 @@ async function pages(file, localeFile) {
     // TO DO We shoudl probably include a verification step here to ensure that provided plugins are legitimate and don't cause any issues
 
     const outputOptions = {
+      explicitOut: explicitOut,
       destination: config.BUILD_DIRECTORY,
       filepath: pagePath,
       filename: `${templateInfo.name}.html`,
