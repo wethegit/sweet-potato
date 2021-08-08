@@ -40,7 +40,24 @@ template: _page.pug
 # Markdown page content goes here.
 ```
 
-The only variable that's necessary in that block is the template variable. It should point to a pug file which is used to render the page. The data from the markdown file gets passed into the `page` variable of the supplied pug template. To render the content of the above markdown file, just reference `page.content` within the pug file.
+#### Supported variables
+The following variables are supported by Sweet Potato out of the box and effect functionality. Additional variables are allowed and will be passed along to the page object for optional use by the pug template.
+
+##### template (required)
+
+The template variable is the relative path (from the md file) to the pug template to be used to render the md file. The data from the markdown file gets passed into the `page` variable of the supplied pug template. To render the content of the above markdown file, just reference `page.content` within the pug file.
+
+##### savePath **(optional)**
+The savePath variable provides the option to save the html file to a location other than that as implicitly represented by the md file's path. This allows you to organise your md files as you wish. For example, the following md file (/pages/news-items/news-item-1.md):
+
+```md
+---
+template: ../news/_news.pug
+savePath: /news/news-item-1.html
+---
+```
+
+Will save the output HTML to a path at `/news/`
 
 #### Extra variables
 
