@@ -445,8 +445,8 @@ async function pages(file, localeFile) {
 
     // Get data from a model, if available
     const model = await getDataFromDataInclude(
-      path.join(templateInfo.dir, "data", "index.js"),
-      path.join(templateInfo.dir, "data")
+      path.join(templateInfo.dir, "_data", "index.js"),
+      path.join(templateInfo.dir, "_data")
     );
 
     // Get any included page functions

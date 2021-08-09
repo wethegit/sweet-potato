@@ -46,7 +46,7 @@ async function javascripts(file) {
     const fileInfo = path.parse(file);
 
     // Continue if we're working in a data folder
-    if (fileInfo.dir.split("/").pop() === 'data') continue;
+    if (fileInfo.dir.split("/").pop() === '_data') continue;
 
     // build dest path
     const DEST = path.join(
