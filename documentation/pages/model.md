@@ -16,7 +16,7 @@ The model itself is just a node js file that's consumed at compile time. This fi
 
 ## Usage
 
-To compile data for this object you would create a data folder relative to the page you wanted to apply it to. For example if you wanted to compile some news data, your folder structure might look like this:
+To compile data for this object you would create a `_data` folder relative to the page you wanted to apply it to. For example if you wanted to compile some news data, your folder structure might look like this:
 
 ```
 pages/
@@ -24,7 +24,7 @@ pages/
   |-- about/
       |-- index.pug
   |-- news/
-      |-- data/
+      |-- _data/
           |-- index.js
       |-- index.pug
 ```
@@ -38,11 +38,11 @@ Given the following folder structure:
 ```
 pages/
   |-- index.pug
-  |-- data/
+  |-- _data/
       |-- index.js
 ```
 
-The contents of data/index.js:
+The contents of _data/index.js:
 
 ```
 module.exports = async function () {
@@ -76,7 +76,7 @@ Given the following folder structure:
 ```
 pages/
   |-- index.pug
-  |-- data/
+  |-- _data/
       |-- index.js
       |-- data.yaml
       |-- events.yaml
