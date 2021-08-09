@@ -45,6 +45,9 @@ async function javascripts(file) {
   for (let file of jsFiles) {
     const fileInfo = path.parse(file);
 
+    // Continue if we're working in a data folder
+    if (fileInfo.dir.split("/").pop() === '_data') continue;
+
     // build dest path
     const DEST = path.join(
       config.BUILD_DIRECTORY,
