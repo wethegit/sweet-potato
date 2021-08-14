@@ -389,11 +389,13 @@ async function resolveLocales(pagePath, n, additionalComponents = []) {
   let locales = [
     path.join(pageLocalePath, `${n}.yaml`),
     path.join(pageLocalePath, `${n}.md`),
-  ];
+  ].filter((l) => fse.pathExistsSync(l));
   
-  const exists = locales.reduce((a, c) => {
-    return a !== false || fse.pathExistsSync(c) !== false;
-  }, false);
+  // const exists = locales.reduce((a, c) => {
+  //   return a !== false || fse.pathExistsSync(c) !== false;
+  // }, false);
+
+  const exists = locales.length > 0;
 
   return {
     pageLocalePath,
