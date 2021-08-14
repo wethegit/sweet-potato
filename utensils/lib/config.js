@@ -13,6 +13,7 @@ let CONFIG = {
   locales: {
     directoryName: "locales",
     defaultName: "default",
+    markdownVariableName: "markdownContent",
   },
   sassOptions: () => {
     return {};
@@ -32,7 +33,7 @@ let CONFIG = {
     },
   },
   breakpoints: false,
-  plugins: []
+  plugins: [],
 };
 
 if (fse.pathExistsSync(CONFIG_PATH)) {

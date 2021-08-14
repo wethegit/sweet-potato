@@ -1,6 +1,6 @@
 {
   "name": "@wethegit/sweet-potato-utensils",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "Shared utilities for sweet-potato packages",
   "main": "index.js",
   "engines": {
