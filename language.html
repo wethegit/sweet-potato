@@ -1,6 +1,6 @@
 <!DOCTYPE html><html lang="en-US"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=1, minimum-scale=1"><meta http-equiv="X-UA-Compatible" content="ie=edge"><meta name="description" content="Sweet Potato is an opinionated and minimal static website generator, by We The Collective."><title>Sweet Potato: Language and localisation</title><link rel="stylesheet" href="./index.css"></head><body><header class="grid"><div class="main-content"><h1>Sweet Potato 🍠</h1></div></header><main class="grid"><div class="main-content"><h2>Language and localisation</h2>
 <h3>Language</h3>
-<p>Language is provided to a document via yaml files in the locales folder of each specific page. If you had a website with a homepage and about page in English and French, its structure might look something like this:</p>
+<p>Language is provided to a document via yaml or markdown files in the locales folder of each specific page. If you had a website with a homepage and about page in English and French, its structure might look something like this:</p>
 <pre><code>pages/
 ├── locales/
 │   ├── default.yml
@@ -15,7 +15,6 @@
         └── fr.yml
 
 </code></pre>
-<p>One important note here is that localised language files <em>extend</em> the default. So if you were to provide a language asset in default and not in en, then the default will be present in en pages.</p>
 <h3>Localisation</h3>
 <p>If you're creating localized versions of your pages (different languages), you can have all your data live in YAML files, which are accessible via the Pug templates.</p>
 <p>This will allow you, for example, to have an English page and a French page; while still only using a single page template.</p>
@@ -91,5 +90,47 @@ main_nav:
 header.main-header
   nav
     h2= globals.main_nav.title
+</code></pre>
+<h3>Supported language files</h3>
+<p>Currently yaml and markdown files are supported for language files. If more than one language file is present for a specific locale, they'll be concatenated together.</p>
+<p>Markdown language files are contructed using matter style layout so they can include a block of variables at the top that extend the object further. Any markdown content rendered will be included in the variable <code>page.markdownContent</code></p>
+<h5>Example</h5>
+<p>Consider the following structure</p>
+<pre><code>src/
+├── locales/
+│   ├── default.yaml
+│   └── default.md
+└── pages/
+    └── index.pug
+</code></pre>
+<p>default.yaml looks like this:</p>
+<pre><code class="language-yaml">main_nav:
+  title: Main site navigation
+</code></pre>
+<p>defualt.md looks like this:</p>
+<pre><code class="language-md">---
+anchor: maincontent
+---
+
+# This is some markdown content
+- see
+- how
+- it
+- flows
+</code></pre>
+<p>This will generate a language object that looks something like this:</p>
+<pre><code>{
+  main_nav: {
+    title: Main site navigation
+  },
+  anchor: 'maincontent',
+  markdownContent: '&lt;h1&gt;This is some markdown content&lt;/h1&gt;\n' +
+    '&lt;ul&gt;\n' +
+    '&lt;li&gt;see&lt;/li&gt;\n' +
+    '&lt;li&gt;how&lt;/li&gt;\n' +
+    '&lt;li&gt;it&lt;/li&gt;\n' +
+    '&lt;li&gt;flows&lt;/li&gt;\n' +
+    '&lt;/ul&gt;\n'
+}
 </code></pre>
 </div><div class="main-navigation"><nav class="main-navigation"><ul class="nav main-navigation__nav"><li><a href="https://wethegit.github.io/sweet-potato//index.html">Introduction</a></li><li><a href="https://wethegit.github.io/sweet-potato//config.html">Configuration</a></li><li><a href="https://wethegit.github.io/sweet-potato//pages.html">Pages</a></li><li><a href="https://wethegit.github.io/sweet-potato//pug-plugins.html">Pug plugins</a></li><li><a href="https://wethegit.github.io/sweet-potato//language.html">Language and localisation</a></li><li><a href="https://wethegit.github.io/sweet-potato//model.html">Data model</a></li><li><a href="https://wethegit.github.io/sweet-potato//js.html">Javascript</a></li><li><a href="https://wethegit.github.io/sweet-potato//styles.html">Styles</a></li><li><a href="https://wethegit.github.io/sweet-potato//envs.html">Environments and environment variables</a></li><li><a href="https://wethegit.github.io/sweet-potato//statics.html">Static assets</a></li><li><a href="https://wethegit.github.io/sweet-potato//dev.html">Sweet Potato development</a></li></ul></nav></div></main><script type="module" src="./index.js"></script></body></html>
