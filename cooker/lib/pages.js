@@ -188,7 +188,8 @@ async function getDataFromMarkdown(file) {
   try {
     const mdfile = matter.read(file);
     result = Object.assign({}, mdfile.data, {
-      markdownContent: Markdown.render(mdfile.content),
+      [config.OPTIONS.locales.markdownVariableName || 'markdownContent']:
+        Markdown.render(mdfile.content),
     });
   } catch (error) {
     logger.error(
@@ -304,8 +305,6 @@ async function getDataFromLocaleFiles(localeFiles) {
 
     dataReturn = Object.assign({}, dataReturn, data);
   };
-
-  console.log(dataReturn);
 
   return dataReturn;
 }
