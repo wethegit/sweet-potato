@@ -305,6 +305,8 @@ async function getDataFromLocaleFiles(localeFiles) {
     dataReturn = Object.assign({}, dataReturn, data);
   };
 
+  console.log(dataReturn);
+
   return dataReturn;
 }
 

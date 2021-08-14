@@ -10,7 +10,7 @@ name: Language and localisation
 
 ### Language
 
-Language is provided to a document via yaml files in the locales folder of each specific page. If you had a website with a homepage and about page in English and French, its structure might look something like this:
+Language is provided to a document via yaml or markdown files in the locales folder of each specific page. If you had a website with a homepage and about page in English and French, its structure might look something like this:
 
 ```
 pages/
@@ -27,8 +27,6 @@ pages/
         └── fr.yml
 
 ```
-
-One important note here is that localised language files _extend_ the default. So if you were to provide a language asset in default and not in en, then the default will be present in en pages.
 
 ### Localisation
 
@@ -138,4 +136,59 @@ You could then access this data from within the `pages/index.pug` file, by doing
 header.main-header
   nav
     h2= globals.main_nav.title
+```
+
+### Supported language files
+
+Currently yaml and markdown files are supported for language files. If more than one language file is present for a specific locale, they'll be concatenated together.
+
+Markdown language files are contructed using matter style layout so they can include a block of variables at the top that extend the object further. Any markdown content rendered will be included in the variable `page.markdownContent`
+
+##### Example
+
+Consider the following structure
+
+```
+src/
+├── locales/
+│   ├── default.yaml
+│   └── default.md
+└── pages/
+    └── index.pug
+```
+
+default.yaml looks like this:
+```yaml
+main_nav:
+  title: Main site navigation
+```
+
+defualt.md looks like this:
+```md
+---
+anchor: maincontent
+---
+
+# This is some markdown content
+- see
+- how
+- it
+- flows
+```
+
+This will generate a language object that looks something like this:
+```
+{
+  main_nav: {
+    title: Main site navigation
+  },
+  anchor: 'maincontent',
+  markdownContent: '<h1>This is some markdown content</h1>\n' +
+    '<ul>\n' +
+    '<li>see</li>\n' +
+    '<li>how</li>\n' +
+    '<li>it</li>\n' +
+    '<li>flows</li>\n' +
+    '</ul>\n'
+}
 ```
