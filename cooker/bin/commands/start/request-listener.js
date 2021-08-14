@@ -309,18 +309,17 @@ async function requestListener(req, res) {
 
       const { dir } = path.parse(ext ? pathname : `${pathname}index.html`);
       const [r, potentialLocale, ...pagePath] = dir.split("/");
-      const pageLocalePath = path.join(
-        config.PAGES_DIRECTORY,
-        pagePath.join("/"),
-        config.OPTIONS.locales.directoryName
-      );
-
       let pageName = ext ? base : "index.html";
 
-      // we first try the page locale
-      let locale = path.join(pageLocalePath, `${potentialLocale}.yaml`);
+      // we first try the page locales
+      let { pageLocalePath, locales, exists } = await resolveLocales(
+        pagePath,
+        potentialLocale
+      );
 
-      if (!fse.pathExistsSync(locale)) {
+      if (exists) {
+        file = path.join(pageLocalePath, "..", pageName.replace("html", "pug"));
+      } else {
         // we are probably dealig with
         // a regular page
         file = path.join(
@@ -336,17 +335,21 @@ async function requestListener(req, res) {
           file = mdFile;
         }
         // try the global locale for the page
-        locale = path.resolve(
-          config.PAGES_DIRECTORY,
-          potentialLocale,
-          pagePath.join("/"),
-          config.OPTIONS.locales.directoryName,
-          config.OPTIONS.locales.defaultName + ".yaml"
-        );
-
-        if (!fse.pathExistsSync(locale)) locale = null;
-      } else {
-        file = path.join(pageLocalePath, "..", pageName.replace("html", "pug"));
+        const defaultLocalesObj = await resolveLocales(pagePath, config.OPTIONS.locales.defaultName);
+        locales = defaultLocalesObj.locales;
+        // LIAM 2021-08-14 - I'm commenting this out because I want to review it later on.
+        // It includes this `potentialLocale` variable that I don't quire understand right now, just refactoring.
+        // const locale = path.resolve(
+        //   config.PAGES_DIRECTORY,
+        //   potentialLocale,
+        //   pagePath.join("/"),
+        //   config.OPTIONS.locales.directoryName,
+        //   config.OPTIONS.locales.defaultName + ".yaml"
+        // );
+        // if (!fse.pathExistsSync(locale)) locales = null;
+        // else locales = [locale];
+        
+        if (!defaultLocalesObj.exists) locales = null;
       }
 
       /// If this doesn't exist...
@@ -363,7 +366,7 @@ async function requestListener(req, res) {
       }
 
       try {
-        contents = await _html(file, locale, pageName);
+        contents = await _html(file, locales, pageName);
       } catch (err) {
         _error(res, file, err);
         break;
@@ -373,6 +376,30 @@ async function requestListener(req, res) {
   }
 
   if (contents) _respond(res, { ...result, contents });
+}
+
+async function resolveLocales(pagePath, n, additionalComponents = []) {
+  const pageLocalePath = path.join(
+    config.PAGES_DIRECTORY,
+    ...additionalComponents,
+    pagePath.join("/"),
+    config.OPTIONS.locales.directoryName
+  );
+  
+  let locales = [
+    path.join(pageLocalePath, `${n}.yaml`),
+    path.join(pageLocalePath, `${n}.md`),
+  ];
+  
+  const exists = locales.reduce((a, c) => {
+    return a !== false || fse.pathExistsSync(c) !== false;
+  }, false);
+
+  return {
+    pageLocalePath,
+    locales,
+    exists,
+  };
 }
 
 module.exports = requestListener;
