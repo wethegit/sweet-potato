@@ -188,7 +188,7 @@ async function getDataFromMarkdown(file) {
   try {
     const mdfile = matter.read(file);
     result = Object.assign({}, mdfile.data, {
-      content: Markdown.render(mdfile.content),
+      markdownContent: Markdown.render(mdfile.content),
     });
   } catch (error) {
     logger.error(
