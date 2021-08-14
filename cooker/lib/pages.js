@@ -337,9 +337,9 @@ async function assemblePageOptions(
       path.join(templateInfo.dir, "locales", "?(*.yaml|*.md)")
     );
 
-  // TO DO NEED TO ADD A WAY IN HERE TO COMBINE LOCALE FILES WHEN THEY MATCH
+  // Combine different types of localefiles into common locale objects based on their name
+  // For example if both default.yaml and default.md exist, these will be combined for processing.
   const locales = {};
-
   localeFiles.forEach(file => {
     const fileInfo = path.parse(file);
     locales[fileInfo.name] = locales[fileInfo.name] || [];
