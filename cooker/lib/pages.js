@@ -334,7 +334,7 @@ async function assemblePageOptions(
     })
   } else
     localeFiles = await getFiles(
-      path.join(templateInfo.dir, "locales", "*.yaml|*.md")
+      path.join(templateInfo.dir, "locales", "?(*.yaml|*.md)")
     );
 
   // TO DO NEED TO ADD A WAY IN HERE TO COMBINE LOCALE FILES WHEN THEY MATCH
@@ -427,7 +427,7 @@ async function pages(file, localeFiles) {
   if (
     (file &&
       (!fse.pathExistsSync(file) || !file.includes(config.PAGES_DIRECTORY))) ||
-    (localeFiles[0] && !fse.pathExistsSync(localeFiles[0]))
+    (localeFiles && localeFiles[0] && !fse.pathExistsSync(localeFiles[0]))
   )
     return;
 
