@@ -58,7 +58,7 @@ async function startCommand(options) {
     }
   }
 
-  const createServer = function(host, port, id) {
+  const createServer = function(host, port) {
     const s = http.createServer(app);
     const serverObject = {
       server: s,
@@ -74,19 +74,19 @@ async function startCommand(options) {
   }
 
   // Create our servers and socket instance
-  servers.push(createServer('localhost', 8080, 0));
+  servers.push(createServer("localhost", options.port, 0));
   for (let i in netresults) {
     if (netresults[i].length) {
-      servers.push(createServer(netresults[i][0], 8080, servers.length));
+      servers.push(
+        createServer(netresults[i][0], options.port, servers.length)
+      );
     }
   }
-  // server = http.createServer(app);
 
   const io = require("socket.io")(server);
-  const host = options.host || "localhost";
-  let port = options.port || 8080;
-  let attempts = 0;
+
   const maxAttempts = 3;
+
   const start = () => {
     servers.forEach((server) => {
       server.start();
@@ -111,7 +111,7 @@ async function startCommand(options) {
       // Check if port is already in use
       if (err.code === "EADDRINUSE" && server.attempts <= maxAttempts) {
         logger.announce(
-          `Port ${port} already in use, trying another (attempt ${attempts} of ${maxAttempts}) ...`
+          `Port ${server.port} already in use, trying another (attempt ${server.attempts} of ${maxAttempts}) ...`
         );
         server.port++;
         // try again on another port
@@ -134,7 +134,7 @@ async function startCommand(options) {
     });
   });
 
-  start(port, host);
+  start();
 }
 
 module.exports = startCommand;
