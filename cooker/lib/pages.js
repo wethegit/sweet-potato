@@ -291,16 +291,17 @@ async function getDataFromLocaleFiles(localeFiles) {
   // Currently there's no explicit order to this data, should we assume one? Question for later
   for(const file of localeFiles) {
     const localeInfo = path.parse(file);
-    let [, localeID, ext] = localeInfo.base.match(/^(.*)(\.md|\.yaml)/);
 
     let data = {};
 
-    if(ext === '.yaml') {
+    if (localeInfo.ext === ".yaml") {
       data = await getDataFromYaml(file);
-    } else if(ext === '.md') {
+    } else if (localeInfo.ext === ".md") {
       data = await getDataFromMarkdown(file);
     } else {
-      logger.warning([`${ext} not supported? How the hell did we get here?`]);
+      logger.warning([
+        `${localeInfo.ext} not supported? How the hell did we get here?`,
+      ]);
     }
 
     dataReturn = Object.assign({}, dataReturn, data);
@@ -332,6 +333,8 @@ async function assemblePageOptions(
       // something to discuss, should we skip files without master locales?
       if (fse.pathExistsSync(masterLocale)) localeFiles.push(masterLocale);
     })
+
+
   } else
     localeFiles = await getFiles(
       path.join(templateInfo.dir, "locales", "?(*.yaml|*.md)")
