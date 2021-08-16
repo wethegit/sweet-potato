@@ -7,7 +7,9 @@ const fse = require("fs-extra");
 const path = require("path");
 const resolve = require("resolve");
 const matter = require("gray-matter");
-const Markdown = require("markdown-it")({ html: true });
+const Markdown = require("markdown-it")({ html: true })
+  .use(require("markdown-it-attrs"))
+  .use(require("markdown-it-div"));
 const { config, logger, getFiles } = require("@wethegit/sweet-potato-utensils");
 
 // local imports
@@ -146,6 +148,8 @@ async function saveHtml(outputOptions, { source }) {
   }
 }
 
+
+
 /**
  * getDataFromYaml
  * Reads a yaml file and returns the compiled data
@@ -162,7 +166,7 @@ async function getDataFromYaml(file) {
     result = yaml.load(content);
   } catch (error) {
     logger.error(
-      [`Can't compile global yaml`, path.relative(config.CWD, file)],
+      [`Can't compile yaml`, path.relative(config.CWD, file)],
       error
     );
 
@@ -170,6 +174,36 @@ async function getDataFromYaml(file) {
   }
 
   return result;
+}
+
+/**
+ * Retrieves locale data from a matter-styled markdown file and renderes the markdown to HTML.
+ * 
+ * @typedef {Object} getDataFromMarkdown
+ * @property {string} file - The full path to the markdown file. Will read with matter and then render the contained markdown
+ */
+async function getDataFromMarkdown(file) {
+  let result = {};
+
+  if (!fse.pathExistsSync(file)) return result;
+
+  try {
+    const mdfile = matter.read(file);
+    result = Object.assign({}, mdfile.data, {
+      [config.OPTIONS.locales.markdownVariableName || 'markdownContent']:
+        Markdown.render(mdfile.content),
+    });
+  } catch (error) {
+    logger.error(
+      [`Can't compile markdown`, path.relative(config.CWD, file)],
+      error
+    );
+
+    throw error;
+  }
+
+  return result;
+
 }
 
 /**
@@ -200,13 +234,6 @@ async function getDataFromDataInclude(file, filepath) {
 
   return result;
 }
-
-/**
- * @typedef {Object} ParsedMarkdown
- * @property {Object} templateInfo - An object containing the combined data for the markdown's rendering template. Result of path.parse(template) with the name and dir modified to variables supplied by the matter file.
- * @property {string} file - The full path to the template pug file. This will replace the parsed file for rendering
- * @property {Object} mdData - The markdown data for rendition.
- */
 
 /**
  * Parses a markdown file from a path, file, and templateInfo supplied by the pages function.
@@ -256,6 +283,36 @@ function parseMarkdown(file, fileInfo) {
 }
 
 /**
+ * Serves as a wrapper around various data resolution methods. Takes a fileInfo and returns an object that contains all of the variables contained within.
+ * 
+ * @param {Array} localeFiles - An array of locale files for consumption
+ */
+async function getDataFromLocaleFiles(localeFiles) {
+  let dataReturn = {}
+
+  // Currently there's no explicit order to this data, should we assume one? Question for later
+  for(const file of localeFiles) {
+    const localeInfo = path.parse(file);
+
+    let data = {};
+
+    if (localeInfo.ext === ".yaml") {
+      data = await getDataFromYaml(file);
+    } else if (localeInfo.ext === ".md") {
+      data = await getDataFromMarkdown(file);
+    } else {
+      logger.warning([
+        `${localeInfo.ext} not supported? How the hell did we get here?`,
+      ]);
+    }
+
+    dataReturn = Object.assign({}, dataReturn, data);
+  };
+
+  return dataReturn;
+}
+
+/**
  * Assembles all of the page options into an array for processing.
  *
  * @param {templateInfo} templateInfo - An object containing the combined data for the rendering template.
@@ -269,17 +326,32 @@ async function assemblePageOptions(
   outputOptions
 ) {
   // Find locale files based on main updated file, if it exists
-  let localeFiles;
+  let localeFiles = [];
   const outputData = [];
   if (singleLocale) {
-    const masterLocale = path.join(templateInfo.dir, "locales", singleLocale);
+    singleLocale.forEach((localeFile) => {
+      const masterLocale = path.join(templateInfo.dir, "locales", localeFile);
 
-    // something to discuss, should we skip files without master locales?
-    if (fse.pathExistsSync(masterLocale)) localeFiles = [masterLocale];
+      // something to discuss, should we skip files without master locales?
+      if (fse.pathExistsSync(masterLocale)) localeFiles.push(masterLocale);
+    })
+
+
   } else
     localeFiles = await getFiles(
-      path.join(templateInfo.dir, "locales", "*.yaml")
+      path.join(templateInfo.dir, "locales", "?(*.yaml|*.md)")
     );
+
+  // Combine different types of localefiles into common locale objects based on their name
+  // For example if both default.yaml and default.md exist, these will be combined for processing.
+  const locales = {};
+  localeFiles.forEach(file => {
+    const fileInfo = path.parse(file);
+    locales[fileInfo.name] = locales[fileInfo.name] || [];
+    locales[fileInfo.name].push(file);
+  });
+
+
 
   // If there are no locale files, we compile the file with the bare bones of information.
   if (localeFiles.length <= 0) {
@@ -301,17 +373,14 @@ async function assemblePageOptions(
 
     // Otherwise we loop through and create a build for each locale
   } else {
-    // go through the locale files
-    for (const locale of localeFiles) {
-      // get the file info
-      const localeInfo = path.parse(locale);
 
-      // get the main locale
+    // Loop through the discovered locales
+    for(const locale in locales) {
+      // get the root locale
       let mainYamlFile = path.join(
         config.GLOBAL_LOCALES_DIRECTORY,
-        localeInfo.base
+        `${locale}.yaml`
       );
-
       // if doesn't exists uses default
       if (!fse.pathExistsSync(mainYamlFile))
         mainYamlFile = path.join(
@@ -321,19 +390,20 @@ async function assemblePageOptions(
 
       let mainYaml = await getDataFromYaml(mainYamlFile);
 
+      const pageLoaleData = await getDataFromLocaleFiles(locales[locale]);
+
       const globals = Object.assign({}, outputOptions.data.globals, mainYaml);
-      const pageYaml = await getDataFromYaml(locale);
-      const page = Object.assign({}, outputOptions.data.page, pageYaml);
+      const page = Object.assign({}, outputOptions.data.page, pageLoaleData);
       const pagePlugins = outputOptions.data.pagePlugins;
 
       // render the html with the data and save it
       const options = {
         ...outputOptions,
-        locale: localeInfo.name,
+        locale,
         destination:
           // default locale doesn't generate a sub directory
-          localeInfo.name !== "default"
-            ? path.join(config.BUILD_DIRECTORY, localeInfo.name)
+          locale !== "default"
+            ? path.join(config.BUILD_DIRECTORY, locale)
             : config.BUILD_DIRECTORY,
         data: {
           ...outputOptions.data,
@@ -358,11 +428,11 @@ async function assemblePageOptions(
  *
  * @returns {promise} - Resolves to array of objects with the page information
  */
-async function pages(file, localeFile) {
+async function pages(file, localeFiles) {
   if (
     (file &&
       (!fse.pathExistsSync(file) || !file.includes(config.PAGES_DIRECTORY))) ||
-    (localeFile && !fse.pathExistsSync(localeFile))
+    (localeFiles && localeFiles[0] && !fse.pathExistsSync(localeFiles[0]))
   )
     return;
 
@@ -372,13 +442,13 @@ async function pages(file, localeFile) {
   if (file) pugFiles = [file];
 
   // Assemble the locale file information
-  if (localeFile) {
-    let fileInfo = path.parse(localeFile);
+  if (localeFiles) {
+    let fileInfo = path.parse(localeFiles[0]);
     // if we have a locale file then we save that specific language
     // that way we only compiled that language template
-    singleLocale = fileInfo.base;
+    singleLocale = localeFiles.map(p => path.parse(p).base); // Map the provided localefiles to their basenames
     // if we are at not at the root then we find the relative template file to the locale file
-    if (!pugFiles && localeFile.includes(config.PAGES_DIRECTORY))
+    if (!pugFiles && localeFiles[0].includes(config.PAGES_DIRECTORY))
       // this assumes that the yaml file lives inside `locales/` just a folder deep
       pugFiles = await getFiles(path.join(fileInfo.dir, "..", "*.pug"));
   }

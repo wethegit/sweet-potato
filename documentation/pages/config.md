@@ -51,6 +51,11 @@ Name of the default locale and locale file.
 
 <div id="pagePlugins"></div>
 
+#### locales.markdownVariableName
+
+**Default:** `markdownContent`  
+This is the name of the variable to which markdown content is supplied in the page object.
+
 ### pagePlugins
 
 **Type:** `object`  
