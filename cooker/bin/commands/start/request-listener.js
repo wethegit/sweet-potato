@@ -337,17 +337,6 @@ async function requestListener(req, res) {
         // try the global locale for the page
         const defaultLocalesObj = await resolveLocales(pagePath, config.OPTIONS.locales.defaultName);
         locales = defaultLocalesObj.locales;
-        // LIAM 2021-08-14 - I'm commenting this out because I want to review it later on.
-        // It includes this `potentialLocale` variable that I don't quire understand right now, just refactoring.
-        // const locale = path.resolve(
-        //   config.PAGES_DIRECTORY,
-        //   potentialLocale,
-        //   pagePath.join("/"),
-        //   config.OPTIONS.locales.directoryName,
-        //   config.OPTIONS.locales.defaultName + ".yaml"
-        // );
-        // if (!fse.pathExistsSync(locale)) locales = null;
-        // else locales = [locale];
         
         if (!defaultLocalesObj.exists) locales = null;
       }
@@ -390,10 +379,6 @@ async function resolveLocales(pagePath, n, additionalComponents = []) {
     path.join(pageLocalePath, `${n}.yaml`),
     path.join(pageLocalePath, `${n}.md`),
   ].filter((l) => fse.pathExistsSync(l));
-  
-  // const exists = locales.reduce((a, c) => {
-  //   return a !== false || fse.pathExistsSync(c) !== false;
-  // }, false);
 
   const exists = locales.length > 0;
 
