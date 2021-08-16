@@ -74,6 +74,7 @@ async function startCommand(options) {
   let attempts = 0;
   const maxAttempts = 3;
   const start = () => {
+    console.log("starting", attempts)
     attempts++;
     // listen to hits on the host
     servers[0].listen(port, host);
@@ -121,11 +122,8 @@ async function startCommand(options) {
     });
 
     server.on("listening", () => {
-      logger.start(`Server is running on http://${host}:${port}`);
-      for (let i in netresults) {
-        if (netresults[i].length)
-          logger.start(`Also on http://${netresults[i][0]}:${port}`);
-      }
+      const address = server.address();
+      logger.start(`Server is running on http://${address.address}:${address.port}`);
       logger.announce("Watching for changes...");
     });
   });
