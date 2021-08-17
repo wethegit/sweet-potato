@@ -6,7 +6,7 @@
 const fs = require("fs");
 const path = require("path");
 const execa = require("execa");
-const { copy, remove } = require("fs-extra");
+const { copy, remove, move } = require("fs-extra");
 const chalk = require("chalk");
 const { logger } = require("@wethegit/sweet-potato-utensils");
 
@@ -75,6 +75,16 @@ const isBaseTemplate = listOfBaseTemplates.find((file) => {
 
       // remove the .git from the cloned template
       await remove(path.join(tempPath, ".git"));
+
+      // remove documentation from the cloned template
+      await remove(path.join(tempPath, "documentation"));
+
+      // Move the proper amplify.yml into place
+      await move(
+        path.join(tempPath, "amplify.yml.copy"),
+        path.join(tempPath, "amplify.yml"),
+        { overwrite: true }
+      );
 
       // copy everything to the main directory
       await copy(tempPath, targetDirectory);
