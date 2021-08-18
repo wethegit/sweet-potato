@@ -58,32 +58,39 @@ async function startCommand(options) {
     }
   }
 
+  const createServer = function(host, port) {
+    const s = http.createServer(app);
+    const serverObject = {
+      server: s,
+      attempts: 0,
+      port: port,
+      host: host,
+      start: function () {
+        this.attempts++;
+        this.server.listen(this.port, this.host);
+      },
+    };
+    return serverObject;
+  }
+
   // Create our servers and socket instance
-  servers.push(http.createServer(app));
+  servers.push(createServer("localhost", options.port, 0));
   for (let i in netresults) {
     if (netresults[i].length) {
-      const s = http.createServer(app);
-      servers.push(s);
+      servers.push(
+        createServer(netresults[i][0], options.port, servers.length)
+      );
     }
   }
-  // server = http.createServer(app);
 
   const io = require("socket.io")(server);
-  const host = options.host || "localhost";
-  let port = options.port || 8080;
-  let attempts = 0;
+
   const maxAttempts = 3;
+
   const start = () => {
-    attempts++;
-    // listen to hits on the host
-    servers[0].listen(port, host);
-    let i = 1;
-    for (let name in netresults) {
-      if (netresults[name].length) {
-        const s = servers[i++];
-        s.listen(port, netresults[name][0]);
-      }
-    }
+    servers.forEach((server) => {
+      server.start();
+    });
   };
 
   // watch for changes
@@ -98,17 +105,17 @@ async function startCommand(options) {
   });
 
   servers.forEach((server) => {
-    server.on("error", (err) => {
-      server.close();
+    server.server.on("error", (err) => {
+      server.server.close();
 
       // Check if port is already in use
-      if (err.code === "EADDRINUSE" && attempts <= maxAttempts) {
+      if (err.code === "EADDRINUSE" && server.attempts <= maxAttempts) {
         logger.announce(
-          `Port ${port} already in use, trying another (attempt ${attempts} of ${maxAttempts}) ...`
+          `Port ${server.port} already in use, trying another (attempt ${server.attempts} of ${maxAttempts}) ...`
         );
-        port++;
+        server.port++;
         // try again on another port
-        start(port, host);
+        server.start();
       } else {
         if (err.code === "EADDRINUSE")
           logger.error(
@@ -120,17 +127,14 @@ async function startCommand(options) {
       }
     });
 
-    server.on("listening", () => {
-      logger.start(`Server is running on http://${host}:${port}`);
-      for (let i in netresults) {
-        if (netresults[i].length)
-          logger.start(`Also on http://${netresults[i][0]}:${port}`);
-      }
+    server.server.on("listening", () => {
+      const address = server.server.address();
+      logger.start(`Server is running on http://${address.address}:${address.port}`);
       logger.announce("Watching for changes...");
     });
   });
 
-  start(port, host);
+  start();
 }
 
 module.exports = startCommand;
