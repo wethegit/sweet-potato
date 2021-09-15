@@ -68,7 +68,7 @@ async function startCommand(options) {
   }
   // server = http.createServer(app);
 
-  const io = require("socket.io")(server);
+  const io = require("socket.io")(servers[0]);
   const host = options.host || "localhost";
   let port = options.port || 8080;
   let attempts = 0;
