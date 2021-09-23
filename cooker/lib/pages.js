@@ -215,13 +215,13 @@ async function getDataFromMarkdown(file) {
  *
  * @returns {object} - Resolves to an object. This is provided by the repo, so implementation is up to the associated developer
  */
-async function getDataFromDataInclude(file, filepath) {
+async function getDataFromDataInclude(file, filepath, locale) {
   let result = {};
 
   if (!fse.pathExistsSync(file)) return result;
 
   try {
-    const content = await require(file)(filepath);
+    const content = await require(file)(filepath, locale);
     result = content;
   } catch (error) {
     logger.error(
@@ -335,6 +335,7 @@ async function assemblePageOptions(
       // something to discuss, should we skip files without master locales?
       if (fse.pathExistsSync(masterLocale)) localeFiles.push(masterLocale);
     })
+    
 
 
   } else
@@ -362,9 +363,16 @@ async function assemblePageOptions(
       )
     );
 
+    const model = await getDataFromDataInclude(
+      path.join(templateInfo.dir, "_data", "index.js"),
+      path.join(templateInfo.dir, "_data"),
+      singleLocale
+    );
+
     // render the html with the data and save it
     const options = {
       ...outputOptions,
+      model
     };
     options.data.globals = mainYaml;
     // options.data.page =Object.assign({}, options.data.page, mainYaml);
@@ -396,6 +404,12 @@ async function assemblePageOptions(
       const page = Object.assign({}, outputOptions.data.page, pageLoaleData);
       const pagePlugins = outputOptions.data.pagePlugins;
 
+      const model = await getDataFromDataInclude(
+        path.join(templateInfo.dir, "_data", "index.js"),
+        path.join(templateInfo.dir, "_data"),
+        locale
+      );
+
       // render the html with the data and save it
       const options = {
         ...outputOptions,
@@ -410,6 +424,7 @@ async function assemblePageOptions(
           globals,
           page,
           pagePlugins,
+          model
         },
       };
 
@@ -514,10 +529,7 @@ async function pages(file, localeFiles) {
     const pagePath = templateInfo.dir.replace(config.PAGES_DIRECTORY, "");
 
     // Get data from a model, if available
-    const model = await getDataFromDataInclude(
-      path.join(templateInfo.dir, "_data", "index.js"),
-      path.join(templateInfo.dir, "_data")
-    );
+    const model = {}
 
     // Get any included page functions
     const pagePlugins = config.OPTIONS.pagePlugins;
