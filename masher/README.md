@@ -1,9 +1,10 @@
-# sweet-potato-masher 🗜
+# [DEPRECATED] Moved to it's own isolated package: [https://github.com/wethegit/masher](https://github.com/wethegit/masher)
+
+## sweet-potato-masher 🗜
 
 Optmizes and compresses all images on a sweet-potato project.
 
 > `sweet-potato-peeler` is part of the `sweet-potato` suite of tools. For information on how to structure a project check the [sweet-potato docs](https://github.com/wethegit/sweet-potato).
-
 
 ## Usage
 
@@ -11,13 +12,13 @@ Optmizes and compresses all images on a sweet-potato project.
 npx @wethegit/sweet-potato-masher [--directory]
 ```
 
-`directory` is optional and the default is the projects `public/` folder.  
-After running the masher, it will create a cache file named `sweet-potato-masher.cache.json` on the root of the project.  
+`directory` is optional and the default is the projects `public/` folder.
+After running the masher, it will create a cache file named `sweet-potato-masher.cache.json` on the root of the project.
 That file should be commited with your project so you avoid recompressing the same files.
 
 ## Options
 
-Granular compression options can be set by creating a file named `sweet-potato.config.js` on the root of the project.  
+Granular compression options can be set by creating a file named `sweet-potato.config.js` on the root of the project.
 The same file used by the [`sweet-potato-cooker`](https://github.com/wethegit/sweet-potato/tree/main/cooker#config).
 
 ```js
@@ -29,19 +30,19 @@ module.exports = {
     },
     imageminPngquant: {
       quality: [0.65, 0.95],
-      speed: 1
+      speed: 1,
     },
     imageminGifsicle: {},
     imageminSvgo: {
       plugins: extendDefaultPlugins([{ name: "removeViewBox", active: false }]),
     },
-  }
-}
+  },
+};
 ```
 
 #### compress.imageminMozjpeg
 
-**Type:** `object`  
+**Type:** `object`
 **Default:**
 
 ```js
@@ -54,7 +55,7 @@ A list of valid [imagemin-mozjpeg](https://www.npmjs.com/package/imagemin-mozjpe
 
 #### compress.imageminPngquant
 
-**Type:** `object`  
+**Type:** `object`
 **Default:**
 
 ```js
@@ -68,13 +69,13 @@ A list of valid [imagemin-pngquant](https://www.npmjs.com/package/imagemin-pngqu
 
 #### compress.imageminGifsicle
 
-**Type:** `object`  
+**Type:** `object`
 **Default:** `{}`
 A list of valid [imagemin-gifsicle](https://www.npmjs.com/package/imagemin-gifsicle) options.
 
 #### compress.imageminSvgo
 
-**Type:** `object`  
+**Type:** `object`
 **Default:**
 
 ```js
