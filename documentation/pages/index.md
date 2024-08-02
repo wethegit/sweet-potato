@@ -19,7 +19,29 @@ The goal is to be simple and allow the composing and styling of pages without ge
 
 ### Requirements
 
-Node >= v14, < v16
+Node.js >= v14, < v16
+Python 2.7
+
+#### Using older versions of Node.js and Python
+
+This project depends on older versions of both Node.js and Python to build. It's suggested to use a Node.js version manager (e.g. `nvm`), and a Python version manager (e.g. `pyenv`).
+
+The project has been tested using Node.js version `15.14.0` and Python version `2.7.18`.
+
+To install older versions using `nvm` and `pyenv`:
+
+```sh
+nvm install 15.14.0
+pyenv install 2.7.18
+```
+
+Running commands with older versions:
+
+```sh
+pyenv local 2.7.18
+nvm use 15.14.0
+nvm exec 15.14.0 <command>
+```
 
 ## Quick Start
 
