@@ -40,7 +40,6 @@ Running commands with older versions:
 ```sh
 pyenv local 2.7.18
 nvm use 15.14.0
-nvm exec 15.14.0 <command>
 ```
 
 ## Quick Start
