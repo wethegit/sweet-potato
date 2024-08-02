@@ -14,12 +14,10 @@ jobs:
   publish:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
-
-      # Publish to npm
-      - uses: actions/setup-node@v1
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
         with:
-          node-version: 12
+          node-version-file: "./components/.nvmrc"
           registry-url: https://registry.npmjs.org/
       - run: npm publish --access public
         working-directory: "./components"
@@ -27,9 +25,9 @@ jobs:
           NODE_AUTH_TOKEN: ${{secrets.NPM_TOKEN}}
 
       # Publish to GHP
-      - uses: actions/setup-node@v1
+      - uses: actions/setup-node@v4
         with:
-          node-version: 12
+          node-version-file: "./components/.nvmrc"
           registry-url: https://npm.pkg.github.com/
       - run: npm publish
         working-directory: "./components"
