@@ -1,6 +1,6 @@
 {
   "name": "@wethegit/sweet-potato-cooker",
-  "version": "1.5.0",
+  "version": "1.5.1",
   "description": "Opinionated and minimal static website generator",
   "main": "bin/index.js",
   "bin": {
