@@ -1,7 +1,7 @@
 // The purpose of this function is to compile our scss files, simple as that
 "use strict";
 
-const sass = require("node-sass");
+const sass = require("sass");
 const path = require("path");
 const fse = require("fs-extra");
 const assetFunctions = require("node-sass-asset-functions");
