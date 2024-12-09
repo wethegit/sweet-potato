@@ -99,6 +99,7 @@ async function styles(file) {
             images_path: config.PUBLIC_DIRECTORY,
             http_images_path: relativeOutput,
           }),
+          silenceDeprecations: ['legacy-js-api'],
           ...config.OPTIONS.sassOptions(!isProduction, file),
         },
         async function (error, result) {
